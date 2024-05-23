@@ -293,7 +293,6 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
 
         self.mouse.move_to(rectangle.random_point())
         self.mouse.click()
-        self.take_break(max_seconds=1, fancy=True)
         return True 
 
     def find_click_tag(self, object_color: clr.Color, mouseover_text: str) -> bool:
@@ -304,8 +303,24 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
 
         self.mouse.move_to(tag.random_point())
         if not self.mouseover_text(contains=mouseover_text):
-            self.log_msg("could not find mouseover text")
-            return False
+            # retry
+            self.mouse.move_to(tag.random_point())
+            if not self.mouseover_text(contains=mouseover_text):
+                self.log_msg("could not find mouseover text")
+                return False
+        self.mouse.click()
+
+        return True 
+
+    def find_click_rectangle(self, rectangle: Rectangle, mouseover_text: str) -> bool:
+
+        self.mouse.move_to(rectangle.random_point())
+        if not self.mouseover_text(contains=mouseover_text):
+            # retry
+            self.mouse.move_to(rectangle.random_point())
+            if not self.mouseover_text(contains=mouseover_text):
+                self.log_msg("could not find mouseover text")
+                return False
         self.mouse.click()
 
         return True 

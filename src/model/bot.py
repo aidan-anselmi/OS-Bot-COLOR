@@ -326,9 +326,11 @@ class Bot(ABC):
         else:
             length = rd.truncated_normal_sample(min_seconds, max_seconds)
         length = round(length, 1)
-        self.log_msg(f"Taking a {length} seconds break.", overwrite=True)
+        if max_seconds > 10:
+            self.log_msg(f"Taking a {length} seconds break.", overwrite=True)
         time.sleep(length)
-        self.log_msg(f"Done taking {length} second break.", overwrite=True)
+        if max_seconds > 10:
+            self.log_msg(f"Done taking {length} second break.", overwrite=True)
 
     # --- Player Status Functions ---
     def has_hp_bar(self) -> bool:

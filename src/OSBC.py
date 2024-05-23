@@ -342,11 +342,11 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     # To test a bot without the GUI, address the comments for each line below.
     # from model.<folder_bot_is_in> import <bot_class_name>  # Uncomment this line and replace <folder_bot_is_in> and <bot_class_name> accordingly to import your bot
-    from model.osrs.sand_ash_smelter import OSRSSandAshSmelter
+    from model.osrs.glass_blower import OSRSGlassBlower
     test = True
     if test:
         app = App(test=True)
-        app.test(OSRSSandAshSmelter()) 
+        app.test(OSRSGlassBlower()) 
     else:
         app = App()  # Add the "test=True" argument to the App constructor call.
         app.start()  # Comment out this line.

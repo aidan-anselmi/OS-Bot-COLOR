@@ -11,13 +11,13 @@ from utilities.sprite_scraper import SpriteScraper, ImageType
 import keyboard
 
 
-class OSRSSandAshSmelter(OSRSBot):
+class OSRSGlassBlower(OSRSBot):
     def __init__(self):
-        bot_title = "sand ash smelter"
-        description = "smelts sand and ash into molten glass at edgeville"
+        bot_title = "glass blower"
+        description = "blows glass"
         super().__init__(bot_title=bot_title, description=description)
         # Set option variables below (initial value is only used during headless testing)
-        self.running_time = 30
+        self.running_time = 80
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
@@ -37,78 +37,83 @@ class OSRSSandAshSmelter(OSRSBot):
 
     def scrape_images(self):
         scraper = SpriteScraper()
-        search_string = "Soda ash, Bucket of sand"
-
-        image_type = ImageType.BANK
-        destination = scraper.DEFAULT_DESTINATION.joinpath("furnace")
+        destination = scraper.DEFAULT_DESTINATION.joinpath("items")
+        
+        search_string = "Molten glass"        
         scraper.search_and_download(
             search_string=search_string,
-            image_type=image_type,
+            image_type=ImageType.BANK,
+            destination=destination,
+            notify_callback=self.log_msg)
+
+        search_string = "Unpowered orb, Glassblowing pipe"
+        scraper.search_and_download(
+            search_string=search_string,
+            image_type=ImageType.NORMAL,
             destination=destination,
             notify_callback=self.log_msg)
         return 
 
     def main_loop(self):
         # Setup APIs
-        self.api_m = MorgHTTPSocket()
+        api_m = MorgHTTPSocket()
+        api_s = StatusSocket()
 
-        # self.scrape_images()
-        soda_ash_img = imsearch.SCRAPER_IMAGES.joinpath("furnace", "Soda_ash_bank.png")
-        sand_img = imsearch.SCRAPER_IMAGES.joinpath("furnace", "Bucket_of_sand_bank.png")
-        desposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")
+        self.scrape_images()
+        molten_glass_img = imsearch.SCRAPER_IMAGES.joinpath("items", "Molten_glass_bank.png")
+        close_bank_img = imsearch.BOT_IMAGES.joinpath("bank", "close_bank.png")
         
-        furnace_color = clr.PINK
         bank_color = clr.BLUE
+
+        # glass_pipe_slot = api_s.get_inv_item_indices(ids.GLASSBLOWING_PIPE)[0]
+        glass_pipe_rectangle = self.win.inventory_slots[0]
 
         # Main loop
         start_time = time.time()
         end_time = self.running_time * 60
         while time.time() - start_time < end_time:
-
-            # bank 
+            # bank
             if not self.find_click_tag(bank_color, "Bank"):
                 self.log_msg("could not click on bank!")
                 break
             self.wait_till_bank_open()
-            self.take_break(max_seconds=3, fancy=True)
+            self.take_break(max_seconds=.8, fancy=True)
 
-            # deposit and withdraw items 
-            if not self.find_click_image(desposit_all_img):
-                self.log_msg("could not find deposit all button")
-                break
-            self.take_break(max_seconds=1, fancy=True)
-            if not self.find_click_image(sand_img):
-                self.log_msg("could not find buckets of sand")
-                break
-            self.take_break(max_seconds=1, fancy=True)
-            if not self.find_click_image(soda_ash_img):
-                self.log_msg("could not find soda ash")
-                break
-            self.take_break(max_seconds=1, fancy=True)
+            # deposit items 
+            self.find_click_rectangle(self.win.inventory_slots[1], "Deposit-All")
+            self.log_msg("deposited orbs.")
+            self.take_break(max_seconds=.4, fancy=True)
 
-            # smelt
-            if not self.find_click_tag(furnace_color, "Smelt"):
-                self.log_msg("could not click on furnace!")
+            # withdraw items 
+            if not self.find_click_image(molten_glass_img):
+                self.log_msg("could not find molten glass.")
                 break
-            if not self.wait_till_interface():
-                self.log_msg("smelting interface never opened")
+            self.take_break(max_seconds=.4, fancy=True)
+
+            # close bank
+            if not self.find_click_image(close_bank_img):
+                self.log_msg("could not close the bank.")
                 break
-            self.take_break(max_seconds=3, fancy=True)
+            self.take_break(max_seconds=.4, fancy=True)
+
+            self.find_click_rectangle(self.win.inventory_slots[0], "Use")
+            self.take_break(max_seconds=.7, fancy=True)
+            self.find_click_rectangle(self.win.inventory_slots[1], "Use")
+            self.wait_till_interface()
+            self.take_break(max_seconds=.4, fancy=True)
             keyboard.press("space")
+            
 
-            # TODO API down 
-            # if not self.wait_till_inv_out_of(ids.SODA_ASH):
-            #     self.log_msg("never ran out of soda ash")
-            #     break
-
-            time.sleep(17.2)
-            self.take_break(max_seconds=8, fancy=True)
+            time.sleep(49)
+            self.take_break(max_seconds=35, fancy=True)
 
             self.update_progress((time.time() - start_time) / end_time)
             self.log_msg("")
 
         self.update_progress(1)
         self.log_msg("Finished.")
+        self.logout()
         self.stop()
+        
 
 
