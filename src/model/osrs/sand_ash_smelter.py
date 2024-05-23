@@ -37,7 +37,8 @@ class OSRSSandAshSmelter(OSRSBot):
 
     def scrape_images(self):
         scraper = SpriteScraper()
-        search_string = "Soda ash, Bucket of sand, Deposit inventory"
+        search_string = "Soda ash, Bucket of sand"
+
         image_type = ImageType.BANK
         destination = scraper.DEFAULT_DESTINATION.joinpath("furnace")
         scraper.search_and_download(
@@ -50,13 +51,12 @@ class OSRSSandAshSmelter(OSRSBot):
     def main_loop(self):
         # Setup APIs
         self.api_m = MorgHTTPSocket()
-        # api_s = StatusSocket()
 
-        self.scrape_images()
-        soda_ash_img = imsearch.BOT_IMAGES.joinpath("furnace", "soda_ash.png")
-        sand_img = imsearch.BOT_IMAGES.joinpath("furnace", "bucket_of_sand.png")
-        deposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_all.png")
-
+        # self.scrape_images()
+        soda_ash_img = imsearch.SCRAPER_IMAGES.joinpath("furnace", "Soda_ash_bank.png")
+        sand_img = imsearch.SCRAPER_IMAGES.joinpath("furnace", "Bucket_of_sand_bank.png")
+        desposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")
+        
         furnace_color = clr.PINK
         bank_color = clr.BLUE
 
@@ -64,52 +64,47 @@ class OSRSSandAshSmelter(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
         while time.time() - start_time < end_time:
-            # bank
-            if self.api_m.get_is_player_idle():
-                if bank := self.get_nearest_tag(bank_color):
-                    self.mouse.move_to(bank.random_point())
-                    if not self.mouseover_text(contains="Bank"):
-                        continue
-                    self.mouse.click()
-            self.wait_till_bank_open()
-            self.take_break(max_seconds=1, fancy=True)
-            
-            # deposit and get items 
-            self.click_deposit_all()
-            self.find_click_image(sand_img)
-            self.find_click_image(soda_ash_img)
-            self.bank_close()
-            self.take_break(max_seconds=1, fancy=True)
 
-            #smelt
-            if self.api_m.get_is_player_idle():
-                if furnace := self.get_nearest_tag(furnace_color):
-                    self.mouse.move_to(furnace.random_point())
-                    if not self.mouseover_text(contains="Smelt"):
-                        continue
-                    self.mouse.click()
-                    self.wait_till_interface()
-                    self.take_break(max_seconds=1, fancy=True)
-                    keyboard.press("space")
-                    
-            self.wait_until_idle()
+            # bank 
+            if not self.find_click_tag(bank_color, "Bank"):
+                self.log_msg("could not click on bank!")
+                break
+            self.wait_till_bank_open()
+
+            # deposit and withdraw items 
+            if not self.find_click_image(desposit_all_img):
+                self.log_msg("could not find deposit all button")
+                break
+            if not self.find_click_image(sand_img):
+                self.log_msg("could not find buckets of sand")
+                break
+            if not self.find_click_image(soda_ash_img):
+                self.log_msg("could not find soda ash")
+                break
+
+            # smelt
+            if not self.find_click_tag(furnace_color, "Smelt"):
+                self.log_msg("could not click on furnace!")
+                break
+            if not self.wait_till_interface():
+                self.log_msg("smelting interface never opened")
+                break
+            self.take_break(max_seconds=3, fancy=True)
+            keyboard.press("space")
+
+            # TODO API down 
+            # if not self.wait_till_inv_out_of(ids.SODA_ASH):
+            #     self.log_msg("never ran out of soda ash")
+            #     break
+
+            time.sleep(17)
+            self.take_break(max_seconds=3, fancy=True)
 
             self.update_progress((time.time() - start_time) / end_time)
+            self.log_msg("")
 
         self.update_progress(1)
         self.log_msg("Finished.")
         self.stop()
 
-    def wait_until_idle(self):
-        while not self.api_m.get_is_player_idle():
-            time.sleep(.1)
-        self.take_break(max_seconds=1, fancy=True)
-        return 
 
-
-    def find_click_image(self, img):
-        if deposit_all := imsearch.search_img_in_rect(img, self.win.game_view):
-                self.mouse.move_to(deposit_all.random_point())
-                self.mouse.click()
-        self.take_break(max_seconds=1, fancy=True)
-        return 

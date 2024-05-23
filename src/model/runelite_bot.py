@@ -10,6 +10,7 @@ For converting RGB to HSV:
 Item ID Database:
     https://www.runelocus.com/tools/osrs-item-id-list/
 """
+from pathlib import Path
 import time
 from abc import ABCMeta
 from typing import List, Union
@@ -25,7 +26,8 @@ import utilities.runelite_cv as rcv
 from model.bot import Bot, BotStatus
 from utilities.geometry import Point, Rectangle, RuneLiteObject
 from utilities.window import Window
-
+import utilities.random_util as rd
+from utilities.api.morg_http_client import MorgHTTPSocket
 
 class RuneLiteWindow(Window):
     current_action: Rectangle = None  # https://i.imgur.com/fKXuIyO.png
@@ -37,6 +39,7 @@ class RuneLiteWindow(Window):
         RuneLiteWindow is an extensions of the Window class, which allows for locating and interacting with key
         UI elements on screen.
         """
+
         super().__init__(window_title, padding_top=26, padding_left=0)
 
     # Override
@@ -255,3 +258,115 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(0.2)
             pag.press("enter")
             time.sleep(1)
+
+
+    def loop_find_image(self, image: Path) -> Rectangle:
+        error = 0
+        while True:
+            if error > 20:
+                return None
+            error += 1
+
+            rectangle = imsearch.search_img_in_rect(image, self.win.game_view)
+            if rectangle:  
+                break
+            time.sleep(0.1)
+        return rectangle
+
+    def loop_find_tag(self, color: clr.Color) -> RuneLiteObject:
+        error = 0
+        while True:
+            if error > 20:
+                return None
+            error += 1
+
+            obj = self.get_nearest_tag(color)
+            if obj:  
+                break
+            time.sleep(0.1)
+        return obj
+
+    def find_click_image(self, image: Path) -> bool:
+        rectangle = self.loop_find_image(image)           
+        if not rectangle:
+            return False
+
+        self.mouse.move_to(rectangle.random_point())
+        self.mouse.click()
+        self.take_break(max_seconds=1, fancy=True)
+        return True 
+
+    def find_click_tag(self, object_color: clr.Color, mouseover_text: str) -> bool:
+        tag = self.loop_find_tag(object_color)
+        if not tag:
+            self.log_msg("could not find tag")
+            return False
+
+        self.mouse.move_to(tag.random_point())
+        if not self.mouseover_text(contains=mouseover_text):
+            self.log_msg("could not find mouseover text")
+            return False
+        self.mouse.click()
+
+        return True 
+
+    def get_all(self) -> bool:
+        """
+        Will check if a certain action menu is open.
+        """
+        if ocr.find_text(["many", "make"], rect=self.win.chat, font=ocr.BOLD_12, color=clr.Color([64, 48, 32])):
+            return True
+        return False
+
+    def wait_till_interface(self):
+        """
+        This will stop further execution until interface is opened
+        """
+        error = 0
+        while not self.get_all():
+            if error > 100:
+                return False
+            error += 1
+            time.sleep(.1)
+        return True    
+
+    def is_bank_open(self):
+        """
+        Checks if the bank interface is currently open.
+
+        This function searches for the bank tabs image within the game view or within a specific region if the bank tabs
+        image has been previously located. If the bank tabs image is found with a confidence level of at least 0.05,
+        it is considered that the bank interface is open.
+
+        Returns:
+            bool: True if the bank interface is open, False otherwise.
+        """
+        tabs_img = imsearch.BOT_IMAGES.joinpath("bank", "bank_tabs_manual.png")
+        if imsearch.search_img_in_rect(tabs_img, self.win.game_view, confidence=0.05):
+            return True
+        return False
+
+    def wait_till_bank_open(self):
+        """
+        Waits until the bank interface is open.
+
+        This function continuously checks if the bank interface is open by calling the is_bank_open method until it returns True.
+
+        """
+        # Continuously loop until the bank interface is open
+        while not self.is_bank_open():
+            time.sleep(.1)
+            pass
+
+    def wait_till_inv_out_of(self, items, max_ms=300) -> bool:
+        """
+        This will stop further execution until inventory is out of item id(s).
+        """
+        error = 0
+        api_m = MorgHTTPSocket()
+        while api_m.get_inv_item_indices(items):
+            if error > max_ms:
+                return False
+            error += 1
+            time.sleep(.1)
+        return True
