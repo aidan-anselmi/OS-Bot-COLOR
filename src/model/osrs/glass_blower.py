@@ -17,7 +17,7 @@ class OSRSGlassBlower(OSRSBot):
         description = "blows glass"
         super().__init__(bot_title=bot_title, description=description)
         # Set option variables below (initial value is only used during headless testing)
-        self.running_time = 80
+        self.running_time = 254
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
@@ -39,7 +39,7 @@ class OSRSGlassBlower(OSRSBot):
         scraper = SpriteScraper()
         destination = scraper.DEFAULT_DESTINATION.joinpath("items")
         
-        search_string = "Molten glass"        
+        search_string = "Molten glass, Maple logs"        
         scraper.search_and_download(
             search_string=search_string,
             image_type=ImageType.BANK,
@@ -60,7 +60,8 @@ class OSRSGlassBlower(OSRSBot):
         api_s = StatusSocket()
 
         self.scrape_images()
-        molten_glass_img = imsearch.SCRAPER_IMAGES.joinpath("items", "Molten_glass_bank.png")
+        # molten_glass_img = imsearch.SCRAPER_IMAGES.joinpath("items", "Molten_glass_bank.png")
+        molten_glass_img = imsearch.SCRAPER_IMAGES.joinpath("items", "Maple_logs_bank.png")
         close_bank_img = imsearch.BOT_IMAGES.joinpath("bank", "close_bank.png")
         
         bank_color = clr.BLUE
@@ -71,11 +72,15 @@ class OSRSGlassBlower(OSRSBot):
         # Main loop
         start_time = time.time()
         end_time = self.running_time * 60
-        while time.time() - start_time < end_time:
+        errors = 0
+        while time.time() - start_time < end_time and errors < 10:
+
             # bank
-            if not self.find_click_tag(bank_color, "Bank"):
-                self.log_msg("could not click on bank!")
-                break
+            if not self.is_bank_open():
+                if not self.find_click_tag(bank_color, "Bank"):
+                    self.log_msg("could not click on bank!")
+                    errors += 1
+                    continue
             self.wait_till_bank_open()
             self.take_break(max_seconds=.8, fancy=True)
 
@@ -87,25 +92,27 @@ class OSRSGlassBlower(OSRSBot):
             # withdraw items 
             if not self.find_click_image(molten_glass_img):
                 self.log_msg("could not find molten glass.")
-                break
-            self.take_break(max_seconds=.4, fancy=True)
+                errors += 1
+                continue
+            self.take_break(max_seconds=.5, fancy=True)
 
             # close bank
             if not self.find_click_image(close_bank_img):
                 self.log_msg("could not close the bank.")
-                break
-            self.take_break(max_seconds=.4, fancy=True)
+                errors += 1
+                continue
+            self.take_break(max_seconds=.5, fancy=True)
 
             self.find_click_rectangle(self.win.inventory_slots[0], "Use")
-            self.take_break(max_seconds=.7, fancy=True)
+            self.take_break(max_seconds=.8, fancy=True)
             self.find_click_rectangle(self.win.inventory_slots[1], "Use")
             self.wait_till_interface()
-            self.take_break(max_seconds=.4, fancy=True)
+            self.take_break(max_seconds=.5, fancy=True)
             keyboard.press("space")
             
 
             time.sleep(49)
-            self.take_break(max_seconds=35, fancy=True)
+            self.take_break(max_seconds=30, fancy=True)
 
             self.update_progress((time.time() - start_time) / end_time)
             self.log_msg("")
