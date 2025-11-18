@@ -226,6 +226,9 @@ class StatusSocket:
     def get_animation_id(self) -> int:
         return player_data["attack"]["animationId"]
 
+    def get_player_data(self):
+        return player_data
+
 
 # Test Code
 if __name__ == "__main__":

@@ -295,17 +295,17 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         self.mouse.click()
         return True 
 
-    def find_click_tag(self, object_color: clr.Color, mouseover_text: str) -> bool:
+    def find_click_tag(self, object_color: clr.Color, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None,) -> bool:
         tag = self.loop_find_tag(object_color)
         if not tag:
             self.log_msg("could not find tag")
             return False
 
         self.mouse.move_to(tag.random_point())
-        if not self.mouseover_text(contains=mouseover_text):
+        if not self.mouseover_text(contains=mouseover_text, color=color):
             # retry
             self.mouse.move_to(tag.random_point())
-            if not self.mouseover_text(contains=mouseover_text):
+            if not self.mouseover_text(contains=mouseover_text, color=color):
                 self.log_msg("could not find mouseover text")
                 return False
         self.mouse.click()
@@ -346,19 +346,17 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         return True    
 
     def is_bank_open(self):
-        """
-        Checks if the bank interface is currently open.
-
-        This function searches for the bank tabs image within the game view or within a specific region if the bank tabs
-        image has been previously located. If the bank tabs image is found with a confidence level of at least 0.05,
-        it is considered that the bank interface is open.
-
-        Returns:
-            bool: True if the bank interface is open, False otherwise.
-        """
         tabs_img = imsearch.BOT_IMAGES.joinpath("bank", "bank_tabs_manual.png")
         if imsearch.search_img_in_rect(tabs_img, self.win.game_view, confidence=0.05):
             return True
+
+        return False
+
+    def is_bank_deposit_open(self):
+        tabs_img = imsearch.BOT_IMAGES.joinpath("bank", "bank_deposit_manual.png")
+        if imsearch.search_img_in_rect(tabs_img, self.win.game_view, confidence=0.05):
+            return True
+
         return False
 
     def wait_till_bank_open(self):
@@ -370,6 +368,18 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         """
         # Continuously loop until the bank interface is open
         while not self.is_bank_open():
+            time.sleep(.1)
+            pass
+
+    def wait_till_bank_deposit_open(self):
+        """
+        Waits until the bank interface is open.
+
+        This function continuously checks if the bank interface is open by calling the is_bank_open method until it returns True.
+
+        """
+        # Continuously loop until the bank interface is open
+        while not self.is_bank_deposit_open():
             time.sleep(.1)
             pass
 
@@ -385,3 +395,11 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             error += 1
             time.sleep(.1)
         return True
+    
+    def move_mouse_random_point(self):
+        return 
+
+    def move_mouse_off_screen(self):
+        return 
+
+    

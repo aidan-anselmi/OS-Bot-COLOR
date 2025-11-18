@@ -8,7 +8,9 @@ from model.runelite_bot import BotStatus
 from utilities.api.morg_http_client import MorgHTTPSocket
 from utilities.api.status_socket import StatusSocket
 from utilities.geometry import RuneLiteObject
-
+import random
+from utilities.sprite_scraper import SpriteScraper, ImageType
+import utilities.imagesearch as imsearch
 
 class OSRSWoodcutter(OSRSBot):
     def __init__(self):
@@ -17,8 +19,11 @@ class OSRSWoodcutter(OSRSBot):
             "This bot power-chops wood. Position your character near some trees, tag them, and press Play.\nTHIS SCRIPT IS AN EXAMPLE, DO NOT USE LONGTERM."
         )
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 1
-        self.take_breaks = False
+        self.running_time = 135
+
+        self.break_length_multiplier = random.uniform(.25, 1)
+        self.break_chance_multiplier = random.uniform(.25, 1)
+        self.tree_color = clr.PINK
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
@@ -41,59 +46,47 @@ class OSRSWoodcutter(OSRSBot):
         self.options_set = True
 
     def main_loop(self):
-        # Setup API
-        api_m = MorgHTTPSocket()
-        api_s = StatusSocket()
-
         self.log_msg("Selecting inventory...")
         self.mouse.move_to(self.win.cp_tabs[3].random_point())
         self.mouse.click()
-
         self.logs = 0
-        failed_searches = 0
+
+        self.desposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")
+        self.close_bank_img = imsearch.BOT_IMAGES.joinpath("bank", "close_bank.png")
+        self.full_yew_logs = imsearch.BOT_IMAGES.joinpath("items", "full_yew_logs.png")
 
         # Main loop
         start_time = time.time()
         end_time = self.running_time * 60
         while time.time() - start_time < end_time:
-            # 5% chance to take a break between tree searches
-            if rd.random_chance(probability=0.05) and self.take_breaks:
-                self.take_break(max_seconds=30, fancy=True)
+            
+            # deposit logs 
+            if self.__full_inventory() or rd.random_chance(probability=0.1 * self.break_chance_multiplier):
+                if not self.__deposit_logs():
+                    continue 
 
-            # 2% chance to drop logs early
-            if rd.random_chance(probability=0.02):
-                self.__drop_logs(api_s)
+            # chop tree 
+            self.__chop_tree(next_nearest=False)
 
-            # If inventory is full, drop logs
-            if api_s.get_is_inv_full():
-                self.__drop_logs(api_s)
+            # chance to move mouse or move to new tree while chopping 
+            while not self.__full_inventory() and not api_m.get_is_player_idle():
+                
+                # chance to move trees 
+                # yew trees last 114 seconds 
+                if rd.random_chance(probabilit=1.0/(114.0 * 4.0)):
+                    self.__chop_tree(next_nearest=True)
 
-            # If our mouse isn't hovering over a tree, and we can't find another tree...
-            if not self.mouseover_text(contains="Chop", color=clr.OFF_WHITE) and not self.__move_mouse_to_nearest_tree():
-                failed_searches += 1
-                if failed_searches % 10 == 0:
-                    self.log_msg("Searching for trees...")
-                if failed_searches > 60:
-                    # If we've been searching for a whole minute...
-                    self.__logout("No tagged trees found. Logging out.")
+                # move mouse randomly 
+                mouse_move_probability = 1.0/(150.0)
+                if rd.random_chance(probabilit=mouse_move_probability):
+                    self.move_mouse_off_screen()
+                elif rd.random_chance(probabilit=mouse_move_probability):
+                    self.move_mouse_random_point()
                 time.sleep(1)
-                continue
-            failed_searches = 0  # If code got here, a tree was found
 
-            # Click if the mouseover text assures us we're clicking a tree
-            if not self.mouseover_text(contains="Chop", color=clr.OFF_WHITE):
-                continue
-            self.mouse.click()
-            time.sleep(0.5)
-
-            # While the player is chopping (or moving), wait
-            probability = 0.10
-            while not api_m.get_is_player_idle():
-                # Every second there is a chance to move the mouse to the next tree, lessen the chance as time goes on
-                if rd.random_chance(probability):
-                    self.__move_mouse_to_nearest_tree(next_nearest=True)
-                    probability /= 2
-                time.sleep(1)
+            # take a break 
+            if rd.random_chance(probability=0.20 * self.break_chance_multiplier):
+                self.take_break(max_seconds=90 * self.break_length_multiplier, fancy=True)
 
             self.update_progress((time.time() - start_time) / end_time)
 
@@ -116,7 +109,7 @@ class OSRSWoodcutter(OSRSBot):
         Returns:
             True if success, False otherwise.
         """
-        trees = self.get_all_tagged_in_rect(self.win.game_view, clr.PINK)
+        trees = self.get_all_tagged_in_rect(self.win.game_view, self.tree_color)
         tree = None
         if not trees:
             return False
@@ -131,13 +124,48 @@ class OSRSWoodcutter(OSRSBot):
             self.mouse.move_to(tree.random_point())
         return True
 
-    def __drop_logs(self, api_s: StatusSocket):
-        """
-        Private function for dropping logs. This code is used in multiple places, so it's been abstracted.
-        Since we made the `api` and `logs` variables assigned to `self`, we can access them from this function.
-        """
-        slots = api_s.get_inv_item_indices(ids.logs)
-        self.drop(slots)
-        self.logs += len(slots)
-        self.log_msg(f"Logs cut: ~{self.logs}")
-        time.sleep(1)
+    def __deposit_logs(self) -> bool:
+        
+        if not self.find_click_tag(self.bank_color, "Deposit", color=clr.OFF_WHITE):
+            self.log_msg("could not click on bank deposit box")
+            return False
+        self.wait_till_bank_deposit_open()
+
+        if not self.find_click_image(self.desposit_all_img):
+            self.log_msg("could not find deposit all button")
+            return False
+
+        # chance to just start chopping logs
+
+        # hit close button 
+        if not self.find_click_image(self.close_bank_img):
+            self.log_msg("could not close the bank")
+            return False
+        
+        return 
+
+    def __chop_tree(self, next_nearest=False) -> bool:
+        failed_searches = 0
+        # If our mouse isn't hovering over a tree, and we can't find another tree...
+        if not self.mouseover_text(contains="Chop", color=clr.OFF_WHITE) and not self.__move_mouse_to_nearest_tree(next_nearest):
+            failed_searches += 1
+            if failed_searches % 10 == 0:
+                self.log_msg("Searching for trees...")
+            if failed_searches > 60:
+                # If we've been searching for a whole minute...
+                self.__logout("No tagged trees found. Logging out.")
+            time.sleep(1)
+            return False
+        failed_searches = 0  # If code got here, a tree was found
+
+        # Click if the mouseover text assures us we're clicking a tree
+        if not self.mouseover_text(contains="Chop", color=clr.OFF_WHITE):
+            return False
+        self.mouse.click()
+        time.sleep(0.5)
+        return True 
+
+    def __full_inventory(self) -> bool:
+        if imsearch.search_img_in_rect(self.full_yew_logs, self.win.inventory_slots):
+            return True 
+        return False

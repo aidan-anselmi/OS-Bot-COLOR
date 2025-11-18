@@ -59,6 +59,8 @@ class OSRSGlassBlower(OSRSBot):
         api_m = MorgHTTPSocket()
         api_s = StatusSocket()
 
+        api_m.get_inv
+
         self.scrape_images()
         # molten_glass_img = imsearch.SCRAPER_IMAGES.joinpath("items", "Molten_glass_bank.png")
         molten_glass_img = imsearch.SCRAPER_IMAGES.joinpath("items", "Maple_logs_bank.png")
@@ -66,8 +68,10 @@ class OSRSGlassBlower(OSRSBot):
         
         bank_color = clr.BLUE
 
-        # glass_pipe_slot = api_s.get_inv_item_indices(ids.GLASSBLOWING_PIPE)[0]
-        glass_pipe_rectangle = self.win.inventory_slots[0]
+        player_data = api_s.get_player_data()
+        self.log_msg("player data - " + str(player_data))
+        self.stop()
+        #glass_pipe_rectangle = self.win.inventory_slots[0]
 
         # Main loop
         start_time = time.time()
@@ -77,7 +81,7 @@ class OSRSGlassBlower(OSRSBot):
 
             # bank
             if not self.is_bank_open():
-                if not self.find_click_tag(bank_color, "Bank"):
+                if not self.find_click_tag(bank_color, "Bank", clr.OFF_WHITE):
                     self.log_msg("could not click on bank!")
                     errors += 1
                     continue
@@ -115,7 +119,7 @@ class OSRSGlassBlower(OSRSBot):
             self.take_break(max_seconds=30, fancy=True)
 
             self.update_progress((time.time() - start_time) / end_time)
-            self.log_msg("")
+            self.log_msg(f"num errors = {errors}")
 
         self.update_progress(1)
         self.log_msg("Finished.")
