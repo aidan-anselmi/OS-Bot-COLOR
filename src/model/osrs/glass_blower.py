@@ -68,11 +68,6 @@ class OSRSGlassBlower(OSRSBot):
         
         bank_color = clr.BLUE
 
-        player_data = api_s.get_player_data()
-        self.log_msg("player data - " + str(player_data))
-        self.stop()
-        #glass_pipe_rectangle = self.win.inventory_slots[0]
-
         # Main loop
         start_time = time.time()
         end_time = self.running_time * 60
