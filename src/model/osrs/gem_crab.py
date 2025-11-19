@@ -43,14 +43,25 @@ class OSRSGemCrabTrainer(OSRSBot):
             if self.find_crab():
                 if random.uniform(0, 1) < .15:
                     self.click_landing_pad()
+                    self.take_break(min_seconds=.5, max_seconds=1, fancy=True)
                 self.click_crab()
                 self.wait_for_kill()
             else:
                 self.click_cave()
                 if not self.find_crab():
                     self.click_landing_pad()
+                    self.take_break(min_seconds=2, max_seconds=4, fancy=True)
 
-            self.log_msg(f"{(time.time() - start_time) / self.running_time * 100:.2f}% done")
+                    # after clicking on the cave wait to find the crab for a bit
+                    # this prevents clicking on the cave repeatedly while crab is waiting to spawn.
+                    for _ in range(5):
+                        if not self.find_crab():
+                            time.sleep(1)
+                        else:
+                            break
+
+            percent = (time.time() - start_time) / (self.running_time * 60) * 100
+            self.log_msg(f"{percent:.2f}% done")
 
         self.update_progress(1)
         self.log_msg("Finished.")
@@ -71,7 +82,6 @@ class OSRSGemCrabTrainer(OSRSBot):
         if not res:
             self.errors += 1
             self.log_msg("could not find click landing pad")
-        self.take_break(min_seconds=1, max_seconds=2, fancy=True)
         return res
 
     def click_cave(self):
