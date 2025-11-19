@@ -8,7 +8,7 @@ from utilities.api.morg_http_client import MorgHTTPSocket
 from utilities.api.status_socket import StatusSocket
 import utilities.imagesearch as imsearch
 from utilities.sprite_scraper import SpriteScraper, ImageType
-import keyboard
+from pynput.keyboard import Key, Controller
 
 
 class OSRSGlassBlower(OSRSBot):
@@ -58,6 +58,7 @@ class OSRSGlassBlower(OSRSBot):
         # Setup APIs
         api_m = MorgHTTPSocket()
         api_s = StatusSocket()
+        keyboard = Controller()
 
         api_m.get_inv
 
@@ -107,8 +108,8 @@ class OSRSGlassBlower(OSRSBot):
             self.find_click_rectangle(self.win.inventory_slots[1], "Use")
             self.wait_till_interface()
             self.take_break(max_seconds=.5, fancy=True)
-            keyboard.press("space")
-            
+            keyboard.press(Key.space)
+            self.log_msg("Making product...")
 
             time.sleep(49)
             self.take_break(max_seconds=30, fancy=True)
