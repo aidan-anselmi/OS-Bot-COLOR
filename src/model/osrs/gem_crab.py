@@ -50,7 +50,7 @@ class OSRSGemCrabTrainer(OSRSBot):
                 if not self.find_crab():
                     self.click_landing_pad()
 
-            self.log_msg(str((time.time() - start_time) / self.running_time) + "%\ done")
+            self.log_msg(f"{(time.time() - start_time) / self.running_time * 100:.2f}% done")
 
         self.update_progress(1)
         self.log_msg("Finished.")
@@ -71,7 +71,7 @@ class OSRSGemCrabTrainer(OSRSBot):
         if not res:
             self.errors += 1
             self.log_msg("could not find click landing pad")
-        self.take_break(min_seconds=.5, max_seconds=1.5, fancy=True)
+        self.take_break(min_seconds=1, max_seconds=2, fancy=True)
         return res
 
     def click_cave(self):
