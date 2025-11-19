@@ -27,6 +27,8 @@ class OSRSGemCrabTrainer(OSRSBot):
 
         self.time_multiplier = random.uniform(0.5, 2)
 
+        self.cave_consec = 0
+
     def create_options(self):
         return
 
@@ -38,8 +40,9 @@ class OSRSGemCrabTrainer(OSRSBot):
     def main_loop(self):    
         start_time = time.time()
         end_time = self.running_time * 60
+        
 
-        while time.time() - start_time < end_time and self.errors < 10:
+        while time.time() - start_time < end_time and self.errors < 10 and self.cave_consec < 4:
             if self.find_crab():
                 if random.random() < 0.15:
                     self.click_landing_pad()
@@ -74,6 +77,8 @@ class OSRSGemCrabTrainer(OSRSBot):
         if not res:
             self.errors += 1
             self.log_msg("could not find click crab")
+        else:
+            self.cave_consec = 0
         self.take_break(min_seconds=1, max_seconds=2, fancy=True)
         return res
 
@@ -90,6 +95,7 @@ class OSRSGemCrabTrainer(OSRSBot):
             self.errors += 1
             self.log_msg("could not find click cave")
         self.take_break(min_seconds=2, max_seconds=3, fancy=True)
+        self.cave_consec += 1
         return res
 
     def find_crab(self):
