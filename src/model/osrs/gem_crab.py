@@ -37,7 +37,6 @@ class OSRSGemCrabTrainer(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
 
-        self.click_cave()
         while time.time() - start_time < end_time and self.errors < 10:
             if self.find_crab():
                 if random.uniform(0, 1) < .15:
