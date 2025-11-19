@@ -325,7 +325,7 @@ class Bot(ABC):
             length = rd.fancy_normal_sample(min_seconds, max_seconds)
         else:
             length = rd.truncated_normal_sample(min_seconds, max_seconds)
-        length = round(length, 1)
+        length = round(length, 2)
         time.sleep(length)
 
     # --- Player Status Functions ---

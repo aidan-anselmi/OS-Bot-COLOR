@@ -41,7 +41,7 @@ class OSRSGemCrabTrainer(OSRSBot):
 
         while time.time() - start_time < end_time and self.errors < 10:
             if self.find_crab():
-                if random.uniform(0, 1) < .15:
+                if random.random() < 0.15:
                     self.click_landing_pad()
                     self.take_break(min_seconds=.5, max_seconds=1, fancy=True)
                 self.click_crab()
@@ -100,16 +100,16 @@ class OSRSGemCrabTrainer(OSRSBot):
 
     def wait_for_kill(self):
         # small chance to click crab. 
-        base_cycles_inverse = (10*60 / 15)**-1
+        base_cycles_inverse = (10.0*60.0 / 15.0)**-1.0
         reclick_chance = .20 * base_cycles_inverse
-        move_mouse_chance = 1 * base_cycles_inverse
+        move_mouse_chance = 1.0 * base_cycles_inverse
 
         while self.find_crab():
             self.take_break(min_seconds=1, max_seconds=30, fancy=True)
 
-            if random.uniform(0, 1) < reclick_chance:
+            if random.random() < reclick_chance:
                 self.click_crab()
-            if random.uniform(0, 1) < move_mouse_chance:
+            if random.random() < move_mouse_chance:
                 self.move_mouse_random_point()
             
         return 
