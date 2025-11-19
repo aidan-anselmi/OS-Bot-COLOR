@@ -27,7 +27,9 @@ class OSRSGemCrabTrainer(OSRSBot):
 
         self.time_multiplier = random.uniform(0.5, 2)
 
-    
+    def create_options(self):
+        return
+
     def save_options(self, options: dict):
         self.log_msg(f"Running time: {self.running_time} minutes.")
         self.log_msg("Options set successfully.")
