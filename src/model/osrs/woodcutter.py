@@ -43,8 +43,10 @@ class OSRSWoodcutter(OSRSBot):
         self.desposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")
         self.close_bank_img = imsearch.BOT_IMAGES.joinpath("bank", "close_bank.png")
 
-        x, y = self.win.inventory_slots[-1].get_center()
-        self.empty_slot_clr = pag.pixel(x, y)
+        self.empty_slot_clr_27 = pag.pixel(*self.win.inventory_slots[-1].get_center())
+        self.empty_slot_clr_26 = pag.pixel(*self.win.inventory_slots[-2].get_center())
+        self.empty_slot_clr_25 = pag.pixel(*self.win.inventory_slots[-3].get_center())
+        self.empty_slot_clr_24 = pag.pixel(*self.win.inventory_slots[-4].get_center())
 
         # Main loop
         start_time = time.time()
@@ -57,22 +59,32 @@ class OSRSWoodcutter(OSRSBot):
                 if not self.__deposit_logs():
                     errors += 1
                     continue 
-
             # chop tree 
-            self.__chop_tree()
+            else:
+                if not self.__chop_tree():
+                    errors += 1
+                    continue 
 
             # chance to move mouse or move to new tree while chopping 
-            while not self.full_inventory() and self.is_player_doing_action("Woodcutting"):
+            while self.is_player_doing_action("Woodcutting"):
                 # chance to move trees 
                 # yew trees last 114 seconds 
-                if rd.random_chance(probability=1.0/(114.0 * 8.0)):
+                if rd.random_chance(probability=1.0/(114.0 * 4.0)):
                     self.__chop_tree()
+
+                # chance that we are attentive of the contents of our inventory and end early if looking full
+                # proabbility is to mimic that we check once every 20s
+                if rd.random_chance(probability=1.0/20.0) and self.full_inventory():
+                    break
 
                 # move mouse randomly 
                 if rd.random_chance(probability=(1.0/45.0)):
                     self.mouse.move_to(self.win.rectangle().random_point())
-                else:
                     time.sleep(1)
+                
+                time.sleep(1)
+
+                
 
             # take a long break 
             if rd.random_chance(probability=0.25 * self.break_chance_multiplier):
@@ -83,38 +95,13 @@ class OSRSWoodcutter(OSRSBot):
 
             self.update_progress((time.time() - start_time) / end_time)
 
-        self.update_progress(1)
+        self.log_msg(f"Script ran with {errors} errors")
         self.__logout("Finished.")
 
     def __logout(self, msg):
         self.log_msg(msg)
         self.logout()
         self.stop()
-
-    def __move_mouse_to_nearest_tree(self, next_nearest=False):
-        """
-        Locates the nearest tree and moves the mouse to it. This code is used multiple times in this script,
-        so it's been abstracted into a function.
-        Args:
-            next_nearest: If True, will move the mouse to the second nearest tree. If False, will move the mouse to the
-                          nearest tree.
-            mouseSpeed: The speed at which the mouse will move to the tree. See mouse.py for options.
-        Returns:
-            True if success, False otherwise.
-        """
-        trees = self.get_all_tagged_in_rect(self.win.game_view, self.tree_color)
-        if not trees:
-            return False
-        # If we are looking for the next nearest tree, we need to make sure trees has at least 2 elements
-        if next_nearest and len(trees) < 2:
-            next_nearest = False
-        trees = sorted(trees, key=RuneLiteObject.distance_from_rect_center)
-        tree = trees[1] if next_nearest else trees[0]
-        if next_nearest:
-            self.mouse.move_to(tree.random_point(), mouseSpeed="slow", knotsCount=2)
-        else:
-            self.mouse.move_to(tree.random_point())
-        return True
 
     def __deposit_logs(self) -> bool:
         
@@ -128,38 +115,39 @@ class OSRSWoodcutter(OSRSBot):
             return False
 
         # chance to just start chopping logs
+        if rd.random_chance(probability=.85):
+            return self.__chop_tree()
 
         # hit close button 
         if not self.find_click_image(self.close_bank_img):
             self.log_msg("could not close the bank")
             return False
         
-        return 
+        return self.__chop_tree()
 
     def __chop_tree(self) -> bool:
-        next_nearest =  rd.random_chance(probability=.25)
-
-        failed_searches = 0
-        # If our mouse isn't hovering over a tree, and we can't find another tree...
-        if not self.mouseover_text(contains="Chop", color=clr.OFF_WHITE) and not self.__move_mouse_to_nearest_tree(next_nearest):
-            failed_searches += 1
-            if failed_searches % 10 == 0:
-                self.log_msg("Searching for trees...")
-            if failed_searches > 60:
-                # If we've been searching for a whole minute...
-                self.__logout("No tagged trees found. Logging out.")
-            time.sleep(1)
-            return False
-        failed_searches = 0  # If code got here, a tree was found
-
-        # Click if the mouseover text assures us we're clicking a tree
-        if not self.mouseover_text(contains="Chop", color=clr.OFF_WHITE):
-            return False
-        self.mouse.click()
-        time.sleep(5) # sleep a bit to wait for action to update
-        return True 
+        for _ in range(5):
+            trees = self.get_all_tagged_in_rect(self.win.game_view, self.tree_color)
+            trees = sorted(trees, key=RuneLiteObject.distance_from_rect_center)
+            if len(trees) == 0:
+                continue
+            tree = trees[0]
+            if len(trees) >= 2 and rd.random_chance(probability=.25):
+                tree = trees[1]
+            if self.find_click_rectangle(tree, mouseover_text="Chop", color=clr.OFF_WHITE):
+                time.sleep(5)
+                return True
+        self.log_msg("no trees found")
+        return False
 
     # Your inventory is too full to hold any more yew logs
     def full_inventory(self) -> bool:
-        x, y = self.win.inventory_slots[-1].get_center()
-        return pag.pixel(x, y) != self.empty_slot_clr
+        if pag.pixel(*self.win.inventory_slots[-1].get_center()) != self.empty_slot_clr_27:
+            return True
+        elif rd.random_chance(probability=.9) and pag.pixel(*self.win.inventory_slots[-2].get_center()) != self.empty_slot_clr_26:
+            return True
+        elif rd.random_chance(probability=.8) and pag.pixel(*self.win.inventory_slots[-3].get_center()) != self.empty_slot_clr_25:
+            return True
+        elif rd.random_chance(probability=.7) and pag.pixel(*self.win.inventory_slots[-4].get_center()) != self.empty_slot_clr_24:
+            return True
+        return False

@@ -295,7 +295,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         self.mouse.click()
         return True 
 
-    def find_click_tag(self, object_color: clr.Color, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None,) -> bool:
+    def find_click_tag(self, object_color: clr.Color, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None) -> bool:
         tag = self.loop_find_tag(object_color)
         if not tag:
             self.log_msg("could not find tag")
@@ -312,13 +312,13 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
 
         return True 
 
-    def find_click_rectangle(self, rectangle: Rectangle, mouseover_text: str) -> bool:
+    def find_click_rectangle(self, rectangle: Rectangle, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None) -> bool:
 
         self.mouse.move_to(rectangle.random_point())
-        if not self.mouseover_text(contains=mouseover_text):
+        if not self.mouseover_text(contains=mouseover_text, color=color):
             # retry
             self.mouse.move_to(rectangle.random_point())
-            if not self.mouseover_text(contains=mouseover_text):
+            if not self.mouseover_text(contains=mouseover_text, color=color):
                 self.log_msg("could not find mouseover text")
                 return False
         self.mouse.click()
@@ -395,10 +395,3 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             error += 1
             time.sleep(.1)
         return True
-
-    # TODO, make an option for checking each slot 
-    def full_inventory(self) -> bool:
-        
-        self.win.inventory_slots[27]
-        return 
-    
