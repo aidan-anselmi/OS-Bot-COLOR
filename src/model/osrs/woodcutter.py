@@ -70,7 +70,7 @@ class OSRSWoodcutter(OSRSBot):
 
                 # move mouse randomly 
                 mouse_move_probability = 150.0/(150.0)
-                if rd.random_chance(probabilit=mouse_move_probability):
+                if rd.random_chance(probability=mouse_move_probability):
                     self.mouse.move_to(self.win.rectangle().random_point())
                 time.sleep(1)
 

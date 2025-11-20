@@ -127,7 +127,7 @@ class MockBotController(object):
         """
         Called from model. Tells view to update progress.
         """
-        print(f"Progress: {int(self.model.progress * 100)}%")
+        print(f"Progress: {self.model.progress * 100:.2f}%")
 
     def update_log(self, msg: str, overwrite: bool = False):
         """

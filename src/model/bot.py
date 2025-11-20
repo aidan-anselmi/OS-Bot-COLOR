@@ -326,6 +326,8 @@ class Bot(ABC):
         else:
             length = rd.truncated_normal_sample(min_seconds, max_seconds)
         length = round(length, 2)
+        if length > 15:
+            self.log_msg(f"Breaking for {length}s...")
         time.sleep(length)
 
     # --- Player Status Functions ---
