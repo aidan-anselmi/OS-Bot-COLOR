@@ -62,7 +62,7 @@ class OSRSWoodcutter(OSRSBot):
             self.__chop_tree()
 
             # chance to move mouse or move to new tree while chopping 
-            while not self.full_inventory() and not self.is_player_doing_action("Woodcutting"):
+            while not self.full_inventory() and self.is_player_doing_action("Woodcutting"):
                 # chance to move trees 
                 # yew trees last 114 seconds 
                 if rd.random_chance(probabilit=1.0/(114.0 * 4.0)):
