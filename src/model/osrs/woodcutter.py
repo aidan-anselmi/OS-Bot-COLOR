@@ -20,10 +20,10 @@ class OSRSWoodcutter(OSRSBot):
             "This bot power-chops wood. Position your character near some trees, tag them, and press Play.\nTHIS SCRIPT IS AN EXAMPLE, DO NOT USE LONGTERM."
         )
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 240
+        self.running_time = 120
 
-        self.break_length_multiplier = random.uniform(.5, 2)
-        self.break_chance_multiplier = random.uniform(.5, 2)
+        self.break_length_multiplier = random.uniform(.5, 1.5)
+        self.break_chance_multiplier = random.uniform(.5, 1.5)
         
         self.tree_color = clr.PINK
         self.bank_color = clr.BLUE
@@ -65,17 +65,21 @@ class OSRSWoodcutter(OSRSBot):
             while not self.full_inventory() and self.is_player_doing_action("Woodcutting"):
                 # chance to move trees 
                 # yew trees last 114 seconds 
-                if rd.random_chance(probability=1.0/(114.0 * 4.0)):
+                if rd.random_chance(probability=1.0/(114.0 * 8.0)):
                     self.__chop_tree()
 
                 # move mouse randomly 
                 if rd.random_chance(probability=(1.0/45.0)):
                     self.mouse.move_to(self.win.rectangle().random_point())
-                time.sleep(1)
+                else:
+                    time.sleep(1)
 
-            # take a break 
-            if rd.random_chance(probability=0.20 * self.break_chance_multiplier):
-                self.take_break(max_seconds=90 * self.break_length_multiplier, fancy=True)
+            # take a long break 
+            if rd.random_chance(probability=0.25 * self.break_chance_multiplier):
+                self.take_break(max_seconds=60 * self.break_length_multiplier, fancy=True)
+            # short break
+            else:
+                self.take_break(max_seconds=5, fancy=True)
 
             self.update_progress((time.time() - start_time) / end_time)
 
