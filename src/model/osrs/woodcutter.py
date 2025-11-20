@@ -11,6 +11,7 @@ from utilities.geometry import RuneLiteObject
 import random
 from utilities.sprite_scraper import SpriteScraper, ImageType
 import utilities.imagesearch as imsearch
+import pyautogui as pag
 
 class OSRSWoodcutter(OSRSBot):
     def __init__(self):
@@ -19,69 +20,58 @@ class OSRSWoodcutter(OSRSBot):
             "This bot power-chops wood. Position your character near some trees, tag them, and press Play.\nTHIS SCRIPT IS AN EXAMPLE, DO NOT USE LONGTERM."
         )
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 135
+        self.running_time = 240
 
-        self.break_length_multiplier = random.uniform(.25, 1)
-        self.break_chance_multiplier = random.uniform(.25, 1)
+        self.break_length_multiplier = random.uniform(.5, 2)
+        self.break_chance_multiplier = random.uniform(.5, 2)
+        
         self.tree_color = clr.PINK
+        self.bank_color = clr.BLUE
 
     def create_options(self):
-        self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
-        self.options_builder.add_checkbox_option("take_breaks", "Take breaks?", [" "])
+        return
 
     def save_options(self, options: dict):
-        for option in options:
-            if option == "running_time":
-                self.running_time = options[option]
-            elif option == "take_breaks":
-                self.take_breaks = options[option] != []
-            else:
-                self.log_msg(f"Unknown option: {option}")
-                print("Developer: ensure that the option keys are correct, and that options are being unpacked correctly.")
-                self.options_set = False
-                return
-        self.log_msg(f"Running time: {self.running_time} minutes.")
-        self.log_msg(f"Bot will{' ' if self.take_breaks else ' not '}take breaks.")
-        self.log_msg("Options set successfully.")
         self.options_set = True
+        return 
 
     def main_loop(self):
         self.log_msg("Selecting inventory...")
         self.mouse.move_to(self.win.cp_tabs[3].random_point())
         self.mouse.click()
-        self.logs = 0
 
         self.desposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")
         self.close_bank_img = imsearch.BOT_IMAGES.joinpath("bank", "close_bank.png")
-        self.full_yew_logs = imsearch.BOT_IMAGES.joinpath("items", "full_yew_logs.png")
+
+        x, y = self.win.inventory_slots[-1].get_center()
+        self.empty_slot_clr = pag.pixel(x, y)
 
         # Main loop
         start_time = time.time()
         end_time = self.running_time * 60
-        while time.time() - start_time < end_time:
+        errors = 0
+        while time.time() - start_time < end_time and errors < 10:
             
             # deposit logs 
-            if self.__full_inventory() or rd.random_chance(probability=0.1 * self.break_chance_multiplier):
+            if self.full_inventory() or rd.random_chance(probability=0.025 * self.break_chance_multiplier):
                 if not self.__deposit_logs():
+                    errors += 1
                     continue 
 
             # chop tree 
-            self.__chop_tree(next_nearest=False)
+            self.__chop_tree()
 
             # chance to move mouse or move to new tree while chopping 
-            while not self.__full_inventory() and not api_m.get_is_player_idle():
-                
+            while not self.full_inventory() and not self.is_player_doing_action("Woodcutting"):
                 # chance to move trees 
                 # yew trees last 114 seconds 
                 if rd.random_chance(probabilit=1.0/(114.0 * 4.0)):
-                    self.__chop_tree(next_nearest=True)
+                    self.__chop_tree()
 
                 # move mouse randomly 
-                mouse_move_probability = 1.0/(150.0)
+                mouse_move_probability = 150.0/(150.0)
                 if rd.random_chance(probabilit=mouse_move_probability):
-                    self.move_mouse_off_screen()
-                elif rd.random_chance(probabilit=mouse_move_probability):
-                    self.move_mouse_random_point()
+                    self.mouse.move_to(self.win.rectangle().random_point())
                 time.sleep(1)
 
             # take a break 
@@ -110,12 +100,11 @@ class OSRSWoodcutter(OSRSBot):
             True if success, False otherwise.
         """
         trees = self.get_all_tagged_in_rect(self.win.game_view, self.tree_color)
-        tree = None
         if not trees:
             return False
         # If we are looking for the next nearest tree, we need to make sure trees has at least 2 elements
         if next_nearest and len(trees) < 2:
-            return False
+            next_nearest = False
         trees = sorted(trees, key=RuneLiteObject.distance_from_rect_center)
         tree = trees[1] if next_nearest else trees[0]
         if next_nearest:
@@ -144,7 +133,9 @@ class OSRSWoodcutter(OSRSBot):
         
         return 
 
-    def __chop_tree(self, next_nearest=False) -> bool:
+    def __chop_tree(self) -> bool:
+        next_nearest =  rd.random_chance(probability=.25)
+
         failed_searches = 0
         # If our mouse isn't hovering over a tree, and we can't find another tree...
         if not self.mouseover_text(contains="Chop", color=clr.OFF_WHITE) and not self.__move_mouse_to_nearest_tree(next_nearest):
@@ -162,10 +153,10 @@ class OSRSWoodcutter(OSRSBot):
         if not self.mouseover_text(contains="Chop", color=clr.OFF_WHITE):
             return False
         self.mouse.click()
-        time.sleep(0.5)
+        time.sleep(5) # sleep a bit to wait for action to update
         return True 
 
-    def __full_inventory(self) -> bool:
-        if imsearch.search_img_in_rect(self.full_yew_logs, self.win.inventory_slots):
-            return True 
-        return False
+    # Your inventory is too full to hold any more yew logs
+    def full_inventory(self) -> bool:
+        x, y = self.win.inventory_slots[-1].get_center()
+        return pag.pixel(x, y) != self.empty_slot_clr

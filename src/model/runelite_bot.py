@@ -395,11 +395,10 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             error += 1
             time.sleep(.1)
         return True
-    
-    def move_mouse_random_point(self):
-        return 
 
-    def move_mouse_off_screen(self):
+    # TODO, make an option for checking each slot 
+    def full_inventory(self) -> bool:
+        
+        self.win.inventory_slots[27]
         return 
-
     

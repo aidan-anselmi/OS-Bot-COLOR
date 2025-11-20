@@ -111,7 +111,7 @@ class OSRSGemCrabTrainer(OSRSBot):
         move_mouse_chance = 1.0 * base_cycles_inverse
 
         while self.find_crab():
-            self.take_break(min_seconds=1, max_seconds=30, fancy=True)
+            self.take_break(min_seconds=1, max_seconds=45, fancy=True)
 
             if random.random() < reclick_chance:
                 self.click_crab()

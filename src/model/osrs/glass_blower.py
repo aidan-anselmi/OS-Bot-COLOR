@@ -55,12 +55,7 @@ class OSRSGlassBlower(OSRSBot):
         return 
 
     def main_loop(self):
-        # Setup APIs
-        api_m = MorgHTTPSocket()
-        api_s = StatusSocket()
         keyboard = Controller()
-
-        api_m.get_inv
 
         self.scrape_images()
         # molten_glass_img = imsearch.SCRAPER_IMAGES.joinpath("items", "Molten_glass_bank.png")
@@ -85,7 +80,7 @@ class OSRSGlassBlower(OSRSBot):
             self.take_break(max_seconds=.8, fancy=True)
 
             # deposit items 
-            self.find_click_rectangle(self.win.inventory_slots[1], "Deposit-All")
+            self.find_click_rectangle(self.win.inventory_slots[1].random_point(), "Deposit-All")
             self.log_msg("deposited orbs.")
             self.take_break(max_seconds=.4, fancy=True)
 
@@ -103,9 +98,9 @@ class OSRSGlassBlower(OSRSBot):
                 continue
             self.take_break(max_seconds=.5, fancy=True)
 
-            self.find_click_rectangle(self.win.inventory_slots[0], "Use")
+            self.find_click_rectangle(self.win.inventory_slots[0].random_point(), "Use")
             self.take_break(max_seconds=.8, fancy=True)
-            self.find_click_rectangle(self.win.inventory_slots[1], "Use")
+            self.find_click_rectangle(self.win.inventory_slots[1].random_point(), "Use")
             self.wait_till_interface()
             self.take_break(max_seconds=.5, fancy=True)
             keyboard.press(Key.space)
