@@ -18,7 +18,7 @@ class OSRSGemCrabTrainer(OSRSBot):
         bot_title = "gem crab"
         description = "fights gem crab"
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 120
+        self.running_time = 131
         self.errors = 0
 
         self.crab_color = clr.CYAN
@@ -42,7 +42,7 @@ class OSRSGemCrabTrainer(OSRSBot):
         end_time = self.running_time * 60
         
 
-        while time.time() - start_time < end_time and self.errors < 10 and self.cave_consec < 4:
+        while time.time() - start_time < end_time and self.errors < 10 and self.cave_consec < 3:
             if self.find_crab():
                 if random.random() < 0.15:
                     self.click_landing_pad()
@@ -53,11 +53,12 @@ class OSRSGemCrabTrainer(OSRSBot):
                 self.click_cave()
                 if not self.find_crab():
                     self.click_landing_pad()
-                    self.take_break(min_seconds=2, max_seconds=4, fancy=True)
+                    if rd.random_chance(probability=.3):
+                        self.take_break(min_seconds=2, max_seconds=4, fancy=True)
 
                     # after clicking on the cave wait to find the crab for a bit
                     # this prevents clicking on the cave repeatedly while crab is waiting to spawn.
-                    for _ in range(5):
+                    for _ in range(10):
                         if not self.find_crab():
                             time.sleep(1)
                         else:
@@ -108,14 +109,16 @@ class OSRSGemCrabTrainer(OSRSBot):
         # small chance to click crab. 
         base_cycles_inverse = (10.0*60.0 / 15.0)**-1.0
         reclick_chance = .20 * base_cycles_inverse
-        move_mouse_chance = 1.0 * base_cycles_inverse
 
         while self.find_crab():
             self.take_break(min_seconds=1, max_seconds=45, fancy=True)
 
-            if random.random() < reclick_chance:
+            # click crab
+            if rd.random_chance(probability=reclick_chance):
                 self.click_crab()
-            if random.random() < move_mouse_chance:
-                self.move_mouse_random_point()
+            # move mouse randomly 
+            if rd.random_chance(probability=reclick_chance):
+                self.mouse.move_to(self.win.rectangle().random_point())
+                time.sleep(1)
             
         return 
