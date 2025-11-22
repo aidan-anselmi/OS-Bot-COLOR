@@ -39,10 +39,11 @@ def extract_objects(image: cv2.Mat) -> List[RuneLiteObject]:
             # Fill in the outline with white pixels
             black_copy = black_image.copy()
             cv2.drawContours(black_copy, contours, objects, (255, 255, 255), -1)
-            cv2.imwrite("black_copy.png", black_copy)
+            
             kernel = np.ones((7, 7), np.uint8)
             black_copy = cv2.morphologyEx(black_copy, cv2.MORPH_OPEN, kernel)
             black_copy = cv2.erode(black_copy, kernel, iterations=2)
+            cv2.imwrite("black_copy.png", black_copy)
             if np.count_nonzero(black_copy == 255):
                 indices = np.where(black_copy == [255])
                 if indices[0].size > 0:
