@@ -31,6 +31,7 @@ class CalcifiedRocks(OSRSBot):
         self.bank_color = clr.RED
         self.path_color = clr.GREEN
 
+        self.scrape()
         return
 
     def create_options(self):
@@ -118,11 +119,6 @@ class CalcifiedRocks(OSRSBot):
         if not path_tiles:
             self.errors += 1
             self.log_msg("No path tiles found to bank.")
-            return False
-        dest_tile = self.pick_click_path_tile(path_tiles, dest_direction)
-        if not dest_tile:
-            self.errors += 1
-            self.log_msg("No valid path tile found to bank.")
             return False
         return self.pick_click_path_tile(path_tiles, dest_direction)
     
