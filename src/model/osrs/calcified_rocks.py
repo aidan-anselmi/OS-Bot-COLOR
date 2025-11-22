@@ -14,6 +14,7 @@ from utilities.sprite_scraper import SpriteScraper, ImageType
 import utilities.imagesearch as imsearch
 import pyautogui as pag
 from pathlib import Path
+import utilities.runelite_cv as rcv
 
 class CalcifiedRocks(OSRSBot):
     def __init__(self):
@@ -60,8 +61,8 @@ class CalcifiedRocks(OSRSBot):
         return 
     
     def main_loop(self):
-        self.scrape()
-        
+        # self.scrape()
+
         self.test_bank = True
         if self.test_bank:
             self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[-1].get_center())
@@ -115,9 +116,15 @@ class CalcifiedRocks(OSRSBot):
     
     def advance_path(self, dest_direction):
         self.log_msg(f"Advancing path in direction {dest_direction}")
-        path_tiles = self.get_all_tagged_in_rect(self.win.game_view, self.path_color)
-        self.log_msg(f"Found {len(path_tiles)} path tiles")
-        self.log_msg(f"Dest direction: {path_tiles}")
+        #path_tiles = self.get_all_tagged_in_rect(self.win.game_view, self.path_color)
+    
+        img_game_view = self.win.game_view.screenshot()
+        img_paths = clr.isolate_colors(img_game_view, self.path_color)
+        path_tiles = rcv.extract_objects(img_paths)
+        for obj in path_tiles:
+            obj.set_rectangle_reference(self.win.game_view)
+            self.log_msg(f"\t Path tile at {obj.rect}")
+
         if not path_tiles:
             self.errors += 1
             self.log_msg("No path tiles found to bank.")
@@ -132,7 +139,7 @@ class CalcifiedRocks(OSRSBot):
             return False
         self.wait_till_bank_deposit_open()
 
-        if not self.find_click_image(" my image"):
+        if not self.find_click_image(imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")):
             self.log_msg("could not find deposit all button")
             self.errors += 1
             return False
