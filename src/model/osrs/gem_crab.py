@@ -40,7 +40,6 @@ class OSRSGemCrabTrainer(OSRSBot):
     def main_loop(self):    
         start_time = time.time()
         end_time = self.running_time * 60
-        
 
         while time.time() - start_time < end_time and self.errors < 10 and self.cave_consec < 3:
             if self.find_crab():
@@ -67,8 +66,11 @@ class OSRSGemCrabTrainer(OSRSBot):
             percent = (time.time() - start_time) / (self.running_time * 60) * 100
             self.log_msg(f"{percent:.2f}% done")
 
+        self.end_script("Finished")
+    
+    def end_script(self, msg):
         self.update_progress(1)
-        self.log_msg("Finished.")
+        self.log_msg(msg)
         self.logout()
         self.stop()
         return 
@@ -110,9 +112,19 @@ class OSRSGemCrabTrainer(OSRSBot):
         base_cycles_inverse = (10.0*60.0 / 15.0)**-1.0
         reclick_chance = .20 * base_cycles_inverse
 
+        prev_xp = self.get_total_xp()
+        errors = 0 
         while self.find_crab():
             self.take_break(min_seconds=1, max_seconds=45, fancy=True)
 
+            if prev_xp == self.get_total_xp() or self.get_total_xp() == -1:
+                errors += 1
+                self.click_crab()
+            else:
+                errors = 0
+            if errors > 3:
+                self.end_script("Errored out, was not gaining xp when we thought we were")
+            
             # click crab
             if rd.random_chance(probability=reclick_chance):
                 self.click_crab()
