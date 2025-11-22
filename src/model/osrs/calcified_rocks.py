@@ -113,6 +113,7 @@ class CalcifiedRocks(OSRSBot):
         return 
     
     def advance_path(self, dest_direction):
+        self.log_msg(f"Advancing path in direction {dest_direction}")
         path_tiles = self.get_all_tagged_in_rect(self.win.game_view, self.path_color)
         if not path_tiles:
             self.errors += 1
@@ -175,7 +176,11 @@ class CalcifiedRocks(OSRSBot):
 
         # prefer tiles furthest along the direction (by dot), tie-break by distance
         # candidates.sort(key=lambda t: (t[1], t[2]), reverse=True)
-        chosen = candidates[0][0]
+
+        # pick a random candidate
+        
+        chosen = random.choices(population=[c[0] for c in candidates])
+        self.log_msg(f"Clicking path tile at {chosen[0].rect}")
 
         # click the chosen tile (expecting a "Walk here" mouseover)
         if not self.find_click_rectangle(chosen.rect, "Walk here", clr.OFF_WHITE):
