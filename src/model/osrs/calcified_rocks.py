@@ -31,11 +31,6 @@ class CalcifiedRocks(OSRSBot):
         self.bank_color = clr.RED
         self.path_color = clr.GREEN
 
-        self.test_bank = True
-        if self.test_bank:
-            self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[-1].get_center())
-        else:
-            self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[0].get_center())
         return
 
     def create_options(self):
@@ -66,6 +61,12 @@ class CalcifiedRocks(OSRSBot):
         return 
     
     def main_loop(self):
+        self.test_bank = True
+        if self.test_bank:
+            self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[-1].get_center())
+        else:
+            self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[0].get_center())
+            
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
