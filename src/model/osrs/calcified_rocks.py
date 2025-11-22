@@ -69,11 +69,15 @@ class CalcifiedRocks(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
+        prev_xp = self.get_total_xp()
         while time.time() - start_time < end_time and self.errors < 10:
+            prev_xp = self.get_total_xp()
             if self.full_inventory():
                 self.bank_and_return()
             self.mining_loop()
             self.bank_and_return()
+            if self.get_total_xp() == prev_xp:
+                self.errors += 1
         return 
     
     def mining_loop(self):
