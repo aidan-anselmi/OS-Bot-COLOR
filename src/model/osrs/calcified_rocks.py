@@ -221,7 +221,7 @@ class CalcifiedRocks(OSRSBot):
         time.sleep(3)
         return True
     
-    def biased_reverse_pick(self, items):
+    def biased_reverse_pick(self, items: list[RuneLiteObject]) -> RuneLiteObject:
         # weights: first item gets biggest weight, last gets smallest
         weights = [(len(items) - i)**1.5 for i in range(len(items))]   # e.g. [1,2,3,4,...]
         weighted_items = list(zip(items, weights))
