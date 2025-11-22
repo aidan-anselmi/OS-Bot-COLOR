@@ -7,7 +7,7 @@ from model.osrs.osrs_bot import OSRSBot
 from model.runelite_bot import BotStatus
 from utilities.api.morg_http_client import MorgHTTPSocket
 from utilities.api.status_socket import StatusSocket
-from utilities.geometry import RuneLiteObject
+from utilities.geometry import RuneLiteObject, Rectangle
 import random
 import math
 from utilities.sprite_scraper import SpriteScraper, ImageType
@@ -116,14 +116,28 @@ class CalcifiedRocks(OSRSBot):
     
     def advance_path(self, dest_direction):
         self.log_msg(f"Advancing path in direction {dest_direction}")
-        #path_tiles = self.get_all_tagged_in_rect(self.win.game_view, self.path_color)
-    
-        img_game_view = self.win.game_view.screenshot()
-        img_paths = clr.isolate_colors(img_game_view, self.path_color)
-        path_tiles = rcv.extract_objects(img_paths)
-        for obj in path_tiles:
-            obj.set_rectangle_reference(self.win.game_view)
-            self.log_msg(f"\t Path tile at {obj.rect}")
+        
+        # Determine a sub-rectangle of the game view to search based on direction.
+        # If dest_direction is (-1,0) we'll search the left half, (1,0) the right half.
+        gv = self.win.game_view
+        left, top, w, h = gv.left, gv.top, gv.width, gv.height
+
+        # default to full game view
+        search_rect = gv
+
+        dx, dy = dest_direction
+        # horizontal split
+        if dx < 0:
+            search_rect = Rectangle(left=left, top=top, width=w // 2, height=h)
+        elif dx > 0:
+            search_rect = Rectangle(left=left + w // 2, top=top, width=w - w // 2, height=h)
+        # vertical split (overrides horizontal if provided)
+        if dy < 0:
+            search_rect = Rectangle(left=left, top=top, width=w, height=h // 2)
+        elif dy > 0:
+            search_rect = Rectangle(left=left, top=top + h // 2, width=w, height=h - h // 2)
+
+        path_tiles = self.get_all_tagged_in_rect(search_rect, self.path_color)
 
         if not path_tiles:
             self.errors += 1
