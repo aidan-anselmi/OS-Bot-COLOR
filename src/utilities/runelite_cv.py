@@ -22,11 +22,10 @@ def extract_objects(image: cv2.Mat) -> List[RuneLiteObject]:
     Returns:
         A list of RuneLiteObjects, or an empty list if no objects are found.
     """
-    # Dilate the outlines (use smaller kernel to avoid excessive expansion)
-    kernel = np.ones((2, 2), np.uint8)
+    # Dilate the outlines
+    kernel = np.ones((4, 4), np.uint8)
     mask = cv2.dilate(image, kernel, iterations=1)
     cv2.imwrite("debug_mask.png", mask)
-    print("mask nonzero:", np.count_nonzero(mask == 255))
     # If no objects are found, return an empty list
     if not np.count_nonzero(mask == 255):
         return []
@@ -40,11 +39,10 @@ def extract_objects(image: cv2.Mat) -> List[RuneLiteObject]:
             # Fill in the outline with white pixels
             black_copy = black_image.copy()
             cv2.drawContours(black_copy, contours, objects, (255, 255, 255), -1)
-            # Use smaller morphological kernel to avoid merging nearby shapes
-            kernel = np.ones((3, 3), np.uint8)
+            cv2.imwrite("black_copy.png", black_copy)
+            kernel = np.ones((7, 7), np.uint8)
             black_copy = cv2.morphologyEx(black_copy, cv2.MORPH_OPEN, kernel)
-            # Use a single erosion iteration (less aggressive shrinking)
-            black_copy = cv2.erode(black_copy, kernel, iterations=1)
+            black_copy = cv2.erode(black_copy, kernel, iterations=2)
             if np.count_nonzero(black_copy == 255):
                 indices = np.where(black_copy == [255])
                 if indices[0].size > 0:
