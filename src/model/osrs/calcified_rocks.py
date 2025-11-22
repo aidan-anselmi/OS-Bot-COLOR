@@ -100,14 +100,14 @@ class CalcifiedRocks(OSRSBot):
         # get to bank deposit
         while not self.loop_find_tag(self.bank_color) and self.errors < 10:
             self.advance_path((-1, 0))
-            time.sleep(5)
+            time.sleep(6)
 
         self.bank()
         
         # get to mines
-        while not self.loop_find_tag(self.bank_color) and self.errors < 10:
+        while not self.loop_find_tag(self.rock_color) and self.errors < 10:
             self.advance_path((1, 0))
-            time.sleep(5)
+            time.sleep(6)
 
         return 
     
