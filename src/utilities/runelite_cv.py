@@ -44,9 +44,9 @@ def extract_objects(image: cv2.Mat) -> List[RuneLiteObject]:
             black_copy = cv2.morphologyEx(black_copy, cv2.MORPH_OPEN, kernel)
             black_copy = cv2.erode(black_copy, kernel, iterations=2)
             cv2.imwrite("black_copy.png", black_copy)
-            print("Non-zero pixels:", np.count_nonzero(black_copy == 255))
             if np.count_nonzero(black_copy == 255):
                 indices = np.where(black_copy == [255])
+                print("Indices shapes:", indices)
                 if indices[0].size > 0:
                     x_min, x_max = np.min(indices[1]), np.max(indices[1])
                     y_min, y_max = np.min(indices[0]), np.max(indices[0])
