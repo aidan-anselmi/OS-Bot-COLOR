@@ -223,7 +223,9 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         isolated_colors = clr.isolate_colors(img_rect, color)
         objs = rcv.extract_objects(isolated_colors)
         for obj in objs:
+            print("Found object at:", obj._width, obj._height)
             obj.set_rectangle_reference(rect)
+            print("Found object at:", obj._width, obj._height)
         return objs
 
     def get_nearest_tag(self, color: clr.Color) -> RuneLiteObject:
