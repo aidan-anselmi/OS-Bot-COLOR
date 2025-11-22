@@ -188,6 +188,7 @@ class CalcifiedRocks(OSRSBot):
             candidates.append(tile)
 
         if not candidates:
+            self.log_msg(f"No cancidate path tiles found in direction {dest_direction}")
             return False
 
         # prefer tiles furthest along the direction (by dot), tie-break by distance
@@ -195,7 +196,7 @@ class CalcifiedRocks(OSRSBot):
 
         # pick a random candidate
         chosen = random.choice(candidates)
-        self.log_msg(f"Clicking path tile at {chosen.rect}")
+        self.log_msg(f"Clicking path tile at {chosen}")
 
         # click the chosen tile (expecting a "Walk here" mouseover)
         if not self.find_click_rectangle(chosen, "Walk here", clr.OFF_WHITE):
