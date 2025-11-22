@@ -148,7 +148,7 @@ class CalcifiedRocks(OSRSBot):
         # reference center for player / game view
         game_center = self.win.game_view.get_center()
 
-        candidates = list(RuneLiteObject)
+        candidates = []
         for tile in path_tiles:
             try:
                 tile_center = tile.center()
@@ -178,9 +178,8 @@ class CalcifiedRocks(OSRSBot):
         # candidates.sort(key=lambda t: (t[1], t[2]), reverse=True)
 
         # pick a random candidate
-        
-        chosen = random.choices(population=[c[0] for c in candidates])
-        self.log_msg(f"Clicking path tile at {chosen[0].rect}")
+        chosen = random.choice(candidates)
+        self.log_msg(f"Clicking path tile at {chosen.rect}")
 
         # click the chosen tile (expecting a "Walk here" mouseover)
         if not self.find_click_rectangle(chosen.rect, "Walk here", clr.OFF_WHITE):
