@@ -217,7 +217,11 @@ class CalcifiedRocks(OSRSBot):
             return False
         
         rock = self.biased_reverse_pick(rocks)
-        self.find_click_rectangle(rock.rect, clr.OFF_WHITE, "Mine")
+        self.log_msg(f"Mining rock at {rock.rect}")
+        if not self.find_click_rectangle(rock.rect, clr.OFF_WHITE, "Mine"):
+            self.log_msg("Could not click selected rock")
+            self.errors += 1
+            return False
         time.sleep(3)
         return True
     
