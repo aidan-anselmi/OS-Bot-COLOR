@@ -63,7 +63,7 @@ class CalcifiedRocks(OSRSBot):
     def main_loop(self):
         # self.scrape()
 
-        self.test_bank = True
+        self.test_bank = False
         self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[-1].get_center())
 
         start_time = time.time()
