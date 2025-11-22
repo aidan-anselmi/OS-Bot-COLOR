@@ -64,10 +64,7 @@ class CalcifiedRocks(OSRSBot):
         # self.scrape()
 
         self.test_bank = True
-        if self.test_bank:
-            self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[0].get_center())
-        else:
-            self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[-1].get_center())
+        self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[-1].get_center())
 
         start_time = time.time()
         end_time = self.running_time * 60
@@ -241,5 +238,5 @@ class CalcifiedRocks(OSRSBot):
     # Your inventory is too full to hold any more
     def full_inventory(self) -> bool:
         if self.test_bank:
-            return pag.pixel(*self.win.inventory_slots[0].get_center()) != self.empty_slot_clr
+            return True
         return pag.pixel(*self.win.inventory_slots[-1].get_center()) != self.empty_slot_clr
