@@ -41,6 +41,10 @@ class CalcifiedRocks(OSRSBot):
     def create_options(self):
         return
     
+    def save_options(self, options: dict):
+        self.options_set = True
+        return 
+    
     def scrape(self):
         scraper = SpriteScraper()
 
