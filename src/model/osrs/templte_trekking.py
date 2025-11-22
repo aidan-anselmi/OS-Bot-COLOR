@@ -31,35 +31,67 @@ class TemplteTrekker(OSRSBot):
     def create_options(self):
         return
     
+    def main_loop(self):
+        start_time = time.time()
+        end_time = self.running_time * 60
+        errors = 0
 
+        while time.time() - start_time < end_time and errors < 10:
+            continue 
+        return
     
     def start_trek(self):
         self.find_click_tag(clr.CYAN, "Escort", clr.OFF_WHITE)
-
+        self.keyboard.press(Key.space)
+        self.find_click_image("Path_to_route_one")
         return
     
-    def route_encounter():
+    def handle_encounter(self):
+        # bog event
+        if self.loop_find_tag(clr.YELLOW):
+            return self.bog()
+        if self.loop_find_tag(clr.RED):
+            return self.log_event()
+        if self.loop_find_tag(clr.PINK):
+            return self.enemy_encounter()
         return 
     
-    def log_event():
+    def log_event(self):
         # red to attack zombies OR cut logs 
         # blue to repair bridge 
         # yellow to cross 
         # pink to leave encounter
         return
     
-    def encounter():
-        # pink to leave
-        # yellow to walk 
+    def log_event_tree(self):
+        return
+    
+    def log_event_zombie(self):
         return 
     
-    def bog():
+    def repair_and_cross_bridge(self, repair_item):
+        return 
+    
+    def enemy_encounter(self):
+        # pink to leave
+        # green to walk 
+
+        return 
+    
+    def bog(self):
         # yellow to leave
         # after teleport home
         return 
     
-    def home():
+    def home(self):
         # teleport home spell
         # pink to teleporter
         # green tiles to get closer to NPCs
         return 
+    
+    def open_loot(self):
+        # find images in slots and open
+        # click bowstrings
+        # click claim
+        # continue until all open 
+        return
