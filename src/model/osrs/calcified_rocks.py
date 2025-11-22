@@ -66,7 +66,7 @@ class CalcifiedRocks(OSRSBot):
             self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[-1].get_center())
         else:
             self.empty_slot_clr = pag.pixel(*self.win.inventory_slots[0].get_center())
-            
+
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
@@ -78,6 +78,7 @@ class CalcifiedRocks(OSRSBot):
         return 
     
     def mining_loop(self):
+        self.log_msg("Starting mining loop")
         prev_xp = self.get_total_xp()
         self.mine_rock()
         time.sleep(10)
@@ -95,6 +96,8 @@ class CalcifiedRocks(OSRSBot):
         return True
     
     def bank_and_return(self):
+        self.log_msg("Starting bank run")
+
         # get to bank deposit
         while not self.loop_find_tag(self.bank_color) and self.errors < 10:
             self.advance_path((-1, 0))
