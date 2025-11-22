@@ -205,7 +205,7 @@ class CalcifiedRocks(OSRSBot):
         self.log_msg(f"Clicking path tile at {chosen.rect}")
 
         # click the chosen tile (expecting a "Walk here" mouseover)
-        if not self.find_click_rectangle(chosen.rect, "Walk here", clr.OFF_WHITE):
+        if not self.find_click_rectangle(chosen, "Walk here", clr.OFF_WHITE):
             self.log_msg("Could not click selected path tile")
             self.errors += 1
             return False
@@ -214,15 +214,13 @@ class CalcifiedRocks(OSRSBot):
     
     def mine_rock(self):
         rocks = self.get_all_tagged_in_rect(self.win.game_view, self.rock_color)
-        for rock in rocks:
-            self.log_msg(f"Found rock at {rock.rect}")
         if not rocks:
             self.log_msg("No calcified rocks found.")
             return False
         
         rock = self.biased_reverse_pick(rocks)
-        self.log_msg(f"Mining rock at {rock.rect}")
-        if not self.find_click_rectangle(rock.rect, "Mine", clr.OFF_WHITE):
+        self.log_msg(f"Mining rock at {rock}")
+        if not self.find_click_rectangle(rock, "Mine", clr.OFF_WHITE):
             self.log_msg("Could not click selected rock")
             self.errors += 1
             return False
