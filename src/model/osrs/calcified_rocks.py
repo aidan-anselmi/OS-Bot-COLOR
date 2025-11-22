@@ -79,8 +79,7 @@ class CalcifiedRocks(OSRSBot):
     def mining_loop(self):
         self.log_msg("Starting mining loop")
         prev_xp = self.get_total_xp()
-        self.mine_rock()
-        time.sleep(10)
+        self.click_rock()
 
         while not self.full_inventory() and self.errors < 10:
             if self.get_total_xp() == prev_xp:
@@ -88,11 +87,21 @@ class CalcifiedRocks(OSRSBot):
             prev_xp = self.get_total_xp()
 
             if not self.is_player_doing_action("Mining"):
-                self.mine_rock()
-                time.sleep(5)
+                self.click_rock()
 
             self.take_break(min_seconds=5, max_seconds=20, fancy=True)
         return True
+    
+    def click_rock(self):
+        if not self.mine_rock():
+            time.sleep(2)
+            if not self.mine_rock():
+                self.log_msg("Failed to start mining")
+                self.errors += 1
+            else:
+                time.sleep(5)
+        else:
+            time.sleep(5)
     
     def bank_and_return(self):
         self.log_msg("Starting bank run")
