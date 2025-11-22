@@ -178,11 +178,12 @@ class CalcifiedRocks(OSRSBot):
             # require the tile to be generally in the requested direction
             dot = dx * dest_direction[0] + dy * dest_direction[1]
             if dot <= 250:
+                self.log_msg(f"Rejecting tile at {tile_center} with dot {dot} for direction {dest_direction}")
                 continue
 
             # ignore tiles that are very close to the player
             dist = math.hypot(dx, dy)
-            if dist < 250:
+            if dist < 100:
                 continue
 
             candidates.append(tile)
