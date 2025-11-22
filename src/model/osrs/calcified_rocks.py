@@ -90,7 +90,7 @@ class CalcifiedRocks(OSRSBot):
                 self.errors += 1
             prev_xp = self.get_total_xp()
 
-            if self.is_player_doing_action("Mining"):
+            if not self.is_player_doing_action("Mining"):
                 self.mine_rock()
                 time.sleep(5)
 
@@ -139,7 +139,6 @@ class CalcifiedRocks(OSRSBot):
 
         path_tiles = self.get_all_tagged_in_rect(search_rect, self.path_color)
         for tile in path_tiles:
-            self.log_msg(f"Found path tile at {tile.rect}")
             print("parent:", tile.rect)
             print("obj:", tile._x_min, tile._y_min, tile._width, tile._height)
 
