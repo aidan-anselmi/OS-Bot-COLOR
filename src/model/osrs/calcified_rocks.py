@@ -148,7 +148,7 @@ class CalcifiedRocks(OSRSBot):
         # reference center for player / game view
         game_center = self.win.game_view.get_center()
 
-        candidates = []
+        candidates = list(RuneLiteObject)
         for tile in path_tiles:
             try:
                 tile_center = tile.center()
@@ -169,7 +169,7 @@ class CalcifiedRocks(OSRSBot):
             if dist < 250:
                 continue
 
-            candidates.append((tile, dot, dist))
+            candidates.append(tile)
 
         if not candidates:
             return False
