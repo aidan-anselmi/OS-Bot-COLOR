@@ -145,9 +145,11 @@ class CalcifiedRocks(OSRSBot):
     def bank(self) -> bool:
         
         if not self.find_click_tag(self.bank_color, "Deposit", color=clr.OFF_WHITE):
-            self.log_msg("could not click on bank deposit box")
-            self.errors += 1
-            return False
+            time.sleep(2)
+            if not self.find_click_tag(self.bank_color, "Deposit", color=clr.OFF_WHITE):
+                self.log_msg("could not click on bank deposit box")
+                self.errors += 1
+                return False
         self.wait_till_bank_deposit_open()
 
         if not self.find_click_image(imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")):
