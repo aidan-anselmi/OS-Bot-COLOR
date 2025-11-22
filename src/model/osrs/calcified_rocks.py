@@ -116,6 +116,8 @@ class CalcifiedRocks(OSRSBot):
     def advance_path(self, dest_direction):
         self.log_msg(f"Advancing path in direction {dest_direction}")
         path_tiles = self.get_all_tagged_in_rect(self.win.game_view, self.path_color)
+        self.log_msg(f"Found {len(path_tiles)} path tiles")
+        self.log_msg(f"Dest direction: {path_tiles}")
         if not path_tiles:
             self.errors += 1
             self.log_msg("No path tiles found to bank.")
