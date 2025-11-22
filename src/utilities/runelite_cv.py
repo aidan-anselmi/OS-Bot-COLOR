@@ -51,6 +51,7 @@ def extract_objects(image: cv2.Mat) -> List[RuneLiteObject]:
                     x_min, x_max = np.min(indices[1]), np.max(indices[1])
                     y_min, y_max = np.min(indices[0]), np.max(indices[0])
                     width, height = x_max - x_min, y_max - y_min
+                    print("Object dimensions:", x_min, x_max, y_min, y_max, width, height)
                     center = [int(x_min + (width / 2)), int(y_min + (height / 2))]
                     axis = np.column_stack((indices[1], indices[0]))
                     objs.append(RuneLiteObject(x_min, x_max, y_min, y_max, width, height, center, axis))
