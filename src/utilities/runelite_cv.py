@@ -22,17 +22,9 @@ def extract_objects(image: cv2.Mat) -> List[RuneLiteObject]:
     Returns:
         A list of RuneLiteObjects, or an empty list if no objects are found.
     """
-    # Normalize input to a binary mask where target pixels == 255 (white).
-    # Some upstream code may produce inverted masks (white background / black shapes).
-    # Convert to grayscale if needed and threshold so any non-zero becomes 255.
-    if len(image.shape) == 3:
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    else:
-        gray = image
-    _, mask = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
-    # Slight dilation to join fragmented outlines (small kernel)
-    kernel = np.ones((2, 2), np.uint8)
-    mask = cv2.dilate(mask, kernel, iterations=1)
+    # Dilate the outlines
+    kernel = np.ones((4, 4), np.uint8)
+    mask = cv2.dilate(image, kernel, iterations=1)
     cv2.imwrite("debug_mask.png", mask)
     # If no objects are found, return an empty list
     if not np.count_nonzero(mask == 255):
