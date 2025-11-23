@@ -193,7 +193,7 @@ class MLM(OSRSBot):
                 gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
                 if self.loop_find_image(gem_img, rect=self.win.inventory_slots[i]):
                     continue
-                elif self.loop_find_image(imsearch.BOT_IMAGES.joinpath("items", "Pay-dirt.png"), rect=self.win.inventory_slots[i], timeout=0.5):
+                elif self.loop_find_image(imsearch.BOT_IMAGES.joinpath("items", "Pay-dirt.png"), rect=self.win.inventory_slots[i]):
                     skip_slots.append(i)
                 else:
                     self.errors += 1
