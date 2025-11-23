@@ -1,0 +1,219 @@
+import time
+
+import utilities.api.item_ids as ids
+import utilities.color as clr
+import utilities.random_util as rd
+from model.osrs.osrs_bot import OSRSBot
+from model.runelite_bot import BotStatus
+from utilities.api.morg_http_client import MorgHTTPSocket
+from utilities.api.status_socket import StatusSocket
+from utilities.geometry import RuneLiteObject, Rectangle
+import random
+import math
+from utilities.sprite_scraper import SpriteScraper, ImageType
+import utilities.imagesearch as imsearch
+import pyautogui as pag
+from pathlib import Path
+import utilities.runelite_cv as rcv
+
+class OSRSWoodcutter(OSRSBot):
+    def __init__(self):
+        bot_title = "Woodcutter"
+        description = (
+            "This bot power-chops wood. Position your character near some trees, tag them, and press Play.\nTHIS SCRIPT IS AN EXAMPLE, DO NOT USE LONGTERM."
+        )
+        super().__init__(bot_title=bot_title, description=description)
+        self.running_time = 120
+
+        self.break_length_multiplier = random.uniform(.5, 1.5)
+        self.break_chance_multiplier = random.uniform(.5, 1.5)
+        
+        self.tree_color = clr.PINK
+        self.bank_color = clr.BLUE
+
+    def create_options(self):
+        return
+
+    def save_options(self, options: dict):
+        self.options_set = True
+        return 
+    
+    def scrape(self):
+        scraper = SpriteScraper()
+
+        # set destination directory to src/images/bot/items (project-relative)
+        dest_dir = Path(__file__).resolve().parents[2].joinpath("images", "bot", "items")
+        # make sure directory exists
+        dest_dir.mkdir(parents=True, exist_ok=True)
+
+        search_string = "Uncut sapphire, Uncut emerald, Uncut ruby, Uncut diamond, Pay-dirt"
+        # search_string = "Deposit Inventory"
+        image_type = ImageType.NORMAL
+        destination = dest_dir
+
+        self.path = scraper.search_and_download(
+            search_string=search_string,
+            image_type=image_type,
+            destination=destination,
+            notify_callback=self.log_msg)
+        return 
+
+    def main_loop(self):
+        self.log_msg("Selecting inventory...")
+        self.mouse.move_to(self.win.cp_tabs[3].random_point())
+        self.mouse.click()
+
+        self.desposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")
+        self.close_bank_img = imsearch.BOT_IMAGES.joinpath("bank", "close_bank.png")
+
+        self.inventory_pixel_map = {}
+        for i in range(len(self.win.inventory_slots)):
+            self.inventory_pixel_map[i] = pag.pixel(*self.win.inventory_slots[i].get_center())
+
+        self.sack_color = clr.GREEN
+        self.up_ladder_color = clr.YELLOW
+        self.down_ladder_color = clr.BLUE
+        self.rock_color = clr.PINK
+        self.hopper_color = clr.RED
+        self.bank_color = clr.CYAN
+
+        # Main loop
+        start_time = time.time()
+        end_time = self.running_time * 60
+        self.errors = 0
+        while time.time() - start_time < end_time and self.errors < 10:
+            # mine until we have "full pay dirt"
+            self.mining_loop()
+
+            # empty sack
+            self.empty_sack()
+
+            self.update_progress((time.time() - start_time) / end_time)
+        self.update_progress(1)
+        return 
+    
+    def mining_loop(self):
+        
+        sack_size = 108
+        while sack_size > 10 and self.errors < 10:
+            self.mine_inventory()
+            self.log_msg(f"Completed mining inventory {i+1}/4")
+
+            self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE)
+            nonempty_inventory_slots = self.nonempty_inventory_slots()
+            sack_size -= nonempty_inventory_slots
+            if nonempty_inventory_slots > 0:
+                self.log_msg("Sack not empty after depositing, sack size {sack_size}, emptying sack.".format(sack_size=sack_size))
+                self.drop_all()
+                self.errors += 1
+                sack_size = 0
+                
+        return
+    
+    def mine_inventory(self) -> int:
+        self.drop_gems()
+        prev_xp = self.get_total_xp()
+        self.mine_rock()
+
+        while not self.full_inventory() and self.errors < 10:
+            if self.get_total_xp() == prev_xp:
+                self.log_msg("No XP gain detected, retrying to mine.")
+                self.errors += 1
+            prev_xp = self.get_total_xp()
+
+            if not self.is_player_doing_action("Mining"):
+                self.drop_gems()
+                self.mine_rock()
+
+            self.take_break(min_seconds=5, max_seconds=40, fancy=True)
+        return self.nonempty_inventory_slots()
+    
+    def mine_rock(self):
+        if not self.click_rock():
+            time.sleep(2)
+            if not self.click_rock():
+                self.log_msg("Failed to start mining")
+                self.errors += 1
+            else:
+                time.sleep(5)
+        else:
+            time.sleep(5)
+
+    def click_rock(self):
+        rocks = self.get_all_tagged_in_rect(self.win.game_view, self.rock_color)
+        if not rocks:
+            self.log_msg("No rocks found.")
+            return False
+        
+        rock = self.biased_reverse_pick(rocks)
+
+        self.log_msg(f"Mining rock at {rock}")
+        if not self.find_click_rectangle_with_missclick(rock, "Mine", clr.OFF_WHITE):
+            self.log_msg("Could not click selected rock")
+            self.errors += 1
+            return False
+        time.sleep(3)
+        return True
+    
+    def biased_reverse_pick(self, items: list[RuneLiteObject], limit=4) -> RuneLiteObject:
+        # weights: first item gets biggest weight, last gets smallest
+        list_size = min(len(items), limit)
+        weights = [(list_size - i)**1.5 for i in range(list_size)]   # e.g. [1,2,3,4,...]
+        weighted_items = list(zip(items[:list_size], weights))
+
+        for item, weight in reversed(weighted_items):
+            if random.random() < (weight / sum(w for _, w in weighted_items)):
+                return item
+
+        # fallback if nothing hits
+        return items[0]
+    
+    def full_inventory(self) -> bool:
+        self.drop_gems()
+
+        non_empty_slots = self.nonempty_inventory_slots()
+        if rd.random_chance(probability=0.25) and non_empty_slots >= 22:
+            return True
+        if rd.random_chance(probability=0.5) and non_empty_slots >= 24:
+            return True
+        if non_empty_slots >= 26:
+            return True
+        return False
+    
+    def nonempty_inventory_slots(self) -> int:
+        non_empty_slots = 0
+        for i in range(len(self.win.inventory_slots)):
+            slot_color = pag.pixel(*self.win.inventory_slots[i].get_center())
+            if slot_color != self.inventory_pixel_map[i]:
+                non_empty_slots += 1
+        return non_empty_slots
+    
+    def drop_gems(self):
+        skip_slots = []
+        for i in range(len(self.win.inventory_slots)):
+            for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
+                gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
+                if self.loop_find_image(gem_img, rect=self.win.inventory_slots[i]):
+                    continue
+                elif self.loop_find_image(imsearch.BOT_IMAGES.joinpath("items", "Pay-dirt.png"), rect=self.win.inventory_slots[i], timeout=0.5):
+                    skip_slots.append(i)
+                else:
+                    self.errors += 1
+                    self.log_msg(f"Could not identify item in inventory slot {i}")
+                    skip_slots.append(i)
+        self.drop_all(skip_slots=skip_slots)
+        return 
+    
+    def empty_sack(self):
+        self.find_click_tag(self.down_ladder_color, "Climb", color=clr.OFF_WHITE)
+        self.take_break(min_seconds=2, max_seconds=4)
+
+        self.find_click_tag(self.sack_color, "Search", color=clr.OFF_WHITE)
+        self.take_break(min_seconds=3, max_seconds=5)
+        while self.nonempty_inventory_slots() > 0 and self.errors < 10:
+            self.deposit_all()
+            self.find_click_tag(self.sack_color, "Search", color=clr.OFF_WHITE)
+            time.sleep(2.5)
+
+        self.find_click_tag(self.up_ladder_color, "Climb", color=clr.OFF_WHITE)
+        self.take_break(min_seconds=2, max_seconds=4)

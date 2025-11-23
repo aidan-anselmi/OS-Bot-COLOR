@@ -28,6 +28,7 @@ from utilities.geometry import Point, Rectangle, RuneLiteObject
 from utilities.window import Window
 import utilities.random_util as rd
 from utilities.api.morg_http_client import MorgHTTPSocket
+import random
 
 class RuneLiteWindow(Window):
     current_action: Rectangle = None  # https://i.imgur.com/fKXuIyO.png
@@ -260,14 +261,16 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(1)
 
 
-    def loop_find_image(self, image: Path) -> Rectangle:
+    def loop_find_image(self, image: Path, rect: Rectangle = None) -> Rectangle:
+        if rect is None:
+            rect = self.win.game_view
         error = 0
         while True:
             if error > 20:
                 return None
             error += 1
 
-            rectangle = imsearch.search_img_in_rect(image, self.win.game_view)
+            rectangle = imsearch.search_img_in_rect(image, rect)
             if rectangle:  
                 break
             time.sleep(0.1)
@@ -324,6 +327,21 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         self.mouse.click()
 
         return True 
+
+    def find_click_rectangle_with_missclick(self, rectangle: Rectangle, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None) -> bool:
+
+        # chance to missclick
+        if rd.random_chance(probability=0.2):
+            offset_x = random.randint(-100, 100)
+            offset_y = random.randint(-100, 100)
+            self.mouse.move_to((rectangle.get_center()[0] + offset_x, rectangle.get_center()[1] + offset_y))
+            self.mouse.click()
+
+        if not self.find_click_rectangle(rectangle, mouseover_text, color):
+            time.sleep(0.5)
+            return self.find_click_rectangle(rectangle, mouseover_text, color)
+
+        return True
 
     def get_all(self) -> bool:
         """
@@ -394,4 +412,21 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
                 return False
             error += 1
             time.sleep(.1)
+        return True
+
+    def deposit_all(self, color: Union[clr.Color, List[clr.Color]] = None) -> bool:
+        
+        if not self.find_click_tag(color, "Deposit", color=clr.OFF_WHITE):
+            time.sleep(2)
+            if not self.find_click_tag(color, "Deposit", color=clr.OFF_WHITE):
+                self.log_msg("could not click on bank deposit box")
+                self.errors += 1
+                return False
+        self.wait_till_bank_deposit_open()
+
+        if not self.find_click_image(imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")):
+            self.log_msg("could not find deposit all button")
+            self.errors += 1
+            return False
+        
         return True

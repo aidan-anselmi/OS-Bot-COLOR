@@ -82,7 +82,7 @@ class CalcifiedRocks(OSRSBot):
     
     def mining_loop(self):
         self.log_msg("Starting mining loop")
-        prev_xp = self.get_total_xp()
+        
         self.click_rock()
 
         while not self.full_inventory() and self.errors < 10:
