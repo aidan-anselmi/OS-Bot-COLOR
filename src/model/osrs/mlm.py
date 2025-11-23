@@ -79,6 +79,8 @@ class MLM(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
+
+        self.empty_sack()
         while time.time() - start_time < end_time and self.errors < 10:
             # mine until we have "full pay dirt"
             self.mining_loop()
@@ -145,7 +147,6 @@ class MLM(OSRSBot):
         
         rock = self.biased_reverse_pick(rocks)
 
-        self.log_msg(f"Mining rock at {rock}")
         if not self.find_click_rectangle_with_missclick(rock, "Mine", clr.OFF_WHITE):
             self.log_msg("Could not click selected rock")
             self.errors += 1
