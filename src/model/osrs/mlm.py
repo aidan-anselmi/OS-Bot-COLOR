@@ -193,7 +193,7 @@ class MLM(OSRSBot):
                 gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
                 # slot is empty
                 if pag.pixel(*self.win.inventory_slots[i].get_center()) == self.inventory_pixel_map[i]:
-                    continue
+                    skip_slots.append(i)
                 elif self.loop_find_image(gem_img, rect=self.win.inventory_slots[i]):
                     continue
                 elif self.loop_find_image(imsearch.BOT_IMAGES.joinpath("items", "Pay-dirt.png"), rect=self.win.inventory_slots[i]):
