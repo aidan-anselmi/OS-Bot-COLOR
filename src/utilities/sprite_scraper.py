@@ -59,6 +59,13 @@ class SpriteScraper:
 
         # Search for each image and attempt to download it
         for img_name in img_names:
+            # if image already exists, skip it
+            filepath = Path(destination).joinpath(img_name)
+            if (image_type in {ImageType.NORMAL, ImageType.ALL} and filepath.with_suffix(".png").exists()) or \
+               (image_type in {ImageType.BANK, ImageType.ALL} and filepath.with_name(f"{img_name}_bank.png").exists()):
+                notify_callback(f"{img_name} already exists. Skipping download.\n")
+                continue
+
             notify_callback(f"Searching for {img_name}...")
             img_url = self.__find_image_url(img_name, notify_callback)
 

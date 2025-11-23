@@ -80,7 +80,10 @@ class MLM(OSRSBot):
         end_time = self.running_time * 60
         self.errors = 0
 
-        self.empty_sack()
+        if not self.empty_sack():
+            self.log_msg("Failed to empty sack.")
+            self.update_progress(1)
+            return
         while time.time() - start_time < end_time and self.errors < 10:
             # mine until we have "full pay dirt"
             self.mining_loop()
