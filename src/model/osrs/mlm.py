@@ -95,7 +95,7 @@ class MLM(OSRSBot):
         sack_size = 108
         while sack_size > 10 and self.errors < 10:
             self.mine_inventory()
-            self.log_msg(f"Completed mining inventory {i+1}/4")
+            self.log_msg(f"Completed mining inventory, current sack size {sack_size}")
 
             self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE)
             nonempty_inventory_slots = self.nonempty_inventory_slots()
