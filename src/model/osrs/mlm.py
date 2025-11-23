@@ -222,7 +222,7 @@ class MLM(OSRSBot):
         self.log_msg("Searching sack...")
         if not self.find_click_tag_with_error(self.sack_color, "Search", clr.OFF_WHITE, "Could not find sack."):
             return False
-        self.take_break(min_seconds=3, max_seconds=5)
+        self.take_break(min_seconds=5, max_seconds=6)
 
         while self.nonempty_inventory_slots() > 0 and self.errors < 10:
             self.log_msg("Depositing items...")
@@ -232,12 +232,12 @@ class MLM(OSRSBot):
             self.log_msg("Searching sack...")
             if not self.find_click_tag_with_error(self.sack_color, "Search", clr.OFF_WHITE, "Could not find sack."):
                 return False
-            time.sleep(2.5)
+            self.take_break(min_seconds=4, max_seconds=5)
 
         self.log_msg("Climbing up ladder...")
         if not self.find_click_tag_with_error(self.up_ladder_color, "Climb", clr.OFF_WHITE, "Could not find up ladder."):
             return False
-        self.take_break(min_seconds=2, max_seconds=4)
+        self.take_break(min_seconds=6, max_seconds=7)
 
     def find_click_tag_with_error(self, color: clr.Color, mouseover_text: str, color_check: clr.Color, error_msg: str) -> bool:
         if not self.find_click_tag(color, mouseover_text, color_check):
