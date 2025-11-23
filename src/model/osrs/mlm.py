@@ -16,7 +16,7 @@ import pyautogui as pag
 from pathlib import Path
 import utilities.runelite_cv as rcv
 
-class OSRSWoodcutter(OSRSBot):
+class MLM(OSRSBot):
     def __init__(self):
         bot_title = "Woodcutter"
         description = (
