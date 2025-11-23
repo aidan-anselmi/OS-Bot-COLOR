@@ -207,15 +207,22 @@ class MLM(OSRSBot):
         return 
     
     def empty_sack(self):
+        self.log_msg("Emptying sack...")
+
+        self.log_msg("Climbing down ladder...")
         self.find_click_tag(self.down_ladder_color, "Climb", color=clr.OFF_WHITE)
         self.take_break(min_seconds=2, max_seconds=4)
 
+        self.log_msg("Searching sack...")
         self.find_click_tag(self.sack_color, "Search", color=clr.OFF_WHITE)
         self.take_break(min_seconds=3, max_seconds=5)
         while self.nonempty_inventory_slots() > 0 and self.errors < 10:
+            self.log_msg("Depositing items...")
             self.deposit_all()
+            self.log_msg("Searching sack...")
             self.find_click_tag(self.sack_color, "Search", color=clr.OFF_WHITE)
             time.sleep(2.5)
 
+        self.log_msg("Climbing up ladder...")
         self.find_click_tag(self.up_ladder_color, "Climb", color=clr.OFF_WHITE)
         self.take_break(min_seconds=2, max_seconds=4)
