@@ -414,11 +414,10 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(.1)
         return True
 
-    def deposit_all(self, color: Union[clr.Color, List[clr.Color]] = None) -> bool:
-        
-        if not self.find_click_tag(color, "Deposit", color=clr.OFF_WHITE):
+    def deposit_all(self, bank_color: Union[clr.Color, List[clr.Color]]) -> bool:
+        if not self.find_click_tag(bank_color, "Deposit", color=clr.OFF_WHITE):
             time.sleep(2)
-            if not self.find_click_tag(color, "Deposit", color=clr.OFF_WHITE):
+            if not self.find_click_tag(bank_color, "Deposit", color=clr.OFF_WHITE):
                 self.log_msg("could not click on bank deposit box")
                 self.errors += 1
                 return False
