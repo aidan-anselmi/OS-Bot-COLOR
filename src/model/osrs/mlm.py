@@ -86,14 +86,16 @@ class MLM(OSRSBot):
             self.mining_loop()
 
             # empty sack
-            self.empty_sack()
+            if not self.empty_sack():
+                self.log_msg("Failed to empty sack.")
+                self.update_progress(1)
+                return
 
             self.update_progress((time.time() - start_time) / end_time)
         self.update_progress(1)
         return 
     
     def mining_loop(self):
-        
         sack_size = 108
         while sack_size > 10 and self.errors < 10:
             self.mine_inventory()
@@ -206,23 +208,37 @@ class MLM(OSRSBot):
         self.drop_all(skip_slots=skip_slots)
         return 
     
-    def empty_sack(self):
+    def empty_sack(self) -> bool:
         self.log_msg("Emptying sack...")
 
         self.log_msg("Climbing down ladder...")
-        self.find_click_tag(self.down_ladder_color, "Climb", color=clr.OFF_WHITE)
+        if not self.find_click_tag_with_error(self.down_ladder_color, "Climb", clr.OFF_WHITE, "Could not find down ladder."):
+            return False
         self.take_break(min_seconds=2, max_seconds=4)
 
         self.log_msg("Searching sack...")
-        self.find_click_tag(self.sack_color, "Search", color=clr.OFF_WHITE)
+        if not self.find_click_tag_with_error(self.sack_color, "Search", clr.OFF_WHITE, "Could not find sack."):
+            return False
         self.take_break(min_seconds=3, max_seconds=5)
+
         while self.nonempty_inventory_slots() > 0 and self.errors < 10:
             self.log_msg("Depositing items...")
-            self.deposit_all()
+            if not self.deposit_all():
+                self.errors += 1
+                return False
             self.log_msg("Searching sack...")
-            self.find_click_tag(self.sack_color, "Search", color=clr.OFF_WHITE)
+            if not self.find_click_tag_with_error(self.sack_color, "Search", clr.OFF_WHITE, "Could not find sack."):
+                return False
             time.sleep(2.5)
 
         self.log_msg("Climbing up ladder...")
-        self.find_click_tag(self.up_ladder_color, "Climb", color=clr.OFF_WHITE)
+        if not self.find_click_tag_with_error(self.up_ladder_color, "Climb", clr.OFF_WHITE, "Could not find up ladder."):
+            return False
         self.take_break(min_seconds=2, max_seconds=4)
+
+    def find_click_tag_with_error(self, color: clr.Color, mouseover_text: str, color_check: clr.Color, error_msg: str) -> bool:
+        if not self.find_click_tag(color, mouseover_text, color_check):
+            self.log_msg(f"Could not click on tag with color {color}.")
+            self.errors += 1
+            return False
+        return True
