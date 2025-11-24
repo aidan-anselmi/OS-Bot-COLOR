@@ -113,20 +113,17 @@ class MLM(OSRSBot):
     
     def mine_inventory(self) -> int:
         self.drop_gems()
-        prev_xp = self.get_total_xp()
         self.mine_rock()
 
         while not self.full_inventory() and self.errors < 10:
-            if self.get_total_xp() == prev_xp:
-                self.log_msg("No XP gain detected, retrying to mine.")
-                self.errors += 1
-            prev_xp = self.get_total_xp()
-
             if not self.is_player_doing_action("Mining"):
                 self.drop_gems()
                 self.mine_rock()
 
-            self.take_break(min_seconds=5, max_seconds=40, fancy=True)
+            if rd.random_chance(probability=0.85):
+                self.take_break(min_seconds=2, max_seconds=12)
+            else:
+                self.take_break(min_seconds=30, max_seconds=75, fancy=True)
         return self.nonempty_inventory_slots()
     
     def mine_rock(self):
