@@ -106,12 +106,8 @@ class MLM(OSRSBot):
             self.mine_inventory()
             self.log_msg(f"Completed mining inventory, current sack size {sack_size}")
 
-            if not self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE):
-                time.sleep(.5)
-                if not self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE):
-                    self.log_msg("Could not find hopper to deposit pay-dirt.")
-                    self.errors += 1
-                    return
+            while not self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE): 
+                self.take_break(min_seconds=30, max_seconds=75, fancy=True)
             nonempty_inventory_slots = self.nonempty_inventory_slots()
             sack_size -= nonempty_inventory_slots
             if nonempty_inventory_slots > 0:
