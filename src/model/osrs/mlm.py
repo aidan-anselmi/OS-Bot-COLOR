@@ -224,7 +224,7 @@ class MLM(OSRSBot):
             return False
         self.take_break(min_seconds=5, max_seconds=6)
 
-        while self.nonempty_inventory_slots() != 28 and self.errors < 10:
+        while self.nonempty_inventory_slots() == 28 and self.errors < 10:
             self.log_msg("Depositing items...")
             if not self.deposit_all(self.bank_color):
                 self.errors += 1
