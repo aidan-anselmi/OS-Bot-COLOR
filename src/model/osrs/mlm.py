@@ -156,7 +156,7 @@ class MLM(OSRSBot):
             self.log_msg("No rocks found.")
             return False
         rocks.sort(key=RuneLiteObject.distance_from_rect_center)
-        rock = self.biased_reverse_pick(rocks)
+        rock = self.biased_reverse_pick(rocks, 2)
 
         if not self.find_click_rectangle_with_missclick(rock, "Mine", clr.OFF_WHITE):
             self.log_msg("Could not click selected rock")
