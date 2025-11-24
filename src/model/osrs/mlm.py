@@ -106,15 +106,22 @@ class MLM(OSRSBot):
             self.mine_inventory()
             self.log_msg(f"Completed mining inventory, current sack size {sack_size}")
 
+            nonempty_inventory_slots = self.nonempty_inventory_slots()
+            sack_size -= nonempty_inventory_slots
+
             pag.keyUp('shift')
             while not self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE): 
                 self.drop_gems()
+                self.log_msg("Could not find hopper to deposit into, retrying...")
                 self.take_break(min_seconds=30, max_seconds=75, fancy=True)
-                self.drop_gems()
                 pag.keyUp('shift')
-            time.sleep(3)
-            nonempty_inventory_slots = self.nonempty_inventory_slots()
-            sack_size -= nonempty_inventory_slots
+            for _ in range(10):
+                nonempty_inventory_slots = self.nonempty_inventory_slots()
+                if nonempty_inventory_slots > 0:
+                    time.sleep(1)
+                else:
+                    break
+            
             if nonempty_inventory_slots > 0:
                 self.log_msg("Sack not empty after depositing, sack size {sack_size}, emptying sack.".format(sack_size=sack_size))
                 self.drop_all()
@@ -204,7 +211,7 @@ class MLM(OSRSBot):
         pag.keyDown('shift')
         for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
             gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
-            while self.loop_find_image(gem_img, loops=5, sleep=0.01):
+            while self.loop_find_image(gem_img, self.win.inventory, loops=5, sleep=0.01):
                 self.find_click_image(gem_img)
             
         pag.keyUp('shift')

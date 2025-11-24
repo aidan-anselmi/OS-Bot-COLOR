@@ -39,6 +39,7 @@ class Window:
     control_panel: Rectangle = None  # https://i.imgur.com/BeMFCIe.png
     cp_tabs: List[Rectangle] = []  # https://i.imgur.com/huwNOWa.png
     inventory_slots: List[Rectangle] = []  # https://i.imgur.com/gBwhAwE.png
+    inventory : Rectangle = None
     spellbook_normal: List[Rectangle] = []  # https://i.imgur.com/vkKAfV5.png
     prayers: List[Rectangle] = []  # https://i.imgur.com/KRmC3YB.png
 
@@ -207,6 +208,13 @@ class Window:
                 self.inventory_slots.append(Rectangle(left=x, top=y, width=slot_w, height=slot_h))
                 x += slot_w + gap_x
             y += slot_h + gap_y
+
+        self.inventory = Rectangle(
+            left=self.inventory_slots[0].left,
+            top=self.inventory_slots[0].top,
+            width=self.inventory_slots[-1].get_top_right().x - self.inventory_slots[0].left,
+            height=self.inventory_slots[-1].get_bottom_right().y - self.inventory_slots[0].top
+        )
 
     def __locate_prayers(self, cp: Rectangle) -> None:
         """
