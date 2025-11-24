@@ -263,7 +263,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(1)
 
 
-    def loop_find_image(self, image: Path, rect: Rectangle = None, loops=20, sleep=0.1) -> Rectangle:
+    def loop_find_image(self, image: Path, rect: Rectangle = None, loops=20, sleep=0.02) -> Rectangle:
         if rect is None:
             rect = self.win.game_view
         error = 0
@@ -288,7 +288,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             obj = self.get_nearest_tag(color)
             if obj:  
                 break
-            time.sleep(0.1)
+            time.sleep(0.02)
         return obj
 
     def find_click_image(self, image: Path) -> bool:
@@ -340,7 +340,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             self.mouse.click()
 
         if not self.find_click_rectangle(rectangle, mouseover_text, color):
-            time.sleep(0.5)
+            self.take_break(min_seconds=0.1, max_seconds=.5, fancy=True)
             return self.find_click_rectangle(rectangle, mouseover_text, color)
 
         return True
@@ -418,7 +418,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
 
     def deposit_all(self, bank_color: Union[clr.Color, List[clr.Color]]) -> bool:
         if not self.find_click_tag(bank_color, "Deposit", color=clr.OFF_WHITE):
-            time.sleep(2)
+            self.take_break(min_seconds=2, max_seconds=3)
             if not self.find_click_tag(bank_color, "Deposit", color=clr.OFF_WHITE):
                 self.log_msg("could not click on bank deposit box")
                 self.errors += 1
