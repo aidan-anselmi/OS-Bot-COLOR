@@ -188,12 +188,18 @@ class MLM(OSRSBot):
     def drop_gems(self):
         skip_slots = []
         for i in range(len(self.win.inventory_slots)):
+            identified = False
             for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
+                if identified:
+                    continue
+
                 gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
                 # slot is empty
                 if pag.pixel(*self.win.inventory_slots[i].get_center()) == self.inventory_pixel_map[i]:
                     skip_slots.append(i)
                 elif self.loop_find_image(gem_img, rect=self.win.inventory_slots[i]):
+                    self.log_msg(f"Found {item} in slot {i}")
+                    identified = True
                     continue
                 elif self.loop_find_image(imsearch.BOT_IMAGES.joinpath("items", "Pay-dirt.png"), rect=self.win.inventory_slots[i]):
                     skip_slots.append(i)
