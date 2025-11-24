@@ -106,9 +106,10 @@ class MLM(OSRSBot):
             self.mine_inventory()
             self.log_msg(f"Completed mining inventory, current sack size {sack_size}")
 
-            pag.keyUp("shift")
+            pag.keyUp('shift')
             while not self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE): 
                 self.take_break(min_seconds=30, max_seconds=75, fancy=True)
+                pag.keyUp('shift')
             nonempty_inventory_slots = self.nonempty_inventory_slots()
             sack_size -= nonempty_inventory_slots
             if nonempty_inventory_slots > 0:
@@ -203,7 +204,7 @@ class MLM(OSRSBot):
             while self.loop_find_image(gem_img, loops=5, sleep=0.01):
                 self.find_click_image(gem_img)
             
-        pag.keyUp("shift")
+        pag.keyUp('shift')
         return 
     
     def empty_sack(self) -> bool:
