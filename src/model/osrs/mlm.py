@@ -224,7 +224,7 @@ class MLM(OSRSBot):
             return False
         self.take_break(min_seconds=5, max_seconds=6)
 
-        while self.nonempty_inventory_slots() > 0 and self.errors < 10:
+        while self.nonempty_inventory_slots() != 28 and self.errors < 10:
             self.log_msg("Depositing items...")
             if not self.deposit_all(self.bank_color):
                 self.errors += 1
@@ -234,6 +234,11 @@ class MLM(OSRSBot):
                 return False
             self.take_break(min_seconds=4, max_seconds=5)
 
+        if self.nonempty_inventory_slots() != 0:
+            self.log_msg("Depositing items...")
+            if not self.deposit_all(self.bank_color):
+                self.errors += 1
+                return False
         self.log_msg("Climbing up ladder...")
         if not self.find_click_tag_with_error(self.up_ladder_color, "Climb", clr.OFF_WHITE, "Could not find up ladder."):
             return False
