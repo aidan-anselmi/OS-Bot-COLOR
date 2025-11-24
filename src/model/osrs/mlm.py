@@ -57,8 +57,7 @@ class MLM(OSRSBot):
 
     def main_loop(self):
         self.current_action_rect = self.win.current_action
-        self.current_action_rect.top += 25
-        self.current_action_rect.height += 20
+        self.current_action_rect.height = 150
     
         self.log_msg("Selecting inventory...")
         self.mouse.move_to(self.win.cp_tabs[3].random_point())
