@@ -83,8 +83,6 @@ class MLM(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
-
-        self.empty_sack()
         while time.time() - start_time < end_time and self.errors < 10:
             # mine until we have "full pay dirt"
             self.mining_loop()
@@ -146,11 +144,10 @@ class MLM(OSRSBot):
 
     def click_rock(self):
         rocks = self.get_all_tagged_in_rect(self.win.game_view, self.rock_color)
-        rocks.sort(key=lambda r: Rectangle.distance_from_center(r.rect))
         if not rocks:
             self.log_msg("No rocks found.")
             return False
-        
+        rocks.sort(key=RuneLiteObject.distance_from_rect_center)
         rock = self.biased_reverse_pick(rocks)
 
         if not self.find_click_rectangle_with_missclick(rock, "Mine", clr.OFF_WHITE):
