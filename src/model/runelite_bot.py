@@ -261,19 +261,19 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(1)
 
 
-    def loop_find_image(self, image: Path, rect: Rectangle = None) -> Rectangle:
+    def loop_find_image(self, image: Path, rect: Rectangle = None, loops=20, sleep=0.1) -> Rectangle:
         if rect is None:
             rect = self.win.game_view
         error = 0
         while True:
-            if error > 20:
+            if error > loops:
                 return None
             error += 1
 
             rectangle = imsearch.search_img_in_rect(image, rect)
             if rectangle:  
                 break
-            time.sleep(0.1)
+            time.sleep(sleep)
         return rectangle
 
     def loop_find_tag(self, color: clr.Color) -> RuneLiteObject:

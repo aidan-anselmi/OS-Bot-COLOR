@@ -186,28 +186,14 @@ class MLM(OSRSBot):
         return non_empty_slots
     
     def drop_gems(self):
-        skip_slots = []
-        for i in range(len(self.win.inventory_slots)):
-            identified = False
-            for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
-                if identified:
-                    continue
-
-                gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
-                # slot is empty
-                if pag.pixel(*self.win.inventory_slots[i].get_center()) == self.inventory_pixel_map[i]:
-                    skip_slots.append(i)
-                elif self.loop_find_image(gem_img, rect=self.win.inventory_slots[i]):
-                    self.log_msg(f"Found {item} in slot {i}")
-                    identified = True
-                    continue
-                elif self.loop_find_image(imsearch.BOT_IMAGES.joinpath("items", "Pay-dirt.png"), rect=self.win.inventory_slots[i]):
-                    skip_slots.append(i)
-                else:
-                    self.errors += 1
-                    self.log_msg(f"Could not identify item in inventory slot {i}")
-                    skip_slots.append(i)
-        self.drop_all(skip_slots=skip_slots)
+        self.log_msg("Dropping gems...")
+        pag.keyDown('shift')
+        for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
+            gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
+            while self.loop_find_image(gem_img, loops=5, sleep=0.01):
+                self.find_click_image(gem_img)
+            
+        pag.keyUp("shift")
         return 
     
     def empty_sack(self) -> bool:
