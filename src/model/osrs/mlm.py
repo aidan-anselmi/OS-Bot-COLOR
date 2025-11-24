@@ -246,7 +246,7 @@ class MLM(OSRSBot):
 
     def find_click_tag_with_error(self, color: clr.Color, mouseover_text: str, color_check: clr.Color, error_msg: str) -> bool:
         if not self.find_click_tag(color, mouseover_text, color_check):
-            self.log_msg(f"Could not click on tag with color {color}.")
+            self.log_msg(error_msg)
             self.errors += 1
             return False
         return True
