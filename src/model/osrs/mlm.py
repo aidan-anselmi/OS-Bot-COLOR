@@ -134,13 +134,20 @@ class MLM(OSRSBot):
     def mine_inventory(self) -> int:
         self.mine_rock()
 
+        prev_xp = self.get_total_xp()
+        prev_xp_timestamp = time.time()
+
         while not self.full_inventory() and self.errors < 10:
+            currenxt_xp = self.get_total_xp()
+            if self.get_total_xp() != -1:
+                current_xp = self.get_total_xp()
             if not self.is_player_doing_action("Mining"):
                 time.sleep(.5)
                 if not self.is_player_doing_action("Mining", rect=self.win.current_action):
                     if rd.random_chance(probability=0.33):
                         self.drop_gems()
                     self.mine_rock()
+
 
             if rd.random_chance(probability=0.95):
                 self.take_break(min_seconds=2, max_seconds=7)
@@ -217,8 +224,8 @@ class MLM(OSRSBot):
         try:
             for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
                 gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
-                while self.loop_find_image(gem_img, self.win.inventory, loops=5):
-                    self.find_click_image(gem_img)
+                while self.find_click_image(gem_img, self.win.inventory):
+                    time.sleep(0.1)
         finally:
             keyboard.release('shift')            
         return 

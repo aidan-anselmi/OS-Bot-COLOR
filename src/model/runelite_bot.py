@@ -291,8 +291,8 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(0.02)
         return obj
 
-    def find_click_image(self, image: Path) -> bool:
-        rectangle = self.loop_find_image(image)           
+    def find_click_image(self, image: Path, rect: Rectangle = None) -> bool:
+        rectangle = self.loop_find_image(image, rect)           
         if not rectangle:
             return False
 
