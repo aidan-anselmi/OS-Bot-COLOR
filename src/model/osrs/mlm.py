@@ -108,7 +108,9 @@ class MLM(OSRSBot):
 
             pag.keyUp('shift')
             while not self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE): 
+                self.drop_gems()
                 self.take_break(min_seconds=30, max_seconds=75, fancy=True)
+                self.drop_gems()
                 pag.keyUp('shift')
             time.sleep(3)
             nonempty_inventory_slots = self.nonempty_inventory_slots()

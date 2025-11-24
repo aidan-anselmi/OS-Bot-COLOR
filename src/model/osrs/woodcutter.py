@@ -134,7 +134,8 @@ class OSRSWoodcutter(OSRSBot):
             tree = trees[0]
             if len(trees) >= 2 and rd.random_chance(probability=.25):
                 tree = trees[1]
-            if self.find_click_rectangle(tree, mouseover_text="Chop", color=clr.OFF_WHITE):
+            
+            if self.find_click_rectangle_with_missclick(tree, mouseover_text="Chop", color=clr.OFF_WHITE):
                 time.sleep(5)
                 return True
         self.log_msg("no trees found")
