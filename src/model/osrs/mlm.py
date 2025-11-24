@@ -20,7 +20,13 @@ class MLM(OSRSBot):
     def __init__(self):
         bot_title = "Woodcutter"
         description = (
-            "This bot power-chops wood. Position your character near some trees, tag them, and press Play.\nTHIS SCRIPT IS AN EXAMPLE, DO NOT USE LONGTERM."
+            """
+            Checklist:
+            - empty inventory
+            - zoomed all the way out
+            - facing north and slightly down
+
+            """
         )
         super().__init__(bot_title=bot_title, description=description)
         self.running_time = 120
@@ -79,6 +85,7 @@ class MLM(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
+        self.empty_sack()
         while time.time() - start_time < end_time and self.errors < 10:
             # mine until we have "full pay dirt"
             self.mining_loop()
@@ -99,7 +106,12 @@ class MLM(OSRSBot):
             self.mine_inventory()
             self.log_msg(f"Completed mining inventory, current sack size {sack_size}")
 
-            self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE)
+            if not self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE):
+                time.sleep(.5)
+                if not self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE):
+                    self.log_msg("Could not find hopper to deposit pay-dirt.")
+                    self.errors += 1
+                    return
             nonempty_inventory_slots = self.nonempty_inventory_slots()
             sack_size -= nonempty_inventory_slots
             if nonempty_inventory_slots > 0:
