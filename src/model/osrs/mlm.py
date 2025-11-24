@@ -120,7 +120,7 @@ class MLM(OSRSBot):
                 self.drop_gems()
                 self.mine_rock()
 
-            if rd.random_chance(probability=0.85):
+            if rd.random_chance(probability=0.95):
                 self.take_break(min_seconds=2, max_seconds=12)
             else:
                 self.take_break(min_seconds=30, max_seconds=75, fancy=True)
