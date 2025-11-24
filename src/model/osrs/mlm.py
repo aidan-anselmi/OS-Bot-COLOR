@@ -215,7 +215,7 @@ class MLM(OSRSBot):
         self.log_msg("Climbing down ladder...")
         if not self.find_click_tag_with_error(self.down_ladder_color, "Climb", clr.OFF_WHITE, "Could not find down ladder."):
             return False
-        self.take_break(min_seconds=2, max_seconds=4)
+        self.take_break(min_seconds=4, max_seconds=6)
 
         self.log_msg("Searching sack...")
         if not self.find_click_tag_with_error(self.sack_color, "Search", clr.OFF_WHITE, "Could not find sack."):
