@@ -55,10 +55,7 @@ class MLM(OSRSBot):
             notify_callback=self.log_msg)
         return 
 
-    def main_loop(self):
-        self.current_action_rect = self.win.current_action
-        self.current_action_rect.height = 150
-    
+    def main_loop(self):    
         self.log_msg("Selecting inventory...")
         self.mouse.move_to(self.win.cp_tabs[3].random_point())
         self.mouse.click()
