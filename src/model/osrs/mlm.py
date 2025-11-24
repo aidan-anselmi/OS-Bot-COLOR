@@ -192,7 +192,7 @@ class MLM(OSRSBot):
     
     def full_inventory(self) -> bool:
         non_empty_slots = self.nonempty_inventory_slots()
-        if self.sack_size - non_empty_slots >= 10:
+        if self.sack_size - non_empty_slots <= 10:
             return True
 
         if rd.random_chance(probability=0.25) and non_empty_slots >= 22:
