@@ -15,6 +15,7 @@ import utilities.imagesearch as imsearch
 import pyautogui as pag
 from pathlib import Path
 import utilities.runelite_cv as rcv
+import keyboard
 
 class MLM(OSRSBot):
     def __init__(self):
@@ -212,11 +213,14 @@ class MLM(OSRSBot):
     
     def drop_gems(self):
         self.log_msg("Dropping gems...")
-        with pag.hold('shift'):
+        keyboard.press('shift')
+        try:
             for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
                 gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
                 while self.loop_find_image(gem_img, self.win.inventory, loops=5):
                     self.find_click_image(gem_img)
+        finally:
+            keyboard.release('shift')            
         return 
     
     def empty_sack(self) -> bool:
