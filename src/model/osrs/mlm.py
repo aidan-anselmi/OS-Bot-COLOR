@@ -80,10 +80,6 @@ class MLM(OSRSBot):
         end_time = self.running_time * 60
         self.errors = 0
 
-        if not self.empty_sack():
-            self.log_msg("Failed to empty sack.")
-            self.update_progress(1)
-            return
         while time.time() - start_time < end_time and self.errors < 10:
             # mine until we have "full pay dirt"
             self.mining_loop()
@@ -243,6 +239,7 @@ class MLM(OSRSBot):
         if not self.find_click_tag_with_error(self.up_ladder_color, "Climb", clr.OFF_WHITE, "Could not find up ladder."):
             return False
         self.take_break(min_seconds=6, max_seconds=7)
+        return True
 
     def find_click_tag_with_error(self, color: clr.Color, mouseover_text: str, color_check: clr.Color, error_msg: str) -> bool:
         if not self.find_click_tag(color, mouseover_text, color_check):
