@@ -145,6 +145,7 @@ class MLM(OSRSBot):
 
     def click_rock(self):
         rocks = self.get_all_tagged_in_rect(self.win.game_view, self.rock_color)
+        rocks.sort(key=lambda r: Rectangle.distance_from_center(r.rect))
         if not rocks:
             self.log_msg("No rocks found.")
             return False
