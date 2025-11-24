@@ -106,7 +106,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         if ocr.extract_text(self.win.current_action, ocr.PLAIN_12, clr.WHITE):
             return True
 
-    def is_player_doing_action(self, action: str):
+    def is_player_doing_action(self, action: str, rect: Rectangle = None) -> bool:
         """
         Returns whether the player character is doing a given action. This works by checking the text in the current action
         region of the game view.
@@ -115,7 +115,9 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         Returns:
             True if the player is doing the given action, False otherwise.
         """
-        return ocr.find_text(action, self.win.current_action, ocr.PLAIN_12, clr.GREEN)
+        if rect is None:
+            rect = self.win.current_action
+        return ocr.find_text(action, rect, ocr.PLAIN_12, clr.GREEN)
 
     def pick_up_loot(self, items: Union[str, List[str]], supress_warning=True) -> bool:
         """

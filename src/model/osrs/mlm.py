@@ -28,6 +28,10 @@ class MLM(OSRSBot):
         self.break_length_multiplier = random.uniform(.5, 1.5)
         self.break_chance_multiplier = random.uniform(.5, 1.5)
 
+        self.current_action_rect = self.win.current_action
+        self.current_action_rect.top += 25
+        self.current_action_rect.height += 20
+
     def create_options(self):
         return
 
@@ -117,8 +121,10 @@ class MLM(OSRSBot):
 
         while not self.full_inventory() and self.errors < 10:
             if not self.is_player_doing_action("Mining"):
-                self.drop_gems()
-                self.mine_rock()
+                time.sleep(.5)
+                if not self.is_player_doing_action("Mining", rect=self.win.current_action):
+                    self.drop_gems()
+                    self.mine_rock()
 
             if rd.random_chance(probability=0.95):
                 self.take_break(min_seconds=2, max_seconds=12)
