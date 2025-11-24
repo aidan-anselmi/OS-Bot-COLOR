@@ -263,7 +263,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(1)
 
 
-    def loop_find_image(self, image: Path, rect: Rectangle = None, loops=20, sleep=0.02) -> Rectangle:
+    def loop_find_image(self, image: Path, rect: Rectangle = None, loops=20, sleep=0.1) -> Rectangle:
         if rect is None:
             rect = self.win.game_view
         error = 0

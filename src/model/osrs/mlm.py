@@ -225,7 +225,7 @@ class MLM(OSRSBot):
             for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
                 gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
                 while self.find_click_image(gem_img, self.win.inventory):
-                    time.sleep(0.1)
+                    self.take_break(min_seconds=0.01, max_seconds=0.2)
         finally:
             keyboard.release('shift')            
         return 
