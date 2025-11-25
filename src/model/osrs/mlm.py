@@ -107,25 +107,25 @@ class MLM(OSRSBot):
             self.mine_inventory()
             self.log_msg(f"Completed mining inventory")
 
-            nonempty_inventory_slots = self.nonempty_inventory_slots()
-            self.sack_size -= nonempty_inventory_slots
+            self.sack_size -= self.nonempty_inventory_slots()
 
             while not self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE): 
                 self.log_msg("Could not find hopper to deposit into, retrying...")
                 time.sleep(2)
             time.sleep(2)
 
-            for _ in range(10):
-                nonempty_inventory_slots = self.nonempty_inventory_slots()
-                if nonempty_inventory_slots > 0:
-                    self.log_msg(f"Inventory non-empty, trying hopper and dropping gems...")
-                    time.sleep(10)
-                    self.drop_gems()
-                    self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE)
-                else:
-                    break
+            if self.nonempty_inventory_slots() > 0:
+                time.sleep(2)
+                for _ in range(10):
+                    if self.nonempty_inventory_slots() > 0:
+                        self.log_msg(f"Inventory non-empty, trying hopper and dropping gems...")
+                        time.sleep(10)
+                        self.drop_gems()
+                        self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE)
+                    else:
+                        break
             
-            if nonempty_inventory_slots > 0:
+            if self.nonempty_inventory_slots() > 0:
                 self.log_msg("Sack not empty after depositing, sack size {sack_size}, emptying sack.".format(sack_size=self.sack_size))
                 self.drop_all()
                 self.errors += 1
