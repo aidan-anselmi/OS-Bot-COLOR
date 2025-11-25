@@ -223,11 +223,20 @@ class MLM(OSRSBot):
     
     def drop_gems(self):
         self.log_msg("Dropping gems...")
-        with keyboard.pressed('shift'):
+
+        try:
+            keyboard.press('shift')
             for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
                 gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
                 while self.find_click_image(gem_img, self.win.inventory, "Drop", clr.OFF_WHITE):
                     self.take_break(min_seconds=0.01, max_seconds=0.2)
+        finally:
+            keyboard.release('shift')
+        
+        time.sleep(.1)
+        if keyboard.is_pressed('shift'):
+            self.log_msg("Releasing stuck shift key...")
+            keyboard.release('shift')
         return 
     
     def empty_sack(self) -> bool:
