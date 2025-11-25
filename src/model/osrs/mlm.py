@@ -118,7 +118,7 @@ class MLM(OSRSBot):
             for _ in range(10):
                 nonempty_inventory_slots = self.nonempty_inventory_slots()
                 if nonempty_inventory_slots > 0:
-                    self.log_msg(f"Hopper not done depositing, waiting...")
+                    self.log_msg(f"Inventory non-empty, trying hopper and dropping gems...")
                     time.sleep(10)
                     self.drop_gems()
                     self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE)
