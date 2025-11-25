@@ -141,8 +141,9 @@ class MLM(OSRSBot):
 
         while not self.full_inventory() and self.errors < 10:
             currenxt_xp = self.get_total_xp()
-            if self.get_total_xp() != -1:
+            if self.get_total_xp() != -1 and currenxt_xp != prev_xp:
                 current_xp = self.get_total_xp()
+                prev_xp_timestamp = time.time()
             if not self.is_player_doing_action("Mining"):
                 time.sleep(.5)
                 if not self.is_player_doing_action("Mining", rect=self.win.current_action):
