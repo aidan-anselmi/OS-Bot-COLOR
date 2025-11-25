@@ -118,13 +118,15 @@ class MLM(OSRSBot):
             for _ in range(10):
                 nonempty_inventory_slots = self.nonempty_inventory_slots()
                 if nonempty_inventory_slots > 0:
+                    self.log_msg(f"Hopper not done depositing, waiting...")
+                    time.sleep(10)
                     self.drop_gems()
-                    time.sleep(1)
+                    self.find_click_tag(self.hopper_color, "Deposit", clr.OFF_WHITE)
                 else:
                     break
             
             if nonempty_inventory_slots > 0:
-                self.log_msg("Sack not empty after depositing, sack size {self.sack_size}, emptying sack.".format(sack_size=self.sack_size))
+                self.log_msg("Sack not empty after depositing, sack size {sack_size}, emptying sack.".format(sack_size=self.sack_size))
                 self.drop_all()
                 self.errors += 1
                 self.sack_size = 0
@@ -220,14 +222,11 @@ class MLM(OSRSBot):
     
     def drop_gems(self):
         self.log_msg("Dropping gems...")
-        keyboard.press('shift')
-        try:
+        with keyboard.pressed('shift'):
             for item in ["Uncut_sapphire.png", "Uncut_emerald.png", "Uncut_ruby.png", "Uncut_diamond.png"]:
                 gem_img = imsearch.BOT_IMAGES.joinpath("items", item)
-                while self.find_click_image(gem_img, self.win.inventory):
+                while self.find_click_image(gem_img, self.win.inventory, "Drop", clr.OFF_WHITE):
                     self.take_break(min_seconds=0.01, max_seconds=0.2)
-        finally:
-            keyboard.release('shift')            
         return 
     
     def empty_sack(self) -> bool:

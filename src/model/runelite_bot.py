@@ -291,12 +291,15 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(0.02)
         return obj
 
-    def find_click_image(self, image: Path, rect: Rectangle = None) -> bool:
+    def find_click_image(self, image: Path, rect: Rectangle = None, mouseover_text: str = "", color: Union[clr.Color, List[clr.Color]] = None) -> bool:
         rectangle = self.loop_find_image(image, rect)           
         if not rectangle:
             return False
 
         self.mouse.move_to(rectangle.random_point())
+        if mouseover_text and not self.mouseover_text(contains=mouseover_text, color=color):
+            self.log_msg("could not find mouseover text")
+            return False
         self.mouse.click()
         return True 
 
