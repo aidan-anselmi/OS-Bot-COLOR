@@ -261,3 +261,17 @@ class RuneLiteObject:
             p: The point to check in the format [x, y].
         """
         return (self._axis == np.array(p)).all(axis=1).any()
+
+    def intersect(self, other: Rectangle) -> Rectangle:
+        """
+        Returns the intersection of this object with another Rectangle.
+        """
+        x_min = max(self._x_min, other.left)
+        y_min = max(self._y_min, other.top)
+        x_max = min(self._x_max, other.left + other.width)
+        y_max = min(self._y_max, other.top + other.height)
+
+        if x_min < x_max and y_min < y_max:
+            return Rectangle(x_min, y_min, x_max - x_min, y_max - y_min)
+        else:
+            return None

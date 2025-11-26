@@ -299,6 +299,40 @@ class Bot(ABC):
         # debug.save_image("minimap_friends.png", only_friends)
         mean = only_friends.mean(axis=(0, 1))
         return mean != 0.0
+    
+    def hop_if_player_nearby(self) -> bool:
+        """
+        Hops worlds if players are nearby.
+        Returns:
+            True if hopped, False otherwise.
+        """
+        if self.player_nearby():
+            self.log_msg("Players nearby, hopping world...")
+            self.quick_hop()
+            return True
+        return False
+
+    def player_nearby(self) -> bool:
+        """
+        Checks the minimap for green dots to indicate friends nearby.
+        Returns:
+            True if friends are nearby, False otherwise.
+        """
+        minimap = self.win.minimap.screenshot()
+        only_friends = clr.isolate_colors(minimap, [clr.RED])
+        mean = only_friends.mean(axis=(0, 1))
+        return mean != 0.0
+    
+    def quick_hop(self, backwards: bool = False) -> None:
+        # hit sshift and page up 
+        self.log_msg("Hopping world...")
+        with pag.hold("shift"):
+            if backwards:
+                pag.press("pageup")
+            else:
+                pag.press("pagedown")
+        time.sleep(5)
+        return 
 
     def logout(self):  # sourcery skip: class-extract-method
         """

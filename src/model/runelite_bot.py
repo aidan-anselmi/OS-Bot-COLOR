@@ -278,18 +278,33 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(sleep)
         return rectangle
 
-    def loop_find_tag(self, color: clr.Color) -> RuneLiteObject:
+    def loop_find_tag(self, color: clr.Color, loops=20, sleep=0.1) -> RuneLiteObject:
         error = 0
         while True:
-            if error > 20:
+            if error > loops:
                 return None
             error += 1
 
             obj = self.get_nearest_tag(color)
             if obj:  
                 break
-            time.sleep(0.02)
+            time.sleep(sleep)
         return obj
+    
+    def loop_find_tag_in_rect(self, color: clr.Color, rect: Rectangle = None, loops=20, sleep=0.1) -> RuneLiteObject:
+        if rect is None:
+            rect = self.win.game_view
+        error = 0
+        while True:
+            if error > loops:
+                return None
+            error += 1
+
+            objs = self.get_all_tagged_in_rect(color, rect)
+            if objs:  
+                break
+            time.sleep(sleep)
+        return objs[0]
 
     def find_click_image(self, image: Path, rect: Rectangle = None, mouseover_text: str = "", color: Union[clr.Color, List[clr.Color]] = None) -> bool:
         rectangle = self.loop_find_image(image, rect)           

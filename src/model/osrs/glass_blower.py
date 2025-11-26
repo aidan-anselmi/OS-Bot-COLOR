@@ -80,7 +80,7 @@ class OSRSGlassBlower(OSRSBot):
             self.take_break(max_seconds=.8, fancy=True)
 
             # deposit items 
-            self.find_click_rectangle(self.win.inventory_slots[1].random_point(), "Deposit-All")
+            self.find_click_rectangle(self.win.inventory_slots[1], "Deposit-All")
             self.log_msg("deposited orbs.")
             self.take_break(max_seconds=.4, fancy=True)
 
@@ -98,9 +98,9 @@ class OSRSGlassBlower(OSRSBot):
                 continue
             self.take_break(max_seconds=.5, fancy=True)
 
-            self.find_click_rectangle(self.win.inventory_slots[0].random_point(), "Use")
+            self.find_click_rectangle(self.win.inventory_slots[0], "Use")
             self.take_break(max_seconds=.8, fancy=True)
-            self.find_click_rectangle(self.win.inventory_slots[1].random_point(), "Use")
+            self.find_click_rectangle(self.win.inventory_slots[1], "Use")
             self.wait_till_interface()
             self.take_break(max_seconds=.5, fancy=True)
             keyboard.press(Key.space)

@@ -346,10 +346,11 @@ if __name__ == "__main__":
     # from model.osrs.woodcutter import OSRSWoodcutter
     from model.osrs.calcified_rocks import CalcifiedRocks
     from model.osrs.mlm import MLM
+    from model.osrs.thieve_alc import ThieveAlc
     test = True
     if test:
         app = App(test=True)
-        app.test(MLM()) 
+        app.test(ThieveAlc()) 
     else:
         app = App()  # Add the "test=True" argument to the App constructor call.
         app.start()  # Comment out this line.
