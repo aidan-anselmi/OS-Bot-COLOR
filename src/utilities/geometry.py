@@ -170,7 +170,7 @@ class Rectangle:
     def __repr__(self):
         return self.__str__()
     
-    def intersect(self, other: Rectangle) -> Rectangle:
+    def intersect(self, other: "Rectangle") -> "Rectangle":
         """
         Returns the intersection of this object with another Rectangle.
         """
