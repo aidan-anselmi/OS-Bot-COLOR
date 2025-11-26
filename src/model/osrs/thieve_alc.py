@@ -71,22 +71,22 @@ class ThieveAlc(OSRSBot):
             if self.hop_if_player_nearby():
                 pag.press('f2')
 
-            distracted_citizen_tile = self.loop_find_tag(self.distracted_citizen_tile_color, loops=5, sleep=0.02)
+            distracted_citizen_tile = self.loop_find_tag(self.distracted_citizen_tile_color, loops=10, sleep=0.02)
             if not distracted_citizen_tile:
                 pag.press('f4')
                 self.take_break(min_seconds=.2, max_seconds=.4, fancy=True)
                 self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
             while not distracted_citizen_tile:
-                self.take_break(min_seconds=.1, max_seconds=.25, fancy=True)
+                self.take_break(min_seconds=.15, max_seconds=.3, fancy=True)
                 self.mouse.click()
-                self.take_break(min_seconds=.1, max_seconds=.25, fancy=True)
+                self.take_break(min_seconds=.15, max_seconds=.3, fancy=True)
                 self.mouse.click()
 
                 alcs += 1
                 if alcs % 100 == 0:
                     self.log_msg(f"High alched {alcs} times so far...")
                 
-                distracted_citizen_tile = self.loop_find_tag(self.distracted_citizen_tile_color, loops=5, sleep=0.02)
+                distracted_citizen_tile = self.loop_find_tag(self.distracted_citizen_tile_color, loops=10, sleep=0.02)
                 if not distracted_citizen_tile:
                     self.log_msg("No distracted citizen found, re-casting high alch...")
                 else:
