@@ -72,7 +72,7 @@ class ThieveAlc(OSRSBot):
             self.mouse.click()
             self.take_break(min_seconds=.2, max_seconds=.4, fancy=True)
             if rd.random_chance(0.005):
-                if rd.random_chance(0.2):
+                if rd.random_chance(0.1):
                     self.take_break(min_seconds=5, max_seconds=90)
                 else:
                     self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
