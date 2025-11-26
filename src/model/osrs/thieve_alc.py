@@ -41,32 +41,11 @@ class ThieveAlc(OSRSBot):
     def save_options(self, options: dict):
         self.options_set = True
         return 
-    
-    def scrape(self):
-        scraper = SpriteScraper()
-
-        # set destination directory to src/images/bot/items (project-relative)
-        dest_dir = Path(__file__).resolve().parents[2].joinpath("images", "bot", "items")
-        # make sure directory exists
-        dest_dir.mkdir(parents=True, exist_ok=True)
-
-        search_string = "Uncut sapphire, Uncut emerald, Uncut ruby, Uncut diamond, Pay-dirt"
-        # search_string = "Deposit Inventory"
-        image_type = ImageType.NORMAL
-        destination = dest_dir
-
-        self.path = scraper.search_and_download(
-            search_string=search_string,
-            image_type=image_type,
-            destination=destination,
-            notify_callback=self.log_msg)
-        return 
 
     def main_loop(self):    
         self.log_msg("Selecting inventory...")
         self.mouse.move_to(self.win.cp_tabs[3].random_point())
         self.mouse.click()
-        self.scrape()
 
         self.desposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")
         self.close_bank_img = imsearch.BOT_IMAGES.joinpath("bank", "close_bank.png")
@@ -95,12 +74,23 @@ class ThieveAlc(OSRSBot):
             distracted_citizen_tile = self.loop_find_tag(self.distracted_citizen_tile_color, loops=5, sleep=0.02)
             if not distracted_citizen_tile:
                 pag.press('f4')
+                self.take_break(min_seconds=.2, max_seconds=.4, fancy=True)
+                self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
             while not distracted_citizen_tile:
-                self.high_alc()
+                self.take_break(min_seconds=.1, max_seconds=.25, fancy=True)
+                self.mouse.click()
+                self.take_break(min_seconds=.1, max_seconds=.25, fancy=True)
+                self.mouse.click()
+
                 alcs += 1
                 if alcs % 100 == 0:
                     self.log_msg(f"High alched {alcs} times so far...")
+                
                 distracted_citizen_tile = self.loop_find_tag(self.distracted_citizen_tile_color, loops=5, sleep=0.02)
+                if not distracted_citizen_tile:
+                    self.log_msg("No distracted citizen found, re-casting high alch...")
+                else:
+                    self.log_msg("Distracted citizen found, attempting to thieve...")
 
             self.thieve_citizen(distracted_citizen_tile)
                     
@@ -151,9 +141,4 @@ class ThieveAlc(OSRSBot):
             return True
         return False
     
-    def high_alc(self):
-        self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
-        self.take_break(min_seconds=.2, max_seconds=.4, fancy=True)
-        self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
-        self.take_break(min_seconds=.2, max_seconds=.4, fancy=True)
 
