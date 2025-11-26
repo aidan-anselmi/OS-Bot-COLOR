@@ -61,6 +61,20 @@ class ThieveAlc(OSRSBot):
         if not self.alc_intersect:
             self.log_msg("ERROR: High alchemy spell does not intersect inventory slot 12!")
             return
+        
+        just_alc = True
+        if just_alc:
+            pag.press('f4')
+            self.take_break(min_seconds=.2, max_seconds=.4, fancy=True)
+            self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
+        while just_alc:
+            self.take_break(min_seconds=.15, max_seconds=.3, fancy=True)
+            self.mouse.click()
+            self.take_break(min_seconds=.15, max_seconds=.3, fancy=True)
+            if rd.random_chance(0.005):
+                self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
+            else:
+                self.mouse.click()
 
         # Main loop
         start_time = time.time()
