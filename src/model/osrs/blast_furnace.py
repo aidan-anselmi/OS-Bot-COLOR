@@ -109,7 +109,7 @@ class BlastFurnace(OSRSBot):
 
     def open_bank(self):
         self.find_click_tag(self.bank_clr, "Use", clr.OFF_WHITE)
-        self.wait_till_bank_deposit_open()
+        self.wait_till_bank_open()
         return
 
     def get_item_from_bank(self, item):
