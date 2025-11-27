@@ -333,6 +333,24 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
                 return False
         self.mouse.click()
 
+        return True
+
+    def find_click_tag_with_missclick(self, object_color: clr.Color, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None) -> bool:
+        # chance to missclick
+        if rd.random_chance(probability=0.2):
+            offset_x = random.randint(-75, 75)
+            offset_y = random.randint(-75, 75)
+            tag = self.loop_find_tag(object_color)
+            if not tag:
+                self.log_msg("could not find tag")
+                return False
+            self.mouse.move_to((tag.get_center()[0] + offset_x, tag.get_center()[1] + offset_y))
+            self.mouse.click()
+
+        if not self.find_click_tag(object_color, mouseover_text, color):
+            self.take_break(min_seconds=0.1, max_seconds=.3, fancy=True)
+            return self.find_click_tag(object_color, mouseover_text, color)
+
         return True 
 
     def find_click_rectangle(self, rectangle: Rectangle, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None) -> bool:

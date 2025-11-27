@@ -116,18 +116,19 @@ class BlastFurnace(OSRSBot):
         self.open_bank()
         img = imsearch.BOT_IMAGES.joinpath("items", item + "_bank.png")
         self.find_click_image(img)
+        self.take_break(min_seconds=.2, max_seconds=.7)
         pag.press('esc')
         return
     
     def place_conveyor_belt_item(self):
-        self.find_click_rectangle_with_missclick(self.conveyor_belt_clr, "Deposit-ore-on", clr.OFF_WHITE)
+        self.find_click_tag_with_missclick(self.conveyor_belt_clr, "Deposit-ore-on", clr.OFF_WHITE)
         time.sleep(3)
         for i in range(100):
             if not self.full_inventory():
                 return True
             # every 2 seconds try to reclick
             if i % 10 == 0:
-                self.find_click_rectangle_with_missclick(self.conveyor_belt_clr, "Deposit-ore-on", clr.OFF_WHITE)
+                self.find_click_tag_with_missclick(self.conveyor_belt_clr, "Deposit-ore-on", clr.OFF_WHITE)
             time.sleep(0.2)
         return False
     
