@@ -352,13 +352,13 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
 
         # chance to missclick
         if rd.random_chance(probability=0.2):
-            offset_x = random.randint(-100, 100)
-            offset_y = random.randint(-100, 100)
+            offset_x = random.randint(-75, 75)
+            offset_y = random.randint(-75, 75)
             self.mouse.move_to((rectangle.get_center()[0] + offset_x, rectangle.get_center()[1] + offset_y))
             self.mouse.click()
 
         if not self.find_click_rectangle(rectangle, mouseover_text, color):
-            self.take_break(min_seconds=0.1, max_seconds=.5, fancy=True)
+            self.take_break(min_seconds=0.1, max_seconds=.3, fancy=True)
             return self.find_click_rectangle(rectangle, mouseover_text, color)
 
         return True
