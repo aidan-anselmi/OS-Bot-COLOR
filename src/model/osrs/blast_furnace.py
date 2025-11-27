@@ -64,13 +64,14 @@ class BlastFurnace(OSRSBot):
         return 
 
     def main_loop(self):    
+        self.scrape()
         self.log_msg("Selecting inventory...")
-        self.mouse.move_to(self.win.cp_tabs[3].random_point())
-        self.mouse.click()
+        pag.press('f2')
 
         self.desposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")
         self.empty_slot_clr_27 = pag.pixel(*self.win.inventory_slots[-1].get_center())
 
+        
         self.inventory_pixel_map = {}
         for i in range(len(self.win.inventory_slots)):
             self.inventory_pixel_map[i] = pag.pixel(*self.win.inventory_slots[i].get_center())
