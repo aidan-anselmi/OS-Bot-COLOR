@@ -53,7 +53,7 @@ class BlastFurnace(OSRSBot):
 
         search_string = "Iron ore, Coal, Gold ore, Mithril ore, Adamantite ore, Runite ore"
         # search_string = "Deposit Inventory"
-        image_type = ImageType.NORMAL
+        image_type = ImageType.BANK
         destination = dest_dir
 
         self.path = scraper.search_and_download(
@@ -113,6 +113,7 @@ class BlastFurnace(OSRSBot):
         return
 
     def get_item_from_bank(self, item):
+        self.open_bank()
         img = imsearch.BOT_IMAGES.joinpath("items", item)
         self.find_click_image(img)
         pag.press('esc')
