@@ -114,7 +114,7 @@ class BlastFurnace(OSRSBot):
 
     def get_item_from_bank(self, item):
         self.open_bank()
-        img = imsearch.BOT_IMAGES.joinpath("items", item + ".png")
+        img = imsearch.BOT_IMAGES.joinpath("items", item + "_bank.png")
         self.find_click_image(img)
         pag.press('esc')
         return
