@@ -1,5 +1,15 @@
 Ideas 
 
+- blast furnace
+- giants foundry
+- temple trekking 
+- moonlight moths 
+- red chins 
+- shop buying bot 
+- Spin flax bot
+- green dragons bot 
+
+
 Entity Tracker class:
     class that keeps track of the center of tags, and sees if the tag has moved
 
