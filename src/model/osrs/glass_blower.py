@@ -19,7 +19,7 @@ class OSRSGlassBlower(OSRSBot):
         description = "blows glass"
         super().__init__(bot_title=bot_title, description=description)
         # Set option variables below (initial value is only used during headless testing)
-        self.running_time = 90
+        self.running_time = 200
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
@@ -45,7 +45,7 @@ class OSRSGlassBlower(OSRSBot):
         # make sure directory exists
         dest_dir.mkdir(parents=True, exist_ok=True)
 
-        search_string = "Yew longbow (u), Bow string"
+        search_string = "Yew longbow (u), Bow string, Maple logs"
         # search_string = "Deposit Inventory"
         image_type = ImageType.BANK
         destination = dest_dir
@@ -64,8 +64,8 @@ class OSRSGlassBlower(OSRSBot):
         self.scrape_images()
         bank_color = clr.BLUE
 
-        bow_img = imsearch.BOT_IMAGES.joinpath("items", "Yew_longbow_(u)_bank.png")
-        string_img = imsearch.BOT_IMAGES.joinpath("items", "Bow_string_bank.png")
+        bow_img = imsearch.BOT_IMAGES.joinpath("items", "Maple_logs_bank.png")
+        # string_img = imsearch.BOT_IMAGES.joinpath("items", "Bow_string_bank.png")
 
         # Main loop
         start_time = time.time()
@@ -84,8 +84,8 @@ class OSRSGlassBlower(OSRSBot):
             self.take_break(max_seconds=.8, fancy=True)
 
             # deposit items 
-            #self.find_click_rectangle(self.win.inventory_slots[0], "Deposit-All")
-            self.find_click_image(imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png"))
+            self.find_click_rectangle(self.win.inventory_slots[1], "Deposit-All")
+            #self.find_click_image(imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png"))
             self.log_msg("deposited orbs.")
             self.take_break(max_seconds=1, fancy=True)
 
@@ -95,19 +95,15 @@ class OSRSGlassBlower(OSRSBot):
                 errors += 1
                 continue
             self.take_break(max_seconds=1, fancy=True)
-            if not self.find_click_image(string_img):
-                self.log_msg("could not find molten glass.")
-                errors += 1
-                continue
             self.take_break(max_seconds=1, fancy=True)
 
             # close bank
             pag.press('esc')
             self.take_break(max_seconds=1, fancy=True)
 
-            self.find_click_rectangle(self.win.inventory_slots[13], "Use")
+            self.find_click_rectangle(self.win.inventory_slots[0], "Use")
             self.take_break(max_seconds=1, fancy=True)
-            self.find_click_rectangle(self.win.inventory_slots[14], "Use")
+            self.find_click_rectangle(self.win.inventory_slots[1], "Use")
             self.wait_till_interface()
             self.take_break(max_seconds=1, fancy=True)
             keyboard.press(Key.space)
