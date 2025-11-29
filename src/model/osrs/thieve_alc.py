@@ -30,7 +30,7 @@ class ThieveAlc(OSRSBot):
             """
         )
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 180
+        self.running_time = 119
 
         self.break_length_multiplier = random.uniform(.5, 1.5)
         self.break_chance_multiplier = random.uniform(.5, 1.5)
@@ -63,22 +63,40 @@ class ThieveAlc(OSRSBot):
             return
         
         just_alc = True
+        xp = self.get_total_xp()
+        xp_timestamp = time.time()
         if just_alc:
             pag.press('f4')
             self.take_break(min_seconds=.1, max_seconds=.5, fancy=True)
             self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
         while just_alc:
-            self.take_break(min_seconds=.1, max_seconds=.6, fancy=True)
+            cur_xp = self.get_total_xp()
+            if cur_xp != -1 and cur_xp != xp:
+                xp = cur_xp
+                xp_timestamp = time.time()
+
+            if time.time() - xp_timestamp > 5 * 60:
+                self.log_msg("did not get xp for 5mins, retrying")
+                pag.press('f4')
+                time.sleep(.2)
+                self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
+                time.sleep(.2)
+            if time.time() - xp_timestamp > 10 * 60:
+                self.log_msg("not getting xp, logging out")
+                return
+                
+
+            self.take_break(min_seconds=.3, max_seconds=.8, fancy=True)
             self.mouse.click()
-            self.take_break(min_seconds=.1, max_seconds=.6, fancy=True)
+            self.take_break(min_seconds=.3, max_seconds=.8, fancy=True)
             if rd.random_chance(0.005):
                 if rd.random_chance(0.1):
-                    self.take_break(min_seconds=5, max_seconds=90)
+                    self.take_break(min_seconds=30, max_seconds=200)
                 else:
-                    self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
-                    self.take_break(min_seconds=.1, max_seconds=.5, fancy=True)
+                    self.take_break(min_seconds=5, max_seconds=30)
             else:
                 self.mouse.click()
+        return 
 
         # Main loop
         start_time = time.time()
