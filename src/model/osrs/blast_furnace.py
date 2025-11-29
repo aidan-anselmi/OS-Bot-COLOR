@@ -129,11 +129,11 @@ class BlastFurnace(OSRSBot):
             return False
         self.take_break(min_seconds=.2, max_seconds=.7)
         pag.press('esc')
-
-        # if not self.full_inventory():
-        #     self.log_msg(f"Inventory not full after taking {item}, retrying...")
-        #     self.errors += 1
-        #     self.get_item_from_bank(item)
+        time.sleep(.1)
+        if not self.full_inventory():
+            self.log_msg(f"Inventory not full after taking {item}, retrying...")
+            self.errors += 1
+            self.get_item_from_bank(item)
         return
     
     def place_conveyor_belt_item(self):
@@ -162,7 +162,8 @@ class BlastFurnace(OSRSBot):
         if rd.random_chance(0.4):
             tag = self.loop_find_tag(self.tiles_by_dispenser)
         else:
-            tag = self.loop_find_tag(self.bar_dispenser_clr)
+            tags = self.get_all_tagged_in_rect(self.win.game_view, self.bar_dispenser_clr)
+            tag = random.choice(tags) if tags else None
         self.mouse.move_to(tag.random_point())
         self.mouse.click()
         self.take_break(min_seconds=0.8, max_seconds=2)
