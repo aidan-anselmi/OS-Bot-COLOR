@@ -52,6 +52,8 @@ class OSRSWoodcutter(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
         errors = 0
+        if self.get_special_energy() == 100:
+            self.find_click_rectangle(self.win.spec_orb_text, "Use", color=clr.OFF_WHITE)
         while time.time() - start_time < end_time and errors < 10:
             
             # deposit logs 
@@ -65,8 +67,13 @@ class OSRSWoodcutter(OSRSBot):
                     errors += 1
                     continue 
 
+            if self.get_special_energy() == 100 and rd.random_chance(probability=0.5):
+                self.find_click_rectangle(self.win.spec_orb_text, "Use", color=clr.OFF_WHITE)
+                self.take_break(min_seconds=0.3, max_seconds=1)
+
             # chance to move mouse or move to new tree while chopping 
             while self.is_player_doing_action("Woodcutting"):
+
                 # chance to move trees 
                 # yew trees last 114 seconds 
                 if rd.random_chance(probability=1.0/(114.0 * 4.0)):
