@@ -197,7 +197,7 @@ class BlastFurnace(OSRSBot):
         time.sleep(0.1)
         for _ in range(50):
             cur_center = self.loop_find_tag(relative_tile_color).get_center()
-            if math.dist(prev_center, cur_center) < 5:
+            if math.dist(prev_center, cur_center) < 2:
                 return True
             else:
                 self.log_msg(f"Player is still moving, {cur_center} vs {prev_center}")
