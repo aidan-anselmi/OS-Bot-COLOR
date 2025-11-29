@@ -37,8 +37,7 @@ class OSRSWoodcutter(OSRSBot):
 
     def main_loop(self):
         self.log_msg("Selecting inventory...")
-        self.mouse.move_to(self.win.cp_tabs[3].random_point())
-        self.mouse.click()
+        pag.press('f2')
 
         self.desposit_all_img = imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png")
         self.close_bank_img = imsearch.BOT_IMAGES.joinpath("bank", "close_bank.png")
