@@ -130,10 +130,10 @@ class BlastFurnace(OSRSBot):
         self.take_break(min_seconds=.2, max_seconds=.7)
         pag.press('esc')
 
-        if not self.full_inventory():
-            self.log_msg(f"Inventory not full after taking {item}, retrying...")
-            self.errors += 1
-            self.get_item_from_bank(item)
+        # if not self.full_inventory():
+        #     self.log_msg(f"Inventory not full after taking {item}, retrying...")
+        #     self.errors += 1
+        #     self.get_item_from_bank(item)
         return
     
     def place_conveyor_belt_item(self):
