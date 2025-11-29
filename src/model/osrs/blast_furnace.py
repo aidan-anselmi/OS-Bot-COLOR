@@ -178,7 +178,7 @@ class BlastFurnace(OSRSBot):
             # Check
             # Take -> hit space
             self.mouse.move_to(tag.random_point())
-            while self.mouseover_text(contains="Check", color=clr.OFF_WHITE):
+            while self.mouseover_text(contains="Check", color=clr.OFF_WHITE) and not self.full_inventory():
                 if rd.random_chance(0.3):
                     self.mouse.click()
                 self.take_break(min_seconds=0.1, max_seconds=0.4)
