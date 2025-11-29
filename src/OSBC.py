@@ -348,10 +348,11 @@ if __name__ == "__main__":
     from model.osrs.mlm import MLM
     from model.osrs.thieve_alc import ThieveAlc
     from model.osrs.blast_furnace import BlastFurnace
+    from model.osrs import *
     test = True
     if test:
         app = App(test=True)
-        app.test(BlastFurnace()) 
+        app.test(ThieveAlc()) 
     else:
         app = App()  # Add the "test=True" argument to the App constructor call.
         app.start()  # Comment out this line.

@@ -30,7 +30,7 @@ class MLM(OSRSBot):
             """
         )
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 120
+        self.running_time = 175
 
         self.break_length_multiplier = random.uniform(.5, 1.5)
         self.break_chance_multiplier = random.uniform(.5, 1.5)
