@@ -179,13 +179,13 @@ class BlastFurnace(OSRSBot):
         relative_tile_color = self.tiles_by_dispenser()
         # wait max of 10 seconds
         prev_center = self.loop_find_tag(relative_tile_color).get_center()
-        time.sleep(0.3)
+        time.sleep(0.2)
         for _ in range(50):
             cur_center = self.loop_find_tag(relative_tile_color).get_center()
             if math.dist(prev_center, cur_center) < 3:
                 return True
             else:
-                time.sleep(0.3)
+                time.sleep(0.2)
 
         self.errors += 1
         self.log_msg("Player did not stop moving in time")
