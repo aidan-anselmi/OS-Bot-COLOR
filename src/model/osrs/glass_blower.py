@@ -72,7 +72,7 @@ class OSRSGlassBlower(OSRSBot):
         end_time = self.running_time * 60
         errors = 0
         items_made = 0
-        while time.time() - start_time < end_time and errors < 10 and items_made < 2380:
+        while time.time() - start_time < end_time and errors < 10 and items_made < 10000:
 
             # bank
             if not self.is_bank_open():
@@ -108,9 +108,10 @@ class OSRSGlassBlower(OSRSBot):
             self.take_break(max_seconds=1, fancy=True)
             keyboard.press(Key.space)
             self.log_msg("Making product...")
-            items_made += 14
+            items_made += 28
 
-            time.sleep(17)
+            #time.sleep(17)
+            time.sleep(49)
             if rd.random_chance(.95):
                 self.take_break(max_seconds=5, fancy=True)
             else:
