@@ -66,8 +66,8 @@ class OSRSWoodcutter(OSRSBot):
                 if not self.__chop_tree():
                     errors += 1
                     continue 
-            self.use_special_attack()
-
+                else:
+                    time.sleep(5)
 
             # chance to move mouse or move to new tree while chopping 
             while self.is_player_doing_action("Woodcutting"):
