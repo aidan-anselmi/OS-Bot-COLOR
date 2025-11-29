@@ -94,11 +94,11 @@ class OSRSWoodcutter(OSRSBot):
                 
 
             # take a long break 
-            if rd.random_chance(probability=0.25 * self.break_chance_multiplier):
-                self.take_break(max_seconds=60 * self.break_length_multiplier, fancy=True)
+            if rd.random_chance(probability=0.125 * self.break_chance_multiplier):
+                self.take_break(min_seconds=30, max_seconds=150 * self.break_length_multiplier, fancy=True)
             # short break
             else:
-                self.take_break(max_seconds=5, fancy=True)
+                self.take_break(min_seconds=5, max_seconds=10)
 
             self.update_progress((time.time() - start_time) / end_time)
 
