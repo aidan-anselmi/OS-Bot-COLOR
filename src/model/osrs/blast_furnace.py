@@ -86,7 +86,8 @@ class BlastFurnace(OSRSBot):
         item_to_smith = "Iron_ore"
         num_bars_to_make = 1400
         bars_made = 0
-        while bars_made < num_bars_to_make - 28:
+        self.errors = 0
+        while bars_made < num_bars_to_make - 28 and self.errors < 10:
             # load with coal 
             for _ in range(coal_ratio[item_to_smith]):
                 self.get_item_from_bank("Coal")
@@ -185,6 +186,7 @@ class BlastFurnace(OSRSBot):
             if math.dist(prev_center, cur_center) < 3:
                 return True
             else:
+                self.logout(f"Player is still moving, {cur_center} vs {prev_center}")
                 time.sleep(0.2)
 
         self.errors += 1
