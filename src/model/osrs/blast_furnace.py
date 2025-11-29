@@ -112,6 +112,7 @@ class BlastFurnace(OSRSBot):
 
     def open_bank(self):
         if self.is_bank_open():
+            self.log_msg("Bank is already open")
             return
         self.find_click_tag(self.bank_clr, "Use", clr.OFF_WHITE)
         self.wait_till_bank_open()
