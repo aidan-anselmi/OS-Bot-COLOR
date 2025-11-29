@@ -142,7 +142,7 @@ class BlastFurnace(OSRSBot):
         if rd.random_chance(0.4):
             self.find_click_tag(self.tiles_by_dispenser, "Walk", clr.OFF_WHITE)
         else:
-            self.find_click_tag(self.bar_dispenser_clr, "Dispenser", clr.OFF_WHITE)
+            self.find_click_tag(self.bar_dispenser_clr, "Check", clr.OFF_WHITE)
         self.wait_until_not_moving()
 
         tag = self.loop_find_tag(self.bar_dispenser_clr)
@@ -153,7 +153,7 @@ class BlastFurnace(OSRSBot):
         # Check
         # Take -> hit space
         self.mouse.move_to(tag.random_point())
-        while self.mouseover_text(contains="Check", rolor=clr.OFF_WHITE):
+        while self.mouseover_text(contains="Check", color=clr.OFF_WHITE):
             if rd.random_chance(0.3):
                 self.mouse.click()
             self.take_break(min_seconds=0.3, max_seconds=0.6)
