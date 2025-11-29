@@ -178,9 +178,8 @@ class BlastFurnace(OSRSBot):
         return False
     
     def turn_on_run(self):
-        if self.get_run_energy() > 25 and rd.random_chance(0.1):
-            self.toggle_run(True)
-            self.take_break(min_seconds=0.5, max_seconds=1.0)
+        if self.get_run_energy() == 100 and rd.random_chance(0.8):
+            self.find_click_rectangle(self.win.run_orb, "Toggle Run", color=clr.OFF_WHITE)
             return True
         return False
     
