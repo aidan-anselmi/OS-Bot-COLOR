@@ -160,7 +160,7 @@ class BlastFurnace(OSRSBot):
             self.wait_until_not_moving()
             time.sleep(.2)
             # inventyory open
-            if self.get_all():
+            if self.get_all() or self.full_inventory():
                 if self.wait_until_full_inventory():
                     return True
                 else:
