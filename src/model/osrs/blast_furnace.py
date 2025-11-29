@@ -124,17 +124,17 @@ class BlastFurnace(OSRSBot):
         return
     
     def place_conveyor_belt_item(self):
-        self.find_click_tag_with_missclick(self.conveyor_belt_clr, "Put-ore-on", clr.OFF_WHITE)
+        self.find_click_tag(self.conveyor_belt_clr, "Put-ore-on", clr.OFF_WHITE)
         self.take_break(min_seconds=0.5, max_seconds=1.0)
         self.turn_on_run()
         self.wait_until_not_moving()
-        for i in range(100):
+        for i in range(200):
             if not self.full_inventory():
                 return True
             # every 2 seconds try to reclick
-            if i % 10 == 0:
-                self.find_click_tag_with_missclick(self.conveyor_belt_clr, "Put-ore-on", clr.OFF_WHITE)
-            time.sleep(0.2)
+            if i % 20 == 0:
+                self.find_click_tag(self.conveyor_belt_clr, "Put-ore-on", clr.OFF_WHITE)
+            time.sleep(0.1)
         return False
     
     def get_bars(self) -> bool:
