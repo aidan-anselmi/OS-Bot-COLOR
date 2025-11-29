@@ -83,8 +83,8 @@ class BlastFurnace(OSRSBot):
 
         coal_ratio = {"Iron_ore": 1, "Mithril_ore": 2}
 
-        item_to_smith = "Iron_ore"
-        num_bars_to_make = 1400
+        item_to_smith = "Mithril_ore"
+        num_bars_to_make = 2300
         bars_made = 0
         self.errors = 0
         while bars_made < num_bars_to_make - 28 and self.errors < 10:
@@ -128,6 +128,11 @@ class BlastFurnace(OSRSBot):
             return False
         self.take_break(min_seconds=.2, max_seconds=.7)
         pag.press('esc')
+
+        if not self.full_inventory():
+            self.log_msg(f"Inventory not full after taking {item}, retrying...")
+            self.errors += 1
+            self.get_item_from_bank(item)
         return
     
     def place_conveyor_belt_item(self):
