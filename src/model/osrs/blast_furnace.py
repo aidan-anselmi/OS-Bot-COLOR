@@ -186,6 +186,7 @@ class BlastFurnace(OSRSBot):
             if math.dist(prev_center, cur_center) < 3:
                 return True
             else:
+                prev_center = cur_center
                 self.log_msg(f"Player is still moving, {cur_center} vs {prev_center}")
                 time.sleep(0.2)
 
