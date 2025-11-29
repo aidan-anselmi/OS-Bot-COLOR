@@ -101,11 +101,18 @@ class BlastFurnace(OSRSBot):
             self.get_bars()
 
             # bank, deposit bars
-            self.open_bank()
-            self.find_click_image(self.desposit_all_img)
+            while self.full_inventory():
+                self.open_bank()
+                if not self.find_click_image(self.desposit_all_img):
+                    self.log_msg("Could not find deposit all button in bank")
+                    time.sleep(.5)
+                    self.errors += 1
+                    continue
             bars_made += 28
 
     def open_bank(self):
+        if self.is_bank_open():
+            return
         self.find_click_tag(self.bank_clr, "Use", clr.OFF_WHITE)
         self.wait_till_bank_open()
         return
@@ -136,6 +143,8 @@ class BlastFurnace(OSRSBot):
                 self.find_click_tag(self.conveyor_belt_clr, "Put-ore-on", clr.OFF_WHITE)
                 self.wait_until_not_moving()
             time.sleep(0.1)
+        self.log_msg("Inventory did not empty in time after placing ore on conveyor belt")
+        self.errors += 1
         return False
     
     def get_bars(self) -> bool:
