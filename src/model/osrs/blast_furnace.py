@@ -165,12 +165,17 @@ class BlastFurnace(OSRSBot):
             self.log_msg("Could not find Take option on dispenser")
             return self.get_bars()
         self.mouse.click()
-        self.take_break(min_seconds=0.3, max_seconds=0.6)
-        pag.press('space')
-        if not self.full_inventory():
-            self.log_msg("Inventory not full after taking bars")
-            return self.get_bars()
-        return True
+        self.take_break(min_seconds=0.1, max_seconds=0.4)
+        with pag.hold('space'):
+            for _ in range(20):
+                time.sleep(0.1)
+                if self.full_inventory():
+                    return True
+                
+        
+        self.log_msg("Inventory not full after taking bars, retrying...")
+        return self.get_bars()
+
     
     def full_inventory(self) -> bool:
         if pag.pixel(*self.win.inventory_slots[-1].get_center()) != self.empty_slot_clr_27:
