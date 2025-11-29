@@ -56,6 +56,7 @@ class OSRSWoodcutter(OSRSBot):
             self.find_click_rectangle(self.win.spec_orb_text, "Use", color=clr.OFF_WHITE)
         while time.time() - start_time < end_time and errors < 10:
             
+            self.use_special_attack()
             # deposit logs 
             if self.full_inventory() or rd.random_chance(probability=0.025 * self.break_chance_multiplier):
                 if not self.__deposit_logs():
@@ -66,10 +67,8 @@ class OSRSWoodcutter(OSRSBot):
                 if not self.__chop_tree():
                     errors += 1
                     continue 
+            self.use_special_attack()
 
-            if self.get_special_energy() == 100 and rd.random_chance(probability=0.5):
-                self.find_click_rectangle(self.win.spec_orb_text, "Use", color=clr.OFF_WHITE)
-                self.take_break(min_seconds=0.3, max_seconds=1)
 
             # chance to move mouse or move to new tree while chopping 
             while self.is_player_doing_action("Woodcutting"):
@@ -88,6 +87,8 @@ class OSRSWoodcutter(OSRSBot):
                 if rd.random_chance(probability=(1.0/45.0)):
                     self.mouse.move_to(self.win.rectangle().random_point())
                     time.sleep(1)
+                if rd.random_chance(probability=0.1):
+                    self.use_special_attack()
                 
                 time.sleep(1)
 
@@ -109,6 +110,11 @@ class OSRSWoodcutter(OSRSBot):
         self.log_msg(msg)
         self.logout()
         self.stop()
+
+    def use_special_attack(self) -> bool:
+        if self.get_special_energy() == 100 and rd.random_chance(probability=0.25):
+            self.find_click_rectangle(self.win.spec_orb_text, "Use", color=clr.OFF_WHITE)
+            self.take_break(min_seconds=0.3, max_seconds=1)
 
     def __deposit_logs(self) -> bool:
         
