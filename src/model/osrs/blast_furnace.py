@@ -140,9 +140,10 @@ class BlastFurnace(OSRSBot):
     def get_bars(self) -> bool:
         # click on tiles by dispenser
         if rd.random_chance(0.4):
-            self.find_click_tag(self.tiles_by_dispenser, "Walk", clr.OFF_WHITE)
+            self.find_click_tag(self.tiles_by_dispenser, "", clr.OFF_WHITE)
         else:
-            self.find_click_tag(self.bar_dispenser_clr, "Check", clr.OFF_WHITE)
+            self.find_click_tag(self.bar_dispenser_clr, "", clr.OFF_WHITE)
+        time.sleep(1)
         self.wait_until_not_moving()
 
         tag = self.loop_find_tag(self.bar_dispenser_clr)
@@ -187,11 +188,11 @@ class BlastFurnace(OSRSBot):
         time.sleep(0.1)
         for _ in range(50):
             cur_center = self.loop_find_tag(relative_tile_color).get_center()
-            if math.dist(prev_center, cur_center) < 3:
+            if math.dist(prev_center, cur_center) < 5:
                 return True
             else:
-                prev_center = cur_center
                 self.log_msg(f"Player is still moving, {cur_center} vs {prev_center}")
+                prev_center = cur_center
                 time.sleep(0.1)
 
         self.errors += 1
