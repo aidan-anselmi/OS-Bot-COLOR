@@ -138,6 +138,10 @@ class BlastFurnace(OSRSBot):
         return False
     
     def get_bars(self) -> bool:
+        if self.full_inventory():
+            self.log_msg("Inventory full before getting bars")
+            return True
+
         # click on tiles by dispenser
         if rd.random_chance(0.4):
             tag = self.loop_find_tag(self.tiles_by_dispenser)
@@ -145,37 +149,58 @@ class BlastFurnace(OSRSBot):
             tag = self.loop_find_tag(self.bar_dispenser_clr)
         self.mouse.move_to(tag.random_point())
         self.mouse.click()
-        time.sleep(.5)
-        self.wait_until_not_moving()
+        self.take_break(min_seconds=0.8, max_seconds=2)
 
-        tag = self.loop_find_tag(self.bar_dispenser_clr)
-        if not tag:
-            self.log_msg("could not find tag")
-            return False
+        # Thhe dispenser doesn't contain any bars.
 
-        # Check
-        # Take -> hit space
-        self.mouse.move_to(tag.random_point())
-        while self.mouseover_text(contains="Check", color=clr.OFF_WHITE):
-            if rd.random_chance(0.3):
-                self.mouse.click()
-            self.take_break(min_seconds=0.1, max_seconds=0.4)
-        if not self.mouseover_text(contains="Take", color=clr.OFF_WHITE):
-            self.errors += 1
-            self.log_msg("Could not find Take option on dispenser")
-            return self.get_bars()
-        self.mouse.click()
-        self.take_break(min_seconds=0.1, max_seconds=0.4)
+        # How many would you likve to take? (bold)
+        # Chooose a quantity
+
         with pag.hold('space'):
-            for _ in range(20):
-                time.sleep(0.1)
-                if self.full_inventory():
+            self.wait_until_not_moving()
+            time.sleep(.2)
+            # inventyory open
+            if self.get_all():
+                if self.wait_until_full_inventory():
                     return True
-                
-        
-        self.log_msg("Inventory not full after taking bars, retrying...")
-        return self.get_bars()
+                else:
+                    self.log_msg("Inventory did not fill after getting bars")
+                    self.errors += 1
+                    return self.get_bars()
 
+
+
+            tag = self.loop_find_tag(self.bar_dispenser_clr)
+            if not tag:
+                self.log_msg("could not find tag")
+                return False
+        
+            # Check
+            # Take -> hit space
+            self.mouse.move_to(tag.random_point())
+            while self.mouseover_text(contains="Check", color=clr.OFF_WHITE):
+                if rd.random_chance(0.3):
+                    self.mouse.click()
+                self.take_break(min_seconds=0.1, max_seconds=0.4)
+            if not self.mouseover_text(contains="Take", color=clr.OFF_WHITE):
+                self.errors += 1
+                self.log_msg("Could not find Take option on dispenser")
+                return self.get_bars()
+            self.mouse.click()
+            if self.wait_until_full_inventory():
+                return True
+            else:
+                self.log_msg("Inventory not full after taking bars, retrying...")
+                return self.get_bars()
+
+    def wait_until_full_inventory(self, timeout: int = 20) -> bool:
+        for _ in range(timeout * 10):
+            if self.full_inventory():
+                return True
+            time.sleep(0.1)
+        self.errors += 1
+        self.log_msg("Inventory did not fill in time")
+        return False
     
     def full_inventory(self) -> bool:
         if pag.pixel(*self.win.inventory_slots[-1].get_center()) != self.empty_slot_clr_27:
