@@ -98,7 +98,7 @@ class BlastFurnace(OSRSBot):
             self.place_conveyor_belt_item()
 
             # get bars
-            self.find_click_tag(self.bar_dispenser_clr, "Dispenser", clr.OFF_WHITE)
+            self.get_bars()
 
             # bank, deposit bars
             self.open_bank()
@@ -180,7 +180,7 @@ class BlastFurnace(OSRSBot):
         relative_tile_color = self.tiles_by_dispenser
         # wait max of 10 seconds
         prev_center = self.loop_find_tag(relative_tile_color).get_center()
-        time.sleep(0.2)
+        time.sleep(0.1)
         for _ in range(50):
             cur_center = self.loop_find_tag(relative_tile_color).get_center()
             if math.dist(prev_center, cur_center) < 3:
@@ -188,7 +188,7 @@ class BlastFurnace(OSRSBot):
             else:
                 prev_center = cur_center
                 self.log_msg(f"Player is still moving, {cur_center} vs {prev_center}")
-                time.sleep(0.2)
+                time.sleep(0.1)
 
         self.errors += 1
         self.log_msg("Player did not stop moving in time")
