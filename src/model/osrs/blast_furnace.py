@@ -176,7 +176,7 @@ class BlastFurnace(OSRSBot):
     def wait_until_not_moving(self):
         # if the relative_tile is moving, we are actually moving
 
-        relative_tile_color = self.tiles_by_dispenser()
+        relative_tile_color = self.tiles_by_dispenser
         # wait max of 10 seconds
         prev_center = self.loop_find_tag(relative_tile_color).get_center()
         time.sleep(0.2)
