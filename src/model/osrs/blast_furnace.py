@@ -157,8 +157,12 @@ class BlastFurnace(OSRSBot):
             if rd.random_chance(0.3):
                 self.mouse.click()
             self.take_break(min_seconds=0.3, max_seconds=0.6)
-        self.mouse.click(contains="Take", color=clr.OFF_WHITE)
-        self.take_break(min_seconds=0.3, max_seconds=0.6)
+        if not self.mouseover_text(contains="Take", color=clr.OFF_WHITE):
+            self.errors += 1
+            self.log_msg("Could not find Take option on dispenser")
+            return self.get_bars()
+        self.mouse.click()
+        self.take_break(min_seconds=0.1, max_seconds=0.4)
         pag.press('space')
         return True
     
