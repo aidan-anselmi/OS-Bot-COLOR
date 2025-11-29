@@ -134,6 +134,7 @@ class BlastFurnace(OSRSBot):
             # every 2 seconds try to reclick
             if i % 20 == 0:
                 self.find_click_tag(self.conveyor_belt_clr, "Put-ore-on", clr.OFF_WHITE)
+                self.wait_until_not_moving()
             time.sleep(0.1)
         return False
     
