@@ -81,9 +81,9 @@ class BlastFurnace(OSRSBot):
         self.tiles_by_dispenser = clr.GREEN
         self.bank_clr = clr.PINK
 
-        coal_ratio = {"Iron ore": 1, "Mithril ore": 2}
+        coal_ratio = {"Iron_ore": 1, "Mithril_ore": 2}
 
-        item_to_smith = "Iron ore"
+        item_to_smith = "Iron_ore"
         num_bars_to_make = 1400
         bars_made = 0
         while bars_made < num_bars_to_make - 28:
@@ -96,10 +96,7 @@ class BlastFurnace(OSRSBot):
             self.get_item_from_bank(item_to_smith)
             self.place_conveyor_belt_item()
 
-            # click on tiles by dispenser
-            self.find_click_tag(self.tiles_by_dispenser, "Walk", clr.OFF_WHITE)
-
-            # click on dispenser
+            # get bars
             self.find_click_tag(self.bar_dispenser_clr, "Dispenser", clr.OFF_WHITE)
 
             # bank, deposit bars
@@ -113,16 +110,23 @@ class BlastFurnace(OSRSBot):
         return
 
     def get_item_from_bank(self, item):
-        self.open_bank()
+        if not self.is_bank_open():
+            self.open_bank()
+        
         img = imsearch.BOT_IMAGES.joinpath("items", item + "_bank.png")
-        self.find_click_image(img)
+        if not self.find_click_image(img):
+            self.log_msg(f"Could not find {item} in bank")
+            self.errors += 1
+            return False
         self.take_break(min_seconds=.2, max_seconds=.7)
         pag.press('esc')
         return
     
     def place_conveyor_belt_item(self):
         self.find_click_tag_with_missclick(self.conveyor_belt_clr, "Put-ore-on", clr.OFF_WHITE)
-        time.sleep(3)
+        self.take_break(min_seconds=0.5, max_seconds=1.0)
+        self.turn_on_run()
+        self.wait_until_not_moving()
         for i in range(100):
             if not self.full_inventory():
                 return True
@@ -132,14 +136,29 @@ class BlastFurnace(OSRSBot):
             time.sleep(0.2)
         return False
     
-    def get_bars(self, object_color: clr.Color) -> bool:
-        tag = self.loop_find_tag(object_color)
+    def get_bars(self) -> bool:
+        # click on tiles by dispenser
+        if rd.random_chance(0.4):
+            self.find_click_tag(self.tiles_by_dispenser, "Walk", clr.OFF_WHITE)
+        else:
+            self.find_click_tag(self.bar_dispenser_clr, "Dispenser", clr.OFF_WHITE)
+        self.wait_until_not_moving()
+
+        tag = self.loop_find_tag(self.bar_dispenser_clr)
         if not tag:
             self.log_msg("could not find tag")
             return False
 
+        # Check
+        # Take -> hit space
         self.mouse.move_to(tag.random_point())
-        self.mouse.click()
+        while self.mouseover_text(contains="Check", clr=clr.OFF_WHITE):
+            if rd.random_chance(0.3):
+                self.mouse.click()
+            self.take_break(min_seconds=0.3, max_seconds=0.6)
+        self.mouse.click(contains="Take", color=clr.OFF_WHITE)
+        self.take_break(min_seconds=0.3, max_seconds=0.6)
+        pag.press('space')
         return True
     
     def full_inventory(self) -> bool:
@@ -147,3 +166,27 @@ class BlastFurnace(OSRSBot):
             return True
         return False
     
+    def turn_on_run(self):
+        if self.get_run_energy() > 25 and rd.random_chance(0.1):
+            self.toggle_run(True)
+            self.take_break(min_seconds=0.5, max_seconds=1.0)
+            return True
+        return False
+    
+    def wait_until_not_moving(self):
+        # if the relative_tile is moving, we are actually moving
+
+        relative_tile_color = self.tiles_by_dispenser()
+        # wait max of 10 seconds
+        prev_center = self.loop_find_tag(relative_tile_color).get_center()
+        time.sleep(0.3)
+        for _ in range(50):
+            cur_center = self.loop_find_tag(relative_tile_color).get_center()
+            if math.dist(prev_center, cur_center) < 3:
+                return True
+            else:
+                time.sleep(0.3)
+
+        self.errors += 1
+        self.log_msg("Player did not stop moving in time")
+        return False
