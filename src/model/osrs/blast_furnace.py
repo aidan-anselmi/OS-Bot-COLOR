@@ -110,6 +110,10 @@ class BlastFurnace(OSRSBot):
                     continue
             bars_made += 28
 
+        self.log_msg(f"Finished making bars, total bars made: {bars_made}")
+        self.logout()
+        return
+
     def open_bank(self):
         if self.is_bank_open():
             self.log_msg("Bank is already open")
