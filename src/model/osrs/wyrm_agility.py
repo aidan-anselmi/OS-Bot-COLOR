@@ -64,8 +64,20 @@ class WyrmAgility(OSRSBot):
                 i += 1
                 time.sleep(.1)
 
+        time_since_last_click = time.time()
         while time.time() - start_time < end_time and self.errors < 10:
+            # if it's been more than 60 seconds since last click, try to re-click the closest other thing
+            if time.time() - time_since_last_click > 60:
+                if self.find_click_tag_with_missclick(clr.RED, "", color=clr.OFF_WHITE):
+                    time.sleep(1)
+                    self.wait_until_not_moving()
+                else:
+                    self.errors += 1
+                    self.log_msg("Could not re-click any obstacle after 60 seconds")
+                    time.sleep(2)
+
             if self.find_click_tag_with_missclick(clr.GREEN, mouseover_text=order[i], color=clr.OFF_WHITE):
+                time_since_last_click = time.time()
                 i += 1
                 if i >= len(order):
                     i = 0
