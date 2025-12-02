@@ -64,10 +64,6 @@ class WyrmAgility(OSRSBot):
                 i += 1
                 time.sleep(.1)
 
-        if not self.mouseover_text(contains=order[i], color=clr.WHITE):
-            self.log_msg("Could not find starting obstacle, ending")
-            return
-
         while time.time() - start_time < end_time and self.errors < 10:
             if self.find_click_tag_with_missclick(clr.GREEN, mouseover_text=order[i], color=clr.WHITE):
                 time.sleep(1)
