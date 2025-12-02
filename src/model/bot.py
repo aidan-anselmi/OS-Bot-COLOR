@@ -444,7 +444,6 @@ class Bot(ABC):
             True if exact string is found, False otherwise.
             If args are left blank, returns the text in the mouseover area.
         """
-        
         if color is None:
             color = [
                 clr.OFF_CYAN,
@@ -455,9 +454,7 @@ class Bot(ABC):
             ]
         if contains is None:
             return ocr.extract_text(self.win.mouseover, ocr.BOLD_12, color)
-        if not bool(ocr.find_text(contains, self.win.mouseover, ocr.BOLD_12, color)):
-            return False
-        return ocr.extract_text(self.win.mouseover, ocr.BOLD_12, color).startswith(contains)
+        return ocr.find_text(contains, self.win.mouseover, ocr.BOLD_12, color)
 
     def chatbox_text(self, contains: str = None) -> Union[bool, str]:
         """
