@@ -344,6 +344,9 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
                 self.log_msg("could not find tag")
                 return False
             self.mouse.move_to((tag.get_center()[0] + offset_x, tag.get_center()[1] + offset_y))
+            if self.mouseover_text(contains=mouseover_text, color=color):
+                self.mouse.click()
+                return True
             self.mouse.click()
 
         if not self.find_click_tag(object_color, mouseover_text, color):

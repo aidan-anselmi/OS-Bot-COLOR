@@ -49,8 +49,23 @@ class WyrmAgility(OSRSBot):
         end_time = self.running_time * 60
         self.errors = 0
 
+        order = ["Climb", "Cross", "Climb", "Jump", "Cross", "Slide"]
+        cur = self.loop_find_tag(clr.GREEN)
+        self.mouse.move_to(cur.random_point())
+        time.sleep(0.5)
+        i = 0
+        while i < len(order):
+            if self.mouseover_text(contains=order[i], color=clr.WHITE):
+                break
+            else:
+                self.mouse.move_to(cur.random_point())
+
+        if not self.mouseover_text(contains=order[i], color=clr.WHITE):
+            self.log_msg("Could not find starting obstacle, ending")
+            return
+
         while time.time() - start_time < end_time and self.errors < 10:
-            if self.find_click_tag_with_missclick(clr.GREEN, ""):
+            if self.find_click_tag_with_missclick(clr.GREEN, mouseover_text=order[i], color=clr.WHITE):
                 time.sleep(1)
                 continue
             
@@ -59,7 +74,8 @@ class WyrmAgility(OSRSBot):
             elif rd.random_chance(.048):
                 self.take_break(min_seconds=3, max_seconds=7)
             else:
-                self.take_break(min_seconds=10, max_seconds=200)
+                time.sleep(0.1)
+                # self.take_break(min_seconds=10, max_seconds=200)
 
     # def get_starting_tag(self) -> clr.Color:
     #     closest_1_tag = self.loop_find_tag(self.obstacle_color_1)
