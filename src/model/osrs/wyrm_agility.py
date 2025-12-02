@@ -60,10 +60,10 @@ class WyrmAgility(OSRSBot):
             
             if rd.random_chance(.95):
                 self.take_break(min_seconds=.1, max_seconds=2)
-            if rd.random_chance(.045):
+            if rd.random_chance(.048):
                 self.take_break(min_seconds=3, max_seconds=7)
             else:
-                self.take_break(min_seconds=10, max_seconds=120)
+                self.take_break(min_seconds=10, max_seconds=200)
 
     # def get_starting_tag(self) -> clr.Color:
     #     closest_1_tag = self.loop_find_tag(self.obstacle_color_1)
