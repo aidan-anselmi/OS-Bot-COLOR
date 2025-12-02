@@ -66,7 +66,11 @@ class WyrmAgility(OSRSBot):
 
         while time.time() - start_time < end_time and self.errors < 10:
             if self.find_click_tag_with_missclick(clr.GREEN, mouseover_text=order[i], color=clr.WHITE):
+                i += 1
+                if i >= len(order):
+                    i = 0
                 time.sleep(1)
+                self.wait_until_not_moving()
                 continue
             
             if rd.random_chance(.95):
@@ -76,6 +80,25 @@ class WyrmAgility(OSRSBot):
             else:
                 time.sleep(0.1)
                 # self.take_break(min_seconds=10, max_seconds=200)
+
+    def wait_until_not_moving(self):
+        # if the relative_tile is moving, we are actually moving
+
+        # wait max of 30 seconds
+        prev_center = self.loop_find_tag(clr.GREEN).get_center()
+        time.sleep(0.1)
+        for _ in range(300):
+            cur_center = self.loop_find_tag(clr.GREEN).get_center()
+            if math.dist(prev_center, cur_center) < 2:
+                return True
+            else:
+                prev_center = cur_center
+                time.sleep(0.1)
+
+        self.errors += 1
+        self.log_msg("Player did not stop moving in time")
+        return False
+
 
     # def get_starting_tag(self) -> clr.Color:
     #     closest_1_tag = self.loop_find_tag(self.obstacle_color_1)
