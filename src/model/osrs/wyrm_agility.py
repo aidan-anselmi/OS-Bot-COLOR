@@ -52,14 +52,16 @@ class WyrmAgility(OSRSBot):
         order = ["Climb", "Cross", "Climb", "Jump", "Cross", "Slide"]
         cur = self.loop_find_tag(clr.GREEN)
         self.mouse.move_to(cur.random_point())
-        time.sleep(0.5)
+        time.sleep(1)
         i = 0
         while i < len(order):
             if self.mouseover_text(contains=order[i], color=clr.WHITE):
+                self.log_msg(f"Starting obstacle found: {order[i]}")
                 break
             else:
                 self.mouse.move_to(cur.random_point())
                 i += 1
+                time.sleep(.1)
 
         if not self.mouseover_text(contains=order[i], color=clr.WHITE):
             self.log_msg("Could not find starting obstacle, ending")
