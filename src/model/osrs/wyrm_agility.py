@@ -71,6 +71,7 @@ class WyrmAgility(OSRSBot):
                 if self.find_click_tag_with_missclick(clr.RED, "", color=clr.OFF_WHITE):
                     time.sleep(1)
                     self.wait_until_not_moving()
+                    time_since_last_click = time.time()
                 else:
                     self.errors += 1
                     self.log_msg("Could not re-click any obstacle after 60 seconds")
