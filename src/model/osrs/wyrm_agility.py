@@ -59,6 +59,7 @@ class WyrmAgility(OSRSBot):
                 self.log_msg(f"Starting obstacle found: {order[i]}")
                 break
             else:
+                self.log_msg(f"'{self.mouseover_text()}' does not start with '{order[i]}'")
                 self.mouse.move_to(cur.random_point())
                 i += 1
                 time.sleep(.1)
