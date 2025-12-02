@@ -454,7 +454,9 @@ class Bot(ABC):
             ]
         if contains is None:
             return ocr.extract_text(self.win.mouseover, ocr.BOLD_12, color)
-        return bool(ocr.find_text(contains, self.win.mouseover, ocr.BOLD_12, color))
+        if not bool(ocr.find_text(contains, self.win.mouseover, ocr.BOLD_12, color)):
+            return False
+        return ocr.extract_text(self.win.mouseover, ocr.BOLD_12, color).startswith(contains)
 
     def chatbox_text(self, contains: str = None) -> Union[bool, str]:
         """
