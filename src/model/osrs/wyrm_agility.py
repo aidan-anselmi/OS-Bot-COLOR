@@ -65,54 +65,54 @@ class WyrmAgility(OSRSBot):
             else:
                 self.take_break(min_seconds=10, max_seconds=120)
 
-    def get_starting_tag(self) -> clr.Color:
-        closest_1_tag = self.loop_find_tag(self.obstacle_color_1)
-        closest_2_tag = self.loop_find_tag(self.obstacle_color_2)
-        cur_tag = None
-        if closest_1_tag and closest_2_tag:
-            closest_1_tag.distance_from_rect_center()
-            closest_2_tag.distance_from_rect_center()
-            if closest_1_tag.distance_from_rect_center() < closest_2_tag.distance_from_rect_center():
-                cur_tag = self.obstacle_color_1
-            else:
-                cur_tag = self.obstacle_color_2
-        elif closest_1_tag:
-            cur_tag = self.obstacle_color_1
-        elif closest_2_tag:
-            cur_tag = self.obstacle_color_2
-        return cur_tag
+    # def get_starting_tag(self) -> clr.Color:
+    #     closest_1_tag = self.loop_find_tag(self.obstacle_color_1)
+    #     closest_2_tag = self.loop_find_tag(self.obstacle_color_2)
+    #     cur_tag = None
+    #     if closest_1_tag and closest_2_tag:
+    #         closest_1_tag.distance_from_rect_center()
+    #         closest_2_tag.distance_from_rect_center()
+    #         if closest_1_tag.distance_from_rect_center() < closest_2_tag.distance_from_rect_center():
+    #             cur_tag = self.obstacle_color_1
+    #         else:
+    #             cur_tag = self.obstacle_color_2
+    #     elif closest_1_tag:
+    #         cur_tag = self.obstacle_color_1
+    #     elif closest_2_tag:
+    #         cur_tag = self.obstacle_color_2
+    #     return cur_tag
     
-    def iterate_tag(self, cur_tag: clr.Color) -> clr.Color:
-        if cur_tag == self.obstacle_color_1:
-            return self.obstacle_color_2
-        return self.obstacle_color_1
+    # def iterate_tag(self, cur_tag: clr.Color) -> clr.Color:
+    #     if cur_tag == self.obstacle_color_1:
+    #         return self.obstacle_color_2
+    #     return self.obstacle_color_1
     
-    def is_moving(self, tracking_color: clr.Color) -> bool:
-        if not self.color_tracker:
-            self.color_tracker = {}
-        if not self.color_tracker.get(tracking_color):
-            self.color_tracker[tracking_color] = self.loop_find_tag(tracking_color)
-            return True
+    # def is_moving(self, tracking_color: clr.Color) -> bool:
+    #     if not self.color_tracker:
+    #         self.color_tracker = {}
+    #     if not self.color_tracker.get(tracking_color):
+    #         self.color_tracker[tracking_color] = self.loop_find_tag(tracking_color)
+    #         return True
         
-        center = self.loop_find_tag(tracking_color).get_center()
-        if not center:
-            return True
-        return math.dist(center, self.color_tracker[tracking_color].get_center()) > 2
+    #     center = self.loop_find_tag(tracking_color).get_center()
+    #     if not center:
+    #         return True
+    #     return math.dist(center, self.color_tracker[tracking_color].get_center()) > 2
     
-    def is_closer_color(self, tracking_color: clr.Color) -> bool:
-        tracking_tag = self.loop_find_tag(tracking_color)
-        other_tag = self.loop_find_tag(self.iterate_tag(tracking_color))
-        if not tracking_tag and not other_tag:
-            return False
-        if not tracking_tag:
-            return False
-        if not other_tag:
-            return True
-        return tracking_tag.distance_from_rect_center() < other_tag.distance_from_rect_center()
+    # def is_closer_color(self, tracking_color: clr.Color) -> bool:
+    #     tracking_tag = self.loop_find_tag(tracking_color)
+    #     other_tag = self.loop_find_tag(self.iterate_tag(tracking_color))
+    #     if not tracking_tag and not other_tag:
+    #         return False
+    #     if not tracking_tag:
+    #         return False
+    #     if not other_tag:
+    #         return True
+    #     return tracking_tag.distance_from_rect_center() < other_tag.distance_from_rect_center()
     
-    def wait_until_not_moving_and_closer(self, tracking_color: clr.Color):
-        for _ in range(300):
-            if not self.is_moving(tracking_color) and self.is_closer_color(tracking_color):
-                return True
-            time.sleep(0.1)
-        return False
+    # def wait_until_not_moving_and_closer(self, tracking_color: clr.Color):
+    #     for _ in range(300):
+    #         if not self.is_moving(tracking_color) and self.is_closer_color(tracking_color):
+    #             return True
+    #         time.sleep(0.1)
+    #     return False
