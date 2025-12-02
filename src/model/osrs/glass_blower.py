@@ -108,7 +108,7 @@ class OSRSGlassBlower(OSRSBot):
             self.take_break(max_seconds=1, fancy=True)
             keyboard.press(Key.space)
             self.log_msg("Making product...")
-            items_made += 28
+            items_made += 27
 
             #time.sleep(17)
             time.sleep(49)

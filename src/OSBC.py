@@ -8,6 +8,7 @@ from PIL import Image, ImageTk
 from pynput import keyboard
 from tktooltip import ToolTip
 
+from model.osrs.wyrm_agility import WyrmAgility
 import utilities.settings as settings
 from controller.bot_controller import BotController, MockBotController
 from model import Bot, RuneLiteBot
@@ -352,7 +353,7 @@ if __name__ == "__main__":
     test = True
     if test:
         app = App(test=True)
-        app.test(ThieveAlc()) 
+        app.test(WyrmAgility()) 
     else:
         app = App()  # Add the "test=True" argument to the App constructor call.
         app.start()  # Comment out this line.
