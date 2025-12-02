@@ -47,24 +47,23 @@ class WyrmAgility(OSRSBot):
         self.mouse.move_to(self.win.cp_tabs[3].random_point())
         self.mouse.click()
     
-        self.obstacle_color_1 = clr.RED
-        self.obstacle_color_2 = clr.GREEN
+        self.obstacle_color_1 = clr.GREEN
 
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
 
-        cur_color = self.get_starting_tag()
         while time.time() - start_time < end_time and self.errors < 10:
-            self.find_click_tag_with_missclick(cur_color)
-            cur_color = self.iterate_tag(cur_color)
-
-            if not self.wait_until_not_moving_and_closer(cur_color):
-                self.errors += 1
-                self.log_msg("Error navigating obstacle, trying again...")
+            if self.find_click_tag_with_missclick(clr.GREEN):
+                time.sleep(1)
                 continue
+            
+            if rd.random_chance(.95):
+                self.take_break(min_seconds=.1, max_seconds=2)
+            if rd.random_chance(.045):
+                self.take_break(min_seconds=3, max_seconds=7)
             else:
-                cur_color = self.iterate_tag(cur_color)
+                self.take_break(min_seconds=10, max_seconds=120)
 
     def get_starting_tag(self) -> clr.Color:
         closest_1_tag = self.loop_find_tag(self.obstacle_color_1)
