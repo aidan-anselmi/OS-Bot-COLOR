@@ -325,14 +325,13 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             return False
 
         self.mouse.move_to(tag.random_point())
-        if not self.mouseover_text(contains=mouseover_text, color=color):
+        if mouseover_text and not self.mouseover_text(contains=mouseover_text, color=color):
             # retry
             self.mouse.move_to(tag.random_point())
             if not self.mouseover_text(contains=mouseover_text, color=color):
                 self.log_msg(f"could not find mouseover text '{mouseover_text}'")
                 return False
         self.mouse.click()
-
         return True
 
     def find_click_tag_with_missclick(self, object_color: clr.Color, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None) -> bool:

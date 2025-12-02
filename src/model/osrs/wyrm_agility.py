@@ -54,7 +54,7 @@ class WyrmAgility(OSRSBot):
         self.errors = 0
 
         while time.time() - start_time < end_time and self.errors < 10:
-            if self.find_click_tag_with_missclick(clr.GREEN):
+            if self.find_click_tag_with_missclick(clr.GREEN, ""):
                 time.sleep(1)
                 continue
             
