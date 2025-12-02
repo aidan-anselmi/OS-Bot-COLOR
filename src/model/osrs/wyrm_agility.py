@@ -7,7 +7,7 @@ from model.osrs.osrs_bot import OSRSBot
 from model.runelite_bot import BotStatus
 from utilities.api.morg_http_client import MorgHTTPSocket
 from utilities.api.status_socket import StatusSocket
-from utilities.geometry import RuneLiteObject, Rectangle
+from utilities.geometry import Point, RuneLiteObject, Rectangle
 import random
 import math
 from utilities.sprite_scraper import SpriteScraper, ImageType
@@ -85,10 +85,15 @@ class WyrmAgility(OSRSBot):
         # if the relative_tile is moving, we are actually moving
 
         # wait max of 30 seconds
-        prev_center = self.loop_find_tag(clr.GREEN).get_center()
+        prev_center = Point(0,0)
         time.sleep(0.1)
         for _ in range(300):
-            cur_center = self.loop_find_tag(clr.GREEN).get_center()
+            cur_tag = self.loop_find_tag(clr.GREEN)
+            if not cur_tag:
+                time.sleep(0.1)
+                continue
+            
+            cur_center = cur_tag.get_center()
             if math.dist(prev_center, cur_center) < 2:
                 return True
             else:
