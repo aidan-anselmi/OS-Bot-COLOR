@@ -55,6 +55,7 @@ class WyrmAgility(OSRSBot):
         time.sleep(1)
         i = 0
         while i < len(order):
+            self.log_msg(self.mouseover_text())
             if self.mouseover_text(contains=order[i], color=clr.WHITE):
                 self.log_msg(f"Starting obstacle found: {order[i]}")
                 break
