@@ -42,11 +42,7 @@ class WyrmAgility(OSRSBot):
         self.options_set = True
         return 
 
-    def main_loop(self):    
-        self.log_msg("Selecting inventory...")
-        self.mouse.move_to(self.win.cp_tabs[3].random_point())
-        self.mouse.click()
-    
+    def main_loop(self):        
         self.obstacle_color_1 = clr.GREEN
 
         start_time = time.time()
