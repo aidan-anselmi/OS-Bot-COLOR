@@ -78,14 +78,10 @@ class WyrmAgility(OSRSBot):
                 time.sleep(1)
                 self.wait_until_not_moving()
 
-            if rd.random_chance(.95):
-                self.take_break(min_seconds=.1, max_seconds=.5)
-            elif rd.random_chance(.048):
+            if rd.random_chance(.02):
+                self.take_break(min_seconds=10, max_seconds=180)
+            elif rd.random_chance(.5):
                 self.take_break(min_seconds=3, max_seconds=7)
-            else:
-                self.take_break(min_seconds=10, max_seconds=150)
-
-
 
     def wait_until_not_moving(self):
         # if the relative_tile is moving, we are actually moving
