@@ -59,6 +59,7 @@ class WyrmAgility(OSRSBot):
                 break
             else:
                 self.mouse.move_to(cur.random_point())
+                i += 1
 
         if not self.mouseover_text(contains=order[i], color=clr.WHITE):
             self.log_msg("Could not find starting obstacle, ending")
