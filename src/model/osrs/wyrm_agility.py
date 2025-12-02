@@ -66,17 +66,10 @@ class WyrmAgility(OSRSBot):
 
         time_since_last_click = time.time()
         while time.time() - start_time < end_time and self.errors < 10:
-            # if it's been more than 60 seconds since last click, try to re-click the closest other thing
-            if time.time() - time_since_last_click > 60:
-                if self.find_click_tag_with_missclick(clr.RED, "", color=clr.OFF_WHITE):
-                    time.sleep(1)
-                    self.wait_until_not_moving()
-                    time_since_last_click = time.time()
-                else:
-                    self.errors += 1
-                    self.log_msg("Could not re-click any obstacle after 60 seconds")
-                    time.sleep(2)
-
+            if time.time() - time_since_last_click > 300:
+                self.log_msg("No obstacles clicked for 5 minutes, ending bot.")
+                return
+            
             if self.find_click_tag_with_missclick(clr.GREEN, mouseover_text=order[i], color=clr.OFF_WHITE):
                 time_since_last_click = time.time()
                 i += 1
@@ -84,15 +77,15 @@ class WyrmAgility(OSRSBot):
                     i = 0
                 time.sleep(1)
                 self.wait_until_not_moving()
-                continue
-            
+
             if rd.random_chance(.95):
-                self.take_break(min_seconds=.1, max_seconds=2)
+                self.take_break(min_seconds=.1, max_seconds=.5)
             elif rd.random_chance(.048):
                 self.take_break(min_seconds=3, max_seconds=7)
             else:
-                time.sleep(0.1)
-                # self.take_break(min_seconds=10, max_seconds=200)
+                self.take_break(min_seconds=10, max_seconds=150)
+
+
 
     def wait_until_not_moving(self):
         # if the relative_tile is moving, we are actually moving
