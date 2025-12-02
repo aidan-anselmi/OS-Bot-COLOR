@@ -444,6 +444,7 @@ class Bot(ABC):
             True if exact string is found, False otherwise.
             If args are left blank, returns the text in the mouseover area.
         """
+        self.log_msg(f"{ocr.extract_text(self.win.mouseover, ocr.BOLD_12, color)}, {contains}, {ocr.extract_text(self.win.mouseover, ocr.BOLD_12, color).startswith(contains)}")
         if color is None:
             color = [
                 clr.OFF_CYAN,
