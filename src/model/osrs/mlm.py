@@ -102,8 +102,8 @@ class MLM(OSRSBot):
         return 
     
     def mining_loop(self):
-        self.sack_size = 108
-        while self.sack_size > 10 and self.errors < 10:
+        self.sack_size = 161 # actually 189 but we give 1 full inventory buffer
+        while self.sack_size > 0 and self.errors < 10:
             self.sack_size -= self.mine_inventory()
             self.log_msg(f"Completed mining inventory")
             self.log_msg(f"Sack size remaining: {self.sack_size}")
@@ -205,7 +205,7 @@ class MLM(OSRSBot):
     
     def full_inventory(self) -> bool:
         non_empty_slots = self.nonempty_inventory_slots()
-        if self.sack_size - non_empty_slots <= 14:
+        if self.sack_size - non_empty_slots <= 0:
             return True
 
         if rd.random_chance(probability=0.25) and non_empty_slots >= 22:
