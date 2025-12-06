@@ -108,7 +108,7 @@ class GiantsFoundry(OSRSBot):
         end_time = self.running_time * 60
         self.errors = 0
         while time.time() - start_time < end_time and self.errors < 10:
-            self.setup_sword()
+            #self.setup_sword()
             self.make_sword()
             self.hand_in_sword()
 
@@ -274,6 +274,8 @@ class GiantsFoundry(OSRSBot):
                     self.wait_until_tag_stops_moving(self.warning_station_color)
                     self.wait_until_tag_moves(self.warning_station_color)
                     continue
+            else:
+                self.log_msg("No stations found, waiting a bit")
         
 
         if self.errors < 10:
