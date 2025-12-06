@@ -93,9 +93,9 @@ class GiantsFoundry(OSRSBot):
         self.scrape()
 
         self.bank_color = clr.PINK
-        self.active_station_color = clr.RED
+        self.active_station_color = clr.GREEN
         self.warning_station_color = clr.ORANGE
-        self.bad_station_color = clr.GREEN
+        self.bad_station_color = clr.RED
         self.bonus_color = clr.PURPLE
         self.mould_text_color = clr.BLUE
         self.general_color = clr.BLUE
