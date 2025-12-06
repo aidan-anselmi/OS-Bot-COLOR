@@ -92,7 +92,7 @@ class GiantsFoundry(OSRSBot):
     def main_loop(self):    
         self.log_msg("Selecting inventory...")
         #pag.press('f2')
-        #self.scrape()
+        self.scrape()
 
         self.bank_color = clr.PINK
         self.active_station_color = clr.GREEN
