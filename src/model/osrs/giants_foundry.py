@@ -113,6 +113,10 @@ class GiantsFoundry(OSRSBot):
         #     self.make_sword()
 
     def set_mould(self):
+        blade_parts = ["Forte", "Blades", "Tips"]
+        if rd.random_chance(0.4):
+            blade_parts.reverse()
+
         tab_selects = 0
         for blade_part in ["Tips", "Blades", "Forte"]:
             tab_rects = ocr.find_text(blade_part, self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
@@ -141,7 +145,7 @@ class GiantsFoundry(OSRSBot):
                 self.log_msg("Failed to click mould when setting mould")
                 return False
 
-        if tab_selects >= 2:
+        if tab_selects < 2:
             self.log_msg(f"Expected to click 2 tab selects when setting mould, clicked {tab_selects}")
         pag.press('esc')
         return True
