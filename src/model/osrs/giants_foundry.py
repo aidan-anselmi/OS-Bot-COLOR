@@ -101,16 +101,38 @@ class GiantsFoundry(OSRSBot):
         self.bonus_color = clr.PURPLE
         self.mould_text_color = clr.BLUE
 
-        self.set_mould()
-        return 
+        
     
-        # Main loop
-        # start_time = time.time()
-        # end_time = self.running_time * 60
-        # self.errors = 0
-        # while time.time() - start_time < end_time and self.errors < 10:
-        #     # mine until we have "full pay dirt"
-        #     self.make_sword()
+        start_time = time.time()
+        end_time = self.running_time * 60
+        self.errors = 0
+        while time.time() - start_time < end_time and self.errors < 10:
+            self.get_commission()
+            self.take_break(min_seconds=0, max_seconds=.5)
+            self.set_mould()
+            self.get_bars()
+            self.add_bars_to_crucible()
+
+            # mine until we have "full pay dirt"
+            self.make_sword()
+
+    def get_commission(self):
+        kovac = self.loop_find_tag(clr.CYAN)
+        if not kovac:
+            self.log_msg("Could not find Kovac to get commission")
+            return False
+        self.mouse.move_to(kovac.random_point())
+        self.mouse.right_click()
+        if take_text := ocr.find_text(
+                "Commission",
+                self.win.game_view,
+                ocr.BOLD_12,
+                clr.WHITE,
+            ):
+            self.mouse.move_to(take_text[0].random_point(), mouseSpeed="medium")
+            self.mouse.click()
+            return True
+        return False
 
     def set_mould(self):
         blade_parts = ["Forte", "Blades", "Tips"]
@@ -149,6 +171,28 @@ class GiantsFoundry(OSRSBot):
             self.log_msg(f"Expected to click 2 tab selects when setting mould, clicked {tab_selects}")
         pag.press('esc')
         return True
+    
+    def get_bars(self):
+        self.find_click_tag(self.bank_color, "Use", color=clr.OFF_WHITE)
+        self.wait_till_bank_open()
+        self.find_click_image(self.path.joinpath("Mithril_ingot_bank.png"))
+        self.take_break(min_seconds=0.1, max_seconds=0.5)
+        self.find_click_image(self.path.joinpath("Steel_ingot_bank.png"))
+        self.take_break(min_seconds=0.1, max_seconds=0.5)
+        pag.press('esc')
+        return
+    
+    def add_bars_to_crucible(self):
+        order = ["3", "4"]
+        if rd.random_chance(0.2):
+            order.reverse()
+
+        for button in order:
+            self.find_click_tag(self.active_station_color, "Fill", color=clr.OFF_WHITE)
+            self.wait_till_interface_text("What metal")
+            pag.press(button)
+            self.wait_till_interface_text("You add")
+        return
 
     def make_sword(self):
         return

@@ -402,6 +402,18 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             error += 1
             time.sleep(.1)
         return True    
+    
+    def wait_till_interface_text(self, texts: Union[str, List[str]]):
+        """
+        This will stop further execution until interface is opened with certain text
+        """
+        error = 0
+        while not ocr.find_text(texts, rect=self.win.chat, font=ocr.BOLD_12, color=clr.Color([64, 48, 32])):
+            if error > 100:
+                return False
+            error += 1
+            time.sleep(.1)
+        return True
 
     def is_bank_open(self):
         tabs_img = imsearch.BOT_IMAGES.joinpath("bank", "bank_tabs_manual.png")
