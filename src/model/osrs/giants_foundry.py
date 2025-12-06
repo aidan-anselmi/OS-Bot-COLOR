@@ -108,13 +108,20 @@ class GiantsFoundry(OSRSBot):
         end_time = self.running_time * 60
         self.errors = 0
         while time.time() - start_time < end_time and self.errors < 10:
-            #self.get_commission()
-            self.take_break(min_seconds=0, max_seconds=.5)
-            #self.set_mould()
-            self.get_bars()
-            self.add_bars_to_crucible()
-
+            self.setup_sword()
             self.make_sword()
+
+    def setup_sword(self):
+        #self.get_commission()
+        self.take_break(min_seconds=0, max_seconds=.5)
+        self.set_mould()
+        self.get_bars()
+        self.add_bars_to_crucible()
+        self.find_click_tag(self.active_station_color, "Pour", color=clr.OFF_WHITE)
+        self.take_break(min_seconds=1, max_seconds=3)
+        self.find_click_tag(self.general_color, "Pick-up", color=clr.OFF_WHITE)
+        self.take_break(min_seconds=5.5, max_seconds=8)
+        return
 
     def get_commission(self):
         kovac = self.loop_find_tag(clr.CYAN)
@@ -142,7 +149,7 @@ class GiantsFoundry(OSRSBot):
             return False
         time.sleep(4)
 
-        blade_parts = ["Forte", "Blades", "Tips"]
+        blade_parts = ["Forte", "lades", "Tips"]
         if rd.random_chance(0.4):
             blade_parts.reverse()
 
@@ -163,7 +170,7 @@ class GiantsFoundry(OSRSBot):
             search_texts = ["Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
             if blade_part == "Forte":
                 search_texts = ["Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
-            elif blade_part == "Blades":
+            elif blade_part == "lades":
                 search_texts = ["Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
             mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
             if not mould_rects:
@@ -201,7 +208,9 @@ class GiantsFoundry(OSRSBot):
         for button in order:
             self.find_click_tag(self.general_color, "Fill", color=clr.OFF_WHITE)
             self.wait_till_interface_text("What metal")
+            time.sleep(.2)
             pag.press(button)
+            # TODO the font for this is off
             self.wait_till_interface_text("You add")
         return
 
@@ -230,4 +239,10 @@ loop while we cant find cyan tag
 
 hand in sword -> press space
 recieve another commission -> press 1
+
+
+# read overlay for 
+Stage 
+heat 
+Actions left 
 """
