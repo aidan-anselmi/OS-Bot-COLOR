@@ -108,7 +108,7 @@ class GiantsFoundry(OSRSBot):
         end_time = self.running_time * 60
         self.errors = 0
         while time.time() - start_time < end_time and self.errors < 10:
-            self.get_commission()
+            #self.get_commission()
             self.take_break(min_seconds=0, max_seconds=.5)
             self.set_mould()
             self.get_bars()
@@ -140,7 +140,7 @@ class GiantsFoundry(OSRSBot):
         if not self.find_click_tag(self.general_color, "Setup", color=clr.OFF_WHITE):
             self.log_msg("Failed to find and click setup station")
             return False
-        time.sleep(3)
+        time.sleep(4)
 
         blade_parts = ["Forte", "Blades", "Tips"]
         if rd.random_chance(0.4):
@@ -150,7 +150,7 @@ class GiantsFoundry(OSRSBot):
         for blade_part in ["Tips", "Blades", "Forte"]:
             tab_rects = ocr.find_text(blade_part, self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
             if not tab_rects:
-                self.log_msg("No text found when setting mould")
+                self.log_msg(f"Could not find {blade_part} tab when setting mould")
                 return False
             if len(tab_rects) != 1:
                 self.log_msg(f"Expected 1 text rect when selecting tab, found {len(tab_rects)}")
