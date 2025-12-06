@@ -99,7 +99,7 @@ class GiantsFoundry(OSRSBot):
         self.warning_station_color = clr.ORANGE
         self.bad_station_color = clr.RED
         self.bonus_color = clr.PURPLE
-        self.mould_text_color = clr.PURPLE
+        self.mould_text_color = clr.BLUE
 
         self.set_mould()
         return 
@@ -113,16 +113,25 @@ class GiantsFoundry(OSRSBot):
         #     self.make_sword()
 
     def set_mould(self):
-        
-        rects = ocr.find_text("Tips", self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
+        rects = ocr.find_text(["Tips", "Blades", "Forte"], self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
         if not rects:
             self.log_msg("No text found when setting mould")
             return False
+        if len(rects) != 3:
+            self.log_msg(f"Expected 3 text rects when setting mould, found {len(rects)}")
+            return False
+
         for rect in rects:
-            self.log_msg(f"Found text rect: {rect.get_center()}")
-            self.mouse.move_to(rect.get_center())
-            time.sleep(1)
-        return 
+            if not self.find_click_rectangle(rect, "View", color=clr.OFF_WHITE):
+                self.log_msg("Failed to click 'View' when setting mould")
+                return False
+            self.take_break(min_seconds=0, max_seconds=.3)
+            if not self.find_click_tag(self.mould_text_color, contains="Select", color=clr.OFF_WHITE):
+                self.log_msg("Failed to click 'Select' when setting mould")
+                return False
+            self.take_break(min_seconds=0, max_seconds=.3)
+        pag.press('esc')
+        return True
 
     def make_sword(self):
         return
