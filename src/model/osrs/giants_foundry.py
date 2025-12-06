@@ -131,14 +131,16 @@ class GiantsFoundry(OSRSBot):
             ):
             self.mouse.move_to(take_text[0].random_point(), mouseSpeed="medium")
             self.mouse.click()
+            time.sleep(3)
             return True
+        self.log_msg("Could not find commission option when right clicking Kovac")
         return False
 
     def set_mould(self):
         if not self.find_click_tag(self.general_color, "Setup", color=clr.OFF_WHITE):
             self.log_msg("Failed to find and click setup station")
             return False
-        time.sleep(1)
+        time.sleep(3)
 
         blade_parts = ["Forte", "Blades", "Tips"]
         if rd.random_chance(0.4):
