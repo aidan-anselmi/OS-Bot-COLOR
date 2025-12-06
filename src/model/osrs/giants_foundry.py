@@ -156,6 +156,18 @@ class GiantsFoundry(OSRSBot):
 
         tab_selects = 0
         for blade_part in blade_parts:
+            tab_rects = ocr.find_text(blade_part, self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
+            if not tab_rects:
+                tab_rects = ocr.find_text(blade_part, self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
+            if not tab_rects:
+                self.log_msg(f"Could not find {blade_part} tab when setting mould")
+                return False
+            if len(tab_rects) != 1:
+                self.log_msg(f"Expected 1 text rect when selecting tab, found {len(tab_rects)}")
+                return False
+            if self.find_click_rectangle(tab_rects[0], "View", color=clr.OFF_WHITE):
+                tab_selects += 1
+
             if not self.select_tab(blade_part):
                 self.log_msg(f"Failed to select {blade_part} tab when setting mould")
                 return False
