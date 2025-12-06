@@ -110,7 +110,7 @@ class GiantsFoundry(OSRSBot):
         while time.time() - start_time < end_time and self.errors < 10:
             #self.get_commission()
             self.take_break(min_seconds=0, max_seconds=.5)
-            self.set_mould()
+            #self.set_mould()
             self.get_bars()
             self.add_bars_to_crucible()
 
