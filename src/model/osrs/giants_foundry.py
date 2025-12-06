@@ -110,6 +110,7 @@ class GiantsFoundry(OSRSBot):
         while time.time() - start_time < end_time and self.errors < 10:
             self.setup_sword()
             self.make_sword()
+            self.hand_in_sword()
 
     def setup_sword(self):
         #self.get_commission()
@@ -149,28 +150,20 @@ class GiantsFoundry(OSRSBot):
             return False
         time.sleep(4)
 
-        blade_parts = ["Forte", "lades", "Tips"]
+        blade_parts = ["Forte", "blades", "Tips"]
         if rd.random_chance(0.4):
             blade_parts.reverse()
 
         tab_selects = 0
         for blade_part in blade_parts:
-            tab_rects = ocr.find_text(blade_part, self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
-            if not tab_rects:
-                tab_rects = ocr.find_text(blade_part, self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
-            if not tab_rects:
-                self.log_msg(f"Could not find {blade_part} tab when setting mould")
+            if not self.select_tab(blade_part):
+                self.log_msg(f"Failed to select {blade_part} tab when setting mould")
                 return False
-            if len(tab_rects) != 1:
-                self.log_msg(f"Expected 1 text rect when selecting tab, found {len(tab_rects)}")
-                return False
-            if self.find_click_rectangle(tab_rects[0], "View", color=clr.OFF_WHITE):
-                tab_selects += 1
 
             search_texts = ["Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
             if blade_part == "Forte":
                 search_texts = ["Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
-            elif blade_part == "lades":
+            elif blade_part == "blades":
                 search_texts = ["Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
             mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
             if not mould_rects:
@@ -189,6 +182,15 @@ class GiantsFoundry(OSRSBot):
             self.log_msg(f"Expected to click 2 tab selects when setting mould, clicked {tab_selects}")
         pag.press('esc')
         return True
+    
+    def select_tab(self, tab_name: str):
+        path = imsearch.BOT_IMAGES.joinpath("giants_foundry", f"{tab_name}_large_tab.png")
+        if self.find_click_image(path):
+            return True
+        path = imsearch.BOT_IMAGES.joinpath("giants_foundry", f"{tab_name}_large_selected.png")
+        if self.find_click_image(path):
+            return True
+        return False
     
     def get_bars(self):
         self.find_click_tag(self.bank_color, "Use", color=clr.OFF_WHITE)
@@ -215,7 +217,95 @@ class GiantsFoundry(OSRSBot):
         return
 
     def make_sword(self):
+        """
+        loop while we cant find blue tag
+            if green -> continue 
+            if orange -> wait if close - click if far
+            if red -> click on green or cyan or whatever
+            if purple -> click on it 
+        """
+        while not self.loop_find_tag(self.general_color) and self.errors < 10:
+            if rect := self.loop_find_tag(self.active_station_color, loops=1):
+                self.mouse.move_to(rect.random_point())
+                if self.mouseover_text(contains="Use", color=clr.OFF_WHITE) or self.mouseover_text(contains="Heat", color=clr.OFF_WHITE) or self.mouseover_text(contains="Cool", color=clr.OFF_WHITE):
+                    self.mouse.click()
+                    time.sleep(.2)
+                    self.wait_until_tag_stops_moving(self.active_station_color)
+                    self.wait_until_tag_moves(self.active_station_color)
+                else:
+                    self.log_msg("Active station found but mouseover text not correct, moving on")
+                    time.sleep(.1)
+            elif rect := self.loop_find_tag(self.bonus_color, loops=1):
+                self.mouse.move_to(rect.random_point())
+                if self.mouseover_text(contains="Use", color=clr.OFF_WHITE):
+                    self.mouse.click()
+                    time.sleep(.1)
+                else:
+                    self.log_msg("Bonus station found but mouseover text not correct, moving on")
+                    time.sleep(.1)
+            elif rect := self.loop_find_tag(self.warning_station_color, loops=1):
+                distance = RuneLiteObject.distance_from_rect_center(rect)
+                if distance < 100:
+                    self.log_msg("Warning station close, waiting for it to be done")
+                    self.wait_until_tag_moves(self.warning_station_color)
+                    continue
+                else:
+                    self.log_msg("Clicking warning station as it is far away")
+                    self.mouse.click()
+                    time.sleep(.2)
+                    self.wait_until_tag_stops_moving(self.warning_station_color)
+                    self.wait_until_tag_moves(self.warning_station_color)
+                    continue
+        
+
+        if self.errors < 10:
+            self.log_msg("Sword made!")
+        else:
+            self.log_msg("Too many errors making sword, moving on")
         return
+    
+    def hand_in_sword(self):
+        self.find_click_tag(self.general_color, "Hand-in", color=clr.OFF_WHITE)
+        self.wait_until_tag_stops_moving(self.general_color)
+        pag.hold('space')
+        time.sleep(2)
+        pag.press('1')
+        return
+    
+    def has_tag_moved(self, tag: clr.Color) -> bool:
+        if not self.tag_map:
+            self.tag_map = {}
+        initial_tag = self.loop_find_tag(tag)
+        if not initial_tag:
+            return True
+        
+        if not tag in self.tag_map:
+            self.tag_map[tag] = initial_tag.get_center()
+            return True
+        if math.dist(self.tag_map[tag], initial_tag.get_center()) > 5:
+            self.tag_map[tag] = initial_tag.get_center()
+            return True
+        return False
+    
+    def wait_until_tag_moves(self, tag: clr.Color, timeout: int = 30) -> bool:
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            if self.has_tag_moved(tag):
+                return True
+            time.sleep(0.1)
+        self.log_msg(f"Tag {tag} did not move within timeout")
+        self.errors += 1
+        return False
+    
+    def wait_until_tag_stops_moving(self, tag: clr.Color, timeout: int = 30) -> bool:
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            if not self.has_tag_moved(tag):
+                return True
+            time.sleep(0.1)
+        self.log_msg(f"Tag {tag} did not stop moving within timeout")
+        self.errors += 1
+        return False
     
 """
 commision
@@ -231,7 +321,7 @@ fill crucible
 pour
 pick up mould
 
-loop while we cant find cyan tag
+loop while we cant find blue tag
     if green -> continue 
     if orange -> wait if close - click if far
     if red -> click on green or cyan or whatever
