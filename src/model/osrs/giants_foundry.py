@@ -113,7 +113,6 @@ class GiantsFoundry(OSRSBot):
             self.get_bars()
             self.add_bars_to_crucible()
 
-            # mine until we have "full pay dirt"
             self.make_sword()
 
     def get_commission(self):
