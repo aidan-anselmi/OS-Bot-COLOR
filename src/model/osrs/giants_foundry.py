@@ -243,6 +243,7 @@ class GiantsFoundry(OSRSBot):
         while not self.loop_find_tag(self.general_color) and self.errors < 10:
             if rect := self.loop_find_tag(self.active_station_color, loops=1):
                 self.mouse.move_to(rect.random_point())
+                time.sleep(.1)
                 if self.mouseover_text(contains="Use", color=clr.OFF_WHITE) or self.mouseover_text(contains="Heat", color=clr.OFF_WHITE) or self.mouseover_text(contains="Cool", color=clr.OFF_WHITE):
                     self.mouse.click()
                     time.sleep(.2)
@@ -253,6 +254,7 @@ class GiantsFoundry(OSRSBot):
                     time.sleep(.1)
             elif rect := self.loop_find_tag(self.bonus_color, loops=1):
                 self.mouse.move_to(rect.random_point())
+                time.sleep(.1)
                 if self.mouseover_text(contains="Use", color=clr.OFF_WHITE):
                     self.mouse.click()
                     time.sleep(.1)
