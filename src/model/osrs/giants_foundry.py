@@ -127,8 +127,11 @@ class GiantsFoundry(OSRSBot):
                 tab_selects += 1
             self.take_break(min_seconds=0, max_seconds=.3)
 
-            text_rect = ocr.extract_text_rectangle(self.win.game_view, ocr.PLAIN_12, self.mould_text_color)
-            if not text_rect or not self.find_click_rectangle(text_rect, "Select", color=clr.OFF_WHITE):
+            text_rect = ocr.extract_text_rectangle(self.win.game_view, ocr.BOLD_12, self.mould_text_color)
+            if not text_rect:
+                self.log_msg("Failed to find mould text")
+                return False
+            if not self.find_click_rectangle(text_rect, "Select", color=clr.OFF_WHITE):
                 self.log_msg("Failed to select mould")
                 return False
             self.take_break(min_seconds=0, max_seconds=.3)
