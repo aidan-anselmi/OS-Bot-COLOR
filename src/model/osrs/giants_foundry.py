@@ -126,7 +126,7 @@ class GiantsFoundry(OSRSBot):
             if self.find_click_rectangle(rect, "View", color=clr.OFF_WHITE):
                 tab_selects += 1
             self.take_break(min_seconds=0, max_seconds=.3)
-            if not self.find_click_tag(self.mould_text_color, contains="Select", color=clr.OFF_WHITE):
+            if not self.find_click_tag(self.mould_text_color, "Select", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click 'Select' when setting mould")
                 return False
             self.take_break(min_seconds=0, max_seconds=.3)
