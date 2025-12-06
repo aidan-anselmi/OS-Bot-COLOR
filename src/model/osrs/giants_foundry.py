@@ -147,7 +147,7 @@ class GiantsFoundry(OSRSBot):
             blade_parts.reverse()
 
         tab_selects = 0
-        for blade_part in ["Tips", "Blades", "Forte"]:
+        for blade_part in blade_parts:
             tab_rects = ocr.find_text(blade_part, self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
             if not tab_rects:
                 self.log_msg(f"Could not find {blade_part} tab when setting mould")
