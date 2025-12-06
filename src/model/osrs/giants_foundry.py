@@ -134,6 +134,11 @@ class GiantsFoundry(OSRSBot):
         return False
 
     def set_mould(self):
+        if not self.find_click_tag(self.active_station_color, "Setup", color=clr.OFF_WHITE):
+            self.log_msg("Failed to find and click setup station")
+            return False
+        time.sleep(1)
+
         blade_parts = ["Forte", "Blades", "Tips"]
         if rd.random_chance(0.4):
             blade_parts.reverse()
