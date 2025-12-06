@@ -165,6 +165,8 @@ class GiantsFoundry(OSRSBot):
                 search_texts = ["Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
             mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
             if not mould_rects:
+                mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
+            if not mould_rects:
                 self.log_msg("No text found when setting mould")
                 return False
             if len(mould_rects) != 1:
