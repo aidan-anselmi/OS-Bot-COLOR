@@ -1,6 +1,6 @@
 import pathlib
 from operator import itemgetter
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 import cv2
 import numpy as np
@@ -132,6 +132,61 @@ def extract_text(rect: Rectangle, font: dict, color: Union[clr.Color, List[clr.C
     # Join the charachers into a string
     return result.join(letter for letter, _, _ in char_list)
 
+def extract_text_rectangle(
+    rect: Rectangle,
+    font: dict,
+    color: Union[clr.Color, List[clr.Color]],
+    exclude_chars: Union[str, List[str]] = problematic_chars,
+) -> Optional[Rectangle]:
+    """
+    Extracts text from a Rectangle.
+    Args:
+        rect: The rectangle to search within.
+        font: The font type to search for.
+        color: The color(s) of the text to search for.
+        exclude_chars: A list of characters to exclude from the search. By default, this is a list of characters that
+                       are known to cause problems.
+    Returns:
+        A single string containing all text found in order, no spaces.
+    """
+    # Screenshot and isolate colors
+    image = clr.isolate_colors(rect.screenshot(), color)
+    # We'll return a Rectangle covering all matched characters (or None if none found).
+    char_list: List[List[int]] = []  # entries: [char, x, y, w, h]
+    for key in font:
+        if key == " " or key in exclude_chars:
+            continue
+        # Template match the character in the image
+        template = font[key][2:] if font is PLAIN_12 else font[key][1:]
+        correlation = cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
+        # Locate the start point for each instance of this character
+        y_mins, x_mins = np.where(correlation >= 0.98)
+        # Template size
+        h, w = template.shape[:2]
+        # For each instance of this character, add it to the list with its size
+        char_list.extend([key, int(x), int(y), int(w), int(h)] for x, y in zip(x_mins, y_mins))
+
+    # Sort the char list based on which ones appear closest to the top-left of the image
+    char_list = sorted(char_list, key=itemgetter(2, 1))
+
+    if not char_list:
+        return None
+
+    # Compute bounding box across all characters
+    xs = [c[1] for c in char_list]
+    ys = [c[2] for c in char_list]
+    rights = [c[1] + c[3] for c in char_list]
+    bottoms = [c[2] + c[4] for c in char_list]
+
+    left = min(xs)
+    top = min(ys)
+    right = max(rights)
+    bottom = max(bottoms)
+
+    width = right - left
+    height = bottom - top
+
+    return Rectangle(left + rect.left, top + rect.top, width, height)
 
 def find_text(
     text: Union[str, List[str]],
