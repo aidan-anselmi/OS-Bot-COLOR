@@ -58,9 +58,7 @@ class GiantsFoundry(OSRSBot):
         )
         super().__init__(bot_title=bot_title, description=description)
         self.running_time = 175
-
-        self.break_length_multiplier = random.uniform(.5, 1.5)
-        self.break_chance_multiplier = random.uniform(.5, 1.5)
+        self.tag_map = {}
 
     def create_options(self):
         return
@@ -293,8 +291,6 @@ class GiantsFoundry(OSRSBot):
         return
     
     def has_tag_moved(self, tag: clr.Color) -> bool:
-        if not self.tag_map:
-            self.tag_map = {}
         initial_tag = self.loop_find_tag(tag)
         if not initial_tag:
             return True
