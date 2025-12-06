@@ -100,6 +100,7 @@ class GiantsFoundry(OSRSBot):
         self.bad_station_color = clr.RED
         self.bonus_color = clr.PURPLE
         self.mould_text_color = clr.BLUE
+        self.general_color = clr.BLUE
 
         
     
@@ -134,7 +135,7 @@ class GiantsFoundry(OSRSBot):
         return False
 
     def set_mould(self):
-        if not self.find_click_tag(self.active_station_color, "Setup", color=clr.OFF_WHITE):
+        if not self.find_click_tag(self.general_color, "Setup", color=clr.OFF_WHITE):
             self.log_msg("Failed to find and click setup station")
             return False
         time.sleep(1)
@@ -192,7 +193,7 @@ class GiantsFoundry(OSRSBot):
             order.reverse()
 
         for button in order:
-            self.find_click_tag(self.active_station_color, "Fill", color=clr.OFF_WHITE)
+            self.find_click_tag(self.general_color, "Fill", color=clr.OFF_WHITE)
             self.wait_till_interface_text("What metal")
             pag.press(button)
             self.wait_till_interface_text("You add")
