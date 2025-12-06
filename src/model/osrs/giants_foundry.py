@@ -241,7 +241,7 @@ class GiantsFoundry(OSRSBot):
             if purple -> click on it 
         """
         while not self.loop_find_tag(self.general_color) and self.errors < 10:
-            if rect := self.loop_find_tag(self.active_station_color, loops=1):
+            if rect := self.loop_find_tag(self.active_station_color, loops=2):
                 self.mouse.move_to(rect.random_point())
                 time.sleep(.1)
                 if self.mouseover_text(contains="Use", color=clr.OFF_WHITE) or self.mouseover_text(contains="Heat", color=clr.OFF_WHITE) or self.mouseover_text(contains="Cool", color=clr.OFF_WHITE):
@@ -252,7 +252,7 @@ class GiantsFoundry(OSRSBot):
                 else:
                     self.log_msg("Active station found but mouseover text not correct, moving on")
                     time.sleep(.1)
-            elif rect := self.loop_find_tag(self.bonus_color, loops=1):
+            elif rect := self.loop_find_tag(self.bonus_color, loops=2):
                 self.mouse.move_to(rect.random_point())
                 time.sleep(.1)
                 if self.mouseover_text(contains="Use", color=clr.OFF_WHITE):
@@ -261,7 +261,7 @@ class GiantsFoundry(OSRSBot):
                 else:
                     self.log_msg("Bonus station found but mouseover text not correct, moving on")
                     time.sleep(.1)
-            elif rect := self.loop_find_tag(self.warning_station_color, loops=1):
+            elif rect := self.loop_find_tag(self.warning_station_color, loops=2):
                 distance = RuneLiteObject.distance_from_rect_center(rect)
                 if distance < 100:
                     self.log_msg("Warning station close, waiting for it to be done")
@@ -274,6 +274,13 @@ class GiantsFoundry(OSRSBot):
                     self.wait_until_tag_stops_moving(self.warning_station_color)
                     self.wait_until_tag_moves(self.warning_station_color)
                     continue
+            # cool
+            elif rect := self.loop_find_tag(clr.YELLOW, loops=1):
+                self.mouse.move_to(rect.random_point())
+                self.mouse.click()
+                time.sleep(.1)
+                self.wait_until_tag_stops_moving(self.bad_station_color)
+                self.wait_until_tag_moves(self.bad_station_color)
             else:
                 self.log_msg("No stations found, waiting a bit")
         
