@@ -113,32 +113,36 @@ class GiantsFoundry(OSRSBot):
         #     self.make_sword()
 
     def set_mould(self):
-        rects = ocr.find_text(["Tips", "Blades", "Forte"], self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
-        if not rects:
-            self.log_msg("No text found when setting mould")
-            return False
-        if len(rects) != 3:
-            self.log_msg(f"Expected 3 text rects when setting mould, found {len(rects)}")
-            return False
-
         tab_selects = 0
-        for rect in rects:
-            if self.find_click_rectangle(rect, "View", color=clr.OFF_WHITE):
+        for blade_part in ["Tips", "Blades", "Forte"]:
+            tab_rects = ocr.find_text(blade_part, self.win.game_view, ocr.PLAIN_12, clr.OFF_ORANGE)
+            if not tab_rects:
+                self.log_msg("No text found when setting mould")
+                return False
+            if len(tab_rects) != 1:
+                self.log_msg(f"Expected 1 text rect when selecting tab, found {len(tab_rects)}")
+                return False
+            if self.find_click_rectangle(tab_rects[0], "View", color=clr.OFF_WHITE):
                 tab_selects += 1
-            self.take_break(min_seconds=0, max_seconds=.3)
 
-            text_rect = ocr.extract_text_rectangle(self.win.game_view, ocr.BOLD_12, self.mould_text_color)
-            if not text_rect:
-                self.log_msg("Failed to find mould text")
+            search_texts = ["Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
+            if blade_part == "Forte":
+                search_texts = ["Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
+            elif blade_part == "Blades":
+                search_texts = ["Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
+            mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
+            if not mould_rects:
+                self.log_msg("No text found when setting mould")
                 return False
-            if not self.find_click_rectangle(text_rect, "Select", color=clr.OFF_WHITE):
-                self.log_msg("Failed to select mould")
+            if len(mould_rects) != 1:
+                self.log_msg(f"Expected 1 text rect when setting mould, found {len(mould_rects)}")
                 return False
-            self.take_break(min_seconds=0, max_seconds=.3)
+            if not self.find_click_rectangle(mould_rects[0], "Select", color=clr.OFF_WHITE):
+                self.log_msg("Failed to click mould when setting mould")
+                return False
 
         if tab_selects >= 2:
             self.log_msg(f"Expected to click 2 tab selects when setting mould, clicked {tab_selects}")
-            return False
         pag.press('esc')
         return True
 
