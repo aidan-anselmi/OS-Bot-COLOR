@@ -187,6 +187,11 @@ class GiantsFoundry(OSRSBot):
         tab_name = tab_name.lower()
         path = imsearch.BOT_IMAGES.joinpath("giants_foundry", f"{tab_name}_large_selected.png")
         self.log_msg(f"Selecting tab {path}")
+        # make sure it exists
+        if not path.exists():
+            self.log_msg(f"Tab image does not exist: {path}")
+            return False
+
         if self.loop_find_image(path, self.win.game_view, loops=3):
             return True
         path = imsearch.BOT_IMAGES.joinpath("giants_foundry", f"{tab_name}_large_tab.png")
