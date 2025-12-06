@@ -168,10 +168,6 @@ class GiantsFoundry(OSRSBot):
             if self.find_click_rectangle(tab_rects[0], "View", color=clr.OFF_WHITE):
                 tab_selects += 1
 
-            if not self.select_tab(blade_part):
-                self.log_msg(f"Failed to select {blade_part} tab when setting mould")
-                return False
-
             search_texts = ["Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
             if blade_part == "Forte":
                 search_texts = ["Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
