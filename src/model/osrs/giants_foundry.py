@@ -185,7 +185,7 @@ class GiantsFoundry(OSRSBot):
     
     def select_tab(self, tab_name: str):
         tab_name = tab_name.lower()
-        path = imsearch.BOT_IMAGES.joinpath("giants_foundry", f"{tab_name}_tab.png")
+        path = imsearch.BOT_IMAGES.joinpath("giants_foundry", f"{tab_name}_large_selected.png")
         self.log_msg(f"Selecting tab {path}")
         if self.loop_find_image(path, self.win.game_view, loops=3):
             return True
