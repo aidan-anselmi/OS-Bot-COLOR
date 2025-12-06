@@ -150,7 +150,7 @@ class GiantsFoundry(OSRSBot):
             return False
         time.sleep(4)
 
-        blade_parts = ["Forte", "blades", "Tips"]
+        blade_parts = ["Forte", "Blades", "Tips"]
         if rd.random_chance(0.4):
             blade_parts.reverse()
 
@@ -163,7 +163,7 @@ class GiantsFoundry(OSRSBot):
             search_texts = ["Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
             if blade_part == "Forte":
                 search_texts = ["Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
-            elif blade_part == "blades":
+            elif blade_part == "Blades":
                 search_texts = ["Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
             mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
             if not mould_rects:
@@ -184,6 +184,7 @@ class GiantsFoundry(OSRSBot):
         return True
     
     def select_tab(self, tab_name: str):
+        tab_name = tab_name.lower()
         path = imsearch.BOT_IMAGES.joinpath("giants_foundry", f"{tab_name}_tab.png")
         self.log_msg(f"Selecting tab {path}")
         if self.loop_find_image(path, self.win.game_view, loops=3):
