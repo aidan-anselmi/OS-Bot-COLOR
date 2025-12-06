@@ -77,7 +77,7 @@ class GiantsFoundry(OSRSBot):
         # make sure directory exists
         dest_dir.mkdir(parents=True, exist_ok=True)
 
-        search_string = "Mithril ingot, Steel ingot"
+        search_string = "Mithril bar, Steel bar"
         # search_string = "Deposit Inventory"
         image_type = ImageType.BANK
         destination = dest_dir
@@ -186,9 +186,9 @@ class GiantsFoundry(OSRSBot):
     def get_bars(self):
         self.find_click_tag(self.bank_color, "Use", color=clr.OFF_WHITE)
         self.wait_till_bank_open()
-        self.find_click_image(self.path.joinpath("Mithril_ingot_bank.png"))
+        self.find_click_image(self.path.joinpath("Mithril_bar_bank.png"))
         self.take_break(min_seconds=0.1, max_seconds=0.5)
-        self.find_click_image(self.path.joinpath("Steel_ingot_bank.png"))
+        self.find_click_image(self.path.joinpath("Steel_bar_bank.png"))
         self.take_break(min_seconds=0.1, max_seconds=0.5)
         pag.press('esc')
         return
