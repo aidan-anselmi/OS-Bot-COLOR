@@ -31,7 +31,7 @@ def extract_objects(image: cv2.Mat) -> List[RuneLiteObject]:
     # Find the contours
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     black_image = np.zeros(mask.shape, dtype="uint8")
-    cv2.imwrite(f"debug_object.png", black_image)
+    # cv2.imwrite(f"debug_object.png", black_image)
     # Extract the objects from each contoured object
     objs: List[RuneLiteObject] = []
     for objects in range(len(contours)):
