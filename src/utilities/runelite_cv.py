@@ -31,6 +31,7 @@ def extract_objects(image: cv2.Mat) -> List[RuneLiteObject]:
     # Find the contours
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     black_image = np.zeros(mask.shape, dtype="uint8")
+    cv2.imwrite(f"debug_object_{objects}.png", black_image)
     # Extract the objects from each contoured object
     objs: List[RuneLiteObject] = []
     for objects in range(len(contours)):
@@ -42,7 +43,7 @@ def extract_objects(image: cv2.Mat) -> List[RuneLiteObject]:
             black_copy = cv2.morphologyEx(black_copy, cv2.MORPH_OPEN, kernel)
             black_copy = cv2.erode(black_copy, kernel, iterations=2)
             # save to debug image
-            cv2.imwrite(f"debug_object_{objects}.png", black_copy)
+            # cv2.imwrite(f"debug_object_{objects}.png", black_copy)
             if np.count_nonzero(black_copy == 255):
                 indices = np.where(black_copy == [255])
                 if indices[0].size > 0:
