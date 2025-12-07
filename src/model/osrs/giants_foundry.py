@@ -454,7 +454,6 @@ class GiantsFoundry(OSRSBot):
     def make_sword(self):
         while not self.loop_find_tag(self.general_color) and self.errors < 10:
             current_stage = self.get_current_stage()
-            self.click_active_station()
             while self.get_current_stage() == current_stage and self.errors < 10:
                 if not self.fix_heat(current_stage):
                     self.click_active_station()
