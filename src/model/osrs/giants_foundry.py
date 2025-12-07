@@ -111,7 +111,7 @@ exclude_chars.extend(alphabet_lower + alphabet_upper)
 green = clr.Color([55, 240, 70])
 red = clr.Color([230, 30, 30])
 orange = clr.Color([230, 150, 30])
-grey = clr.Color([154, 167, 164])
+grey = clr.Color([165, 164, 165])
 colors = [green, red, orange, grey]
 
 class GiantsFoundry(OSRSBot):
