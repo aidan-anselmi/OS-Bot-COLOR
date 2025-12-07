@@ -187,9 +187,9 @@ class GiantsFoundry(OSRSBot):
         )
         self.current_stage_window = Rectangle(
             left=10 + self.win.game_view.left + 45,
-            top= self.heat_window.top + self.heat_window.height,
+            top= self.heat_window.top + self.heat_window.height - 1,
             width=100,
-            height=20,
+            height=19,
         )
     
         start_time = time.time()
