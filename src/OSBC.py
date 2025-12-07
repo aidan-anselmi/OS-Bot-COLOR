@@ -343,12 +343,13 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     # To test a bot without the GUI, address the comments for each line below.
     # from model.<folder_bot_is_in> import <bot_class_name>  # Uncomment this line and replace <folder_bot_is_in> and <bot_class_name> accordingly to import your bot
-    #from model.osrs.gem_crab import OSRSGemCrabTrainer
-    # from model.osrs.woodcutter import OSRSWoodcutter
+    from model.osrs.gem_crab import OSRSGemCrabTrainer
+    from model.osrs.woodcutter import OSRSWoodcutter
     from model.osrs.calcified_rocks import CalcifiedRocks
     from model.osrs.mlm import MLM
     from model.osrs.thieve_alc import ThieveAlc
     from model.osrs.blast_furnace import BlastFurnace
+    from model.osrs.giants_foundry import GiantsFoundry
     from model.osrs import *
     test = True
     if test:

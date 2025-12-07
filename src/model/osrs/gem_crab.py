@@ -18,7 +18,7 @@ class OSRSGemCrabTrainer(OSRSBot):
         bot_title = "gem crab"
         description = "fights gem crab"
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 131
+        self.running_time = 130
         self.errors = 0
 
         self.crab_color = clr.CYAN
