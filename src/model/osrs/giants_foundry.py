@@ -424,11 +424,11 @@ class GiantsFoundry(OSRSBot):
         # Grind ORANGE Medium - min 38 max 62
         # Polish GREEN Low - min 5 max 28
         if current_stage == "Hammer":
-            return (85, 95)
+            return (80, 95)
         elif current_stage == "Grind":
-            return (38, 48)
+            return (38, 53)
         elif current_stage == "Polish":
-            return (18, 28)
+            return (18, 33)
         return (-1, -1)
     
     def get_current_stage(self) -> str:
