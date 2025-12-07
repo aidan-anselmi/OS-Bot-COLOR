@@ -170,21 +170,21 @@ class GiantsFoundry(OSRSBot):
         self.waterfall_color = clr.YELLOW        
 
         self.status_window = Rectangle(
-            left=10 + self.game_view.left,
-            top=25 + self.game_view.top,
+            left=10 + self.win.game_view.left,
+            top=25 + self.win.game_view.top,
             width=145,
             height=80,
         )
         
         self.heat_window = Rectangle(
-            left=10 + self.game_view.left,
-            top=25 + self.game_view.top,
+            left=10 + self.win.game_view.left,
+            top=25 + self.win.game_view.top,
             width=145,
             height=20,
         )
         self.current_stage_window = Rectangle(
-            left=10 + self.game_view.left,
-            top=25 + self.game_view.top + self.heat_window.height + 2,
+            left=10 + self.win.game_view.left,
+            top=25 + self.win.game_view.top + self.heat_window.height + 2,
             width=145,
             height=20,
         )
