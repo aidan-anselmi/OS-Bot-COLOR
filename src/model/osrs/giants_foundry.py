@@ -1,5 +1,7 @@
 import time
 
+import numpy as np
+
 import utilities.api.item_ids as ids
 import utilities.color as clr
 import utilities.random_util as rd
@@ -17,6 +19,7 @@ from pathlib import Path
 import utilities.runelite_cv as rcv
 import keyboard
 import utilities.ocr as ocr
+import cv2
 
 """
 commision
@@ -374,7 +377,7 @@ class GiantsFoundry(OSRSBot):
         
         target_min, target_max = self.get_target_heat_range(current_stage)
         if target_min == -1:
-            self.log_msg("Failed to read target heat range, retrying")
+            self.log_msg(f"Failed to read target heat range for {current_stage}, retrying")
             time.sleep(1)
             return self.fix_heat(current_stage, False)
         if current_heat >= target_min and current_heat <= target_max:
@@ -408,6 +411,8 @@ class GiantsFoundry(OSRSBot):
         # High red
         # Medium orange
         # Low green
+        img_rect = self.heat_window.screenshot()
+        cv2.imwrite(f"heat_window.png", np.array(img_rect))
         heat = ocr.extract_text(self.heat_window, ocr.PLAIN_12, colors, exclude_chars=exclude_chars)
         # if we read a number, return it
         if str(heat).isdigit():
@@ -435,6 +440,9 @@ class GiantsFoundry(OSRSBot):
         return "unknown"
 
     def get_current_stage_helper(self) -> str:
+        # save window to debug
+        img_rect = self.current_stage_window.screenshot()
+        cv2.imwrite(f"current_stage_window.png", np.array(img_rect))
         if ocr.find_text("Hammer", self.current_stage_window, ocr.PLAIN_12, red):
             return "Hammer"
         elif ocr.find_text("Grind", self.current_stage_window, ocr.PLAIN_12, orange):
