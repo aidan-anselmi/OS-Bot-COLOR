@@ -180,15 +180,15 @@ class GiantsFoundry(OSRSBot):
         )
         
         self.heat_window = Rectangle(
-            left=10 + self.win.game_view.left,
+            left=10 + self.win.game_view.left + 100,
             top=25 + self.win.game_view.top,
-            width=145,
+            width=45,
             height=20,
         )
         self.current_stage_window = Rectangle(
-            left=10 + self.win.game_view.left,
-            top=25 + self.win.game_view.top + self.heat_window.height + 2,
-            width=145,
+            left=10 + self.win.game_view.left + 45,
+            top= self.heat_window.top + self.heat_window.height,
+            width=100,
             height=20,
         )
     
