@@ -362,7 +362,7 @@ class GiantsFoundry(OSRSBot):
         self.errors += 1
         return False
     
-    def fix_heat(self, current_stage: str):
+    def fix_heat(self, current_stage: str, first_try: bool = True):
         # get heat
         # get tarted heat
         # heat or cool until done
@@ -372,36 +372,31 @@ class GiantsFoundry(OSRSBot):
         if current_heat == -1:
             self.log_msg("Failed to read current heat, retrying")
             time.sleep(1)
-            return self.fix_heat(current_stage)
+            return self.fix_heat(current_stage, False)
         
         target_min, target_max = self.get_target_heat_range(current_stage)
         if target_min == -1:
             self.log_msg("Failed to read target heat range, retrying")
             time.sleep(1)
-            return self.fix_heat(current_stage)
+            return self.fix_heat(current_stage, False)
         if current_heat >= target_min and current_heat <= target_max:
-            return
+            return first_try
 
         if current_heat <= target_min:
             if not self.find_click_tag(self.lava_color, "Heat", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click lava to heat, retrying")
-                return self.fix_heat(current_stage)
+                return self.fix_heat(current_stage, False)
         elif current_heat >= target_max:
             if not self.find_click_tag(self.waterfall_color, "Cool", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click waterfall to cool, retrying")
-                return self.fix_heat(current_stage)
+                return self.fix_heat(current_stage, False)
             
         while True:
             current_heat = self.get_current_heat()
             if current_heat >= target_min and current_heat <= target_max:
                 if not self.find_click_tag(clr.MINT, "Walk", color=clr.OFF_WHITE):
-                    self.log_msg("Failed to click on self tile to stop heating/cooling, retrying")
-                    if not self.find_click_tag(clr.MINT, "Walk", color=clr.OFF_WHITE):
-                        self.log_msg("AHHHHHHHHHHHHHH")
-                        self.mouse.move_to(self.win.game_view.get_center())
-                        self.mouse
-                return self.fix_heat(current_stage)
-        return
+                    self.click_self_tile()                        
+                return self.fix_heat(current_stage, False)
     
     def get_current_heat(self):
         for _ in range(3):
@@ -453,14 +448,35 @@ class GiantsFoundry(OSRSBot):
     def make_sword(self):
         while not self.loop_find_tag(self.general_color) and self.errors < 10:
             current_stage = self.get_current_stage()
+            self.click_active_station()
             while self.get_current_stage() == current_stage and self.errors < 10:
-                self.fix_heat(current_stage)
-                while self.is_idle():
-                    self.find_click_tag(self.active_station_color, "Use", color=clr.OFF_WHITE)
-                    time.sleep(0.3)                
-            
+                if not self.fix_heat(current_stage):
+                    self.click_active_station()
+            self.click_self_tile()
+
         return 
     
+    def click_active_station(self):
+        for _ in range(5):
+            if self.find_click_tag(self.active_station_color, "Use", color=clr.OFF_WHITE):
+                return True
+            time.sleep(.1)
+        self.errors += 1
+        self.log_msg("Failed to click active station")
+        return False
+    
+    def click_self_tile(self):
+        for _ in range(5):
+            if self.find_click_tag(clr.MINT, "Walk", color=clr.OFF_WHITE):
+                return True
+            time.sleep(.1)
+        self.log_msg("AHHHHHHHHHHHHHH")
+        self.mouse.move_to(self.win.game_view.get_center())
+        self.mouse.click()
+        self.errors += 1
+        self.log_msg("Failed to click self tile")
+        return False
+
 """
 commision
 set mould
