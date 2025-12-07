@@ -24,6 +24,75 @@ hand in sword -> press space
 recieve another commission -> press 1
 """
 
+exclude_chars = [
+    "Ì",
+    "Í",
+    "Î",
+    "Ï",
+    "ì",
+    "í",
+    "î",
+    "ï",
+    "Ĺ",
+    "Ļ",
+    "Ľ",
+    "Ŀ",
+    "Ł",
+    "ĺ",
+    "ļ",
+    "ľ",
+    "ŀ",
+    "ł",
+    "|",
+    "¦",
+    "!",
+    "ĵ",
+    "ǰ",
+    "ȷ",
+    "ɉ",
+    "Ĵ",
+    "Ĩ",
+    "Ī",
+    "Ĭ",
+    "Į",
+    "İ",
+    "Ɨ",
+    "Ỉ",
+    "Ị",
+    "ĩ",
+    "ī",
+    "ĭ",
+    "į",
+    "ı",
+    "ƚ",
+    "ỉ",
+    "ị",
+    "ˈ",
+    "ˌ",
+    "ʻ",
+    "ʼ",
+    "ʽ",
+    "˚",
+    "˙",
+    "ʾ",
+    "ʿ",
+    ",",
+    "˙",
+    "`",
+    "(",
+    ")",
+    "%",
+]
+# Also exclude all ASCII alphabetic characters (lower and upper) by default
+alphabet_lower = [chr(c) for c in range(ord('a'), ord('z') + 1)]
+alphabet_upper = [chr(c) for c in range(ord('A'), ord('Z') + 1)]
+exclude_chars.extend(alphabet_lower + alphabet_upper)
+green = clr.Color([55, 240, 70])
+red = clr.Color([230, 30, 30])
+orange = clr.Color([230, 150, 30])
+grey = clr.Color([154, 167, 164])
+colors = [green, red, orange, grey]
+
 import time
 
 import utilities.api.item_ids as ids
@@ -99,8 +168,28 @@ class GiantsFoundry(OSRSBot):
         self.bonus_color = clr.PURPLE
         self.mould_text_color = clr.BLUE
         self.general_color = clr.BLUE
+        self.lava_color = clr.WHITE
+        self.waterfall_color = clr.YELLOW        
 
+        self.status_window = Rectangle(
+            left=10 + self.game_view.left,
+            top=25 + self.game_view.top,
+            width=145,
+            height=80,
+        )
         
+        self.heat_window = Rectangle(
+            left=10 + self.game_view.left,
+            top=25 + self.game_view.top,
+            width=145,
+            height=20,
+        )
+        self.current_stage_window = Rectangle(
+            left=10 + self.game_view.left,
+            top=25 + self.game_view.top + self.heat_window.height + 2,
+            width=145,
+            height=20,
+        )
     
         start_time = time.time()
         end_time = self.running_time * 60
@@ -229,66 +318,7 @@ class GiantsFoundry(OSRSBot):
             time.sleep(.2)
             pag.press(button)
             # TODO the font for this is off
-            self.wait_till_interface_text("You add")
-        return
-
-    def make_sword(self):
-        """
-        loop while we cant find blue tag
-            if green -> continue 
-            if orange -> wait if close - click if far
-            if red -> click on green or cyan or whatever
-            if purple -> click on it 
-        """
-        while not self.loop_find_tag(self.general_color) and self.errors < 10:
-            if rect := self.loop_find_tag(self.active_station_color, loops=2):
-                self.mouse.move_to(rect.random_point())
-                time.sleep(.1)
-                if self.mouseover_text(contains="Use", color=clr.OFF_WHITE) or self.mouseover_text(contains="Heat", color=clr.OFF_WHITE) or self.mouseover_text(contains="Cool", color=clr.OFF_WHITE):
-                    self.mouse.click()
-                    time.sleep(.2)
-                    self.wait_until_tag_stops_moving(self.active_station_color)
-                    self.wait_until_tag_moves(self.active_station_color)
-                else:
-                    self.log_msg("Active station found but mouseover text not correct, moving on")
-                    time.sleep(.1)
-            elif rect := self.loop_find_tag(self.bonus_color, loops=2):
-                self.mouse.move_to(rect.random_point())
-                time.sleep(.1)
-                if self.mouseover_text(contains="Use", color=clr.OFF_WHITE):
-                    self.mouse.click()
-                    time.sleep(.1)
-                else:
-                    self.log_msg("Bonus station found but mouseover text not correct, moving on")
-                    time.sleep(.1)
-            elif rect := self.loop_find_tag(self.warning_station_color, loops=2):
-                distance = RuneLiteObject.distance_from_rect_center(rect)
-                if distance < 100:
-                    self.log_msg("Warning station close, waiting for it to be done")
-                    self.wait_until_tag_moves(self.warning_station_color)
-                    continue
-                else:
-                    self.log_msg("Clicking warning station as it is far away")
-                    self.mouse.click()
-                    time.sleep(.2)
-                    self.wait_until_tag_stops_moving(self.warning_station_color)
-                    self.wait_until_tag_moves(self.warning_station_color)
-                    continue
-            # cool
-            elif rect := self.loop_find_tag(clr.YELLOW, loops=1):
-                self.mouse.move_to(rect.random_point())
-                self.mouse.click()
-                time.sleep(.1)
-                self.wait_until_tag_stops_moving(self.bad_station_color)
-                self.wait_until_tag_moves(self.bad_station_color)
-            else:
-                self.log_msg("No stations found, waiting a bit")
-        
-
-        if self.errors < 10:
-            self.log_msg("Sword made!")
-        else:
-            self.log_msg("Too many errors making sword, moving on")
+            self.wait_till_interface_text("You add", ocr.QUILL_8)
         return
     
     def hand_in_sword(self):
@@ -331,6 +361,105 @@ class GiantsFoundry(OSRSBot):
         self.log_msg(f"Tag {tag} did not stop moving within timeout")
         self.errors += 1
         return False
+    
+    def fix_heat(self, current_stage: str):
+        # get heat
+        # get tarted heat
+        # heat or cool until done
+        # click on self tile 
+
+        current_heat = self.get_current_heat()
+        if current_heat == -1:
+            self.log_msg("Failed to read current heat, retrying")
+            time.sleep(1)
+            return self.fix_heat(current_stage)
+        
+        target_min, target_max = self.get_target_heat_range(current_stage)
+        if target_min == -1:
+            self.log_msg("Failed to read target heat range, retrying")
+            time.sleep(1)
+            return self.fix_heat(current_stage)
+        if current_heat >= target_min and current_heat <= target_max:
+            return
+
+        if current_heat <= target_min:
+            if not self.find_click_tag(self.lava_color, "Heat", color=clr.OFF_WHITE):
+                self.log_msg("Failed to click lava to heat, retrying")
+                return self.fix_heat(current_stage)
+        elif current_heat >= target_max:
+            if not self.find_click_tag(self.waterfall_color, "Cool", color=clr.OFF_WHITE):
+                self.log_msg("Failed to click waterfall to cool, retrying")
+                return self.fix_heat(current_stage)
+            
+        while True:
+            current_heat = self.get_current_heat()
+            if current_heat >= target_min and current_heat <= target_max:
+                if not self.find_click_tag(clr.MINT, "Walk", color=clr.OFF_WHITE):
+                    self.log_msg("Failed to click on self tile to stop heating/cooling, retrying")
+                    if not self.find_click_tag(clr.MINT, "Walk", color=clr.OFF_WHITE):
+                        self.log_msg("AHHHHHHHHHHHHHH")
+                        self.mouse.move_to(self.win.game_view.get_center())
+                        self.mouse
+                return self.fix_heat(current_stage)
+        return
+    
+    def get_current_heat(self):
+        for _ in range(3):
+            heat = self.get_current_heat_helper()
+            if heat != -1:
+                return heat
+            time.sleep(0.1)
+        return -1
+
+    def get_current_heat_helper(self) -> int:
+        # High red
+        # Medium orange
+        # Low green
+        heat = ocr.extract_text(self.heat_window, ocr.PLAIN_12, colors, exclude_chars=exclude_chars)
+        # if we read a number, return it
+        if str(heat).isdigit():
+            return int(heat)
+        return -1
+
+    def get_target_heat_range(self, current_stage: str) -> tuple[int, int]:
+        # Hammer RED High - min 72 max 95
+        # Grind ORANGE Medium - min 38 max 62
+        # Polish GREEN Low - min 5 max 28
+        if current_stage == "Hammer":
+            return (85, 95)
+        elif current_stage == "Grind":
+            return (38, 48)
+        elif current_stage == "Polish":
+            return (18, 28)
+        return (-1, -1)
+    
+    def get_current_stage(self) -> str:
+        for _ in range(3):
+            stage = self.get_current_stage_helper()
+            if stage != "unknown":
+                return stage
+            time.sleep(0.1)
+        return "unknown"
+
+    def get_current_stage_helper(self) -> str:
+        if ocr.find_text("Hammer", self.current_stage_window, ocr.PLAIN_12, red):
+            return "Hammer"
+        elif ocr.find_text("Grind", self.current_stage_window, ocr.PLAIN_12, orange):
+            return "Grind"
+        elif ocr.find_text("Polish", self.current_stage_window, ocr.PLAIN_12, green):
+            return "Polish"
+        return "unknown"
+
+    def make_sword(self):
+        while not self.loop_find_tag(self.general_color) and self.errors < 10:
+            current_stage = self.get_current_stage()
+            while self.get_current_stage() == current_stage and self.errors < 10:
+                self.fix_heat(current_stage)
+                while self.is_idle():
+                    self.find_click_tag(self.active_station_color, "Use", color=clr.OFF_WHITE)
+                    time.sleep(0.3)                
+            
+        return 
     
 """
 commision
