@@ -1,4 +1,22 @@
+import time
 
+import utilities.api.item_ids as ids
+import utilities.color as clr
+import utilities.random_util as rd
+from model.osrs.osrs_bot import OSRSBot
+from model.runelite_bot import BotStatus
+from utilities.api.morg_http_client import MorgHTTPSocket
+from utilities.api.status_socket import StatusSocket
+from utilities.geometry import RuneLiteObject, Rectangle
+import random
+import math
+from utilities.sprite_scraper import SpriteScraper, ImageType
+import utilities.imagesearch as imsearch
+import pyautogui as pag
+from pathlib import Path
+import utilities.runelite_cv as rcv
+import keyboard
+import utilities.ocr as ocr
 
 """
 commision
@@ -92,26 +110,6 @@ red = clr.Color([230, 30, 30])
 orange = clr.Color([230, 150, 30])
 grey = clr.Color([154, 167, 164])
 colors = [green, red, orange, grey]
-
-import time
-
-import utilities.api.item_ids as ids
-import utilities.color as clr
-import utilities.random_util as rd
-from model.osrs.osrs_bot import OSRSBot
-from model.runelite_bot import BotStatus
-from utilities.api.morg_http_client import MorgHTTPSocket
-from utilities.api.status_socket import StatusSocket
-from utilities.geometry import RuneLiteObject, Rectangle
-import random
-import math
-from utilities.sprite_scraper import SpriteScraper, ImageType
-import utilities.imagesearch as imsearch
-import pyautogui as pag
-from pathlib import Path
-import utilities.runelite_cv as rcv
-import keyboard
-import utilities.ocr as ocr
 
 class GiantsFoundry(OSRSBot):
     def __init__(self):
