@@ -323,8 +323,8 @@ class GiantsFoundry(OSRSBot):
         return
     
     def hand_in_sword(self):
-        self.find_click_tag(self.general_color, "Hand-in", color=clr.OFF_WHITE)
-        self.wait_until_tag_stops_moving(self.general_color)
+        self.find_click_tag(clr.CYAN, "Hand-in", color=clr.OFF_WHITE)
+        self.wait_until_tag_stops_moving(clr.CYAN)
         pag.hold('space')
         time.sleep(2)
         pag.press('1')
@@ -401,8 +401,8 @@ class GiantsFoundry(OSRSBot):
                 self.click_self_tile()                        
                 return self.fix_heat(current_stage, False)
     
-    def get_current_heat(self):
-        for _ in range(3):
+    def get_current_heat(self, loop_count: int = 3) -> int:
+        for _ in range(loop_count):
             heat = self.get_current_heat_helper()
             if heat != -1:
                 return heat
@@ -454,7 +454,7 @@ class GiantsFoundry(OSRSBot):
         return "unknown"
 
     def make_sword(self):
-        while not self.loop_find_tag(self.general_color) and self.errors < 10:
+        while self.errors < 10 and not self.no_swoard_interface():
             current_stage = self.get_current_stage()
             while self.get_current_stage() == current_stage and self.errors < 10:
                 if not self.fix_heat(current_stage):
@@ -483,6 +483,9 @@ class GiantsFoundry(OSRSBot):
         self.errors += 1
         self.log_msg("Failed to click self tile")
         return False
+    
+    def no_swoard_interface(self) -> bool:
+        return self.get_current_heat(loop_count=3) == -1
 
 """
 commision
