@@ -433,6 +433,7 @@ class GiantsFoundry(OSRSBot):
 
         while True:
             current_heat = self.get_current_heat()
+            heat_left = self.get_heat_left()
             if heat_left >= target_heat  or (heat_left - actions_left >= 2):
                 self.click_self_tile()                        
                 return self.fix_heat(current_stage, False)
