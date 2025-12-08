@@ -376,7 +376,7 @@ class GiantsFoundry(OSRSBot):
         self.errors += 1
         return False
     
-    def fix_heat(self, current_stage: str, first_try: bool = True):
+    def fix_heat(self, first_try: bool = True):
         # get heat
         # get tarted heat
         # heat or cool until done
@@ -389,7 +389,8 @@ class GiantsFoundry(OSRSBot):
 
         current_heat = self.get_current_heat()
         actions_left = self.get_actions_left()
-        if current_heat == -1 or heat_left == -1 or actions_left == -1:
+        current_stage = self.get_current_stage()
+        if current_heat == -1 or heat_left == -1 or actions_left == -1 or current_stage == "unknown":
             return False
         
         target_min, target_max = self.get_target_heat_range(current_stage)
@@ -410,11 +411,11 @@ class GiantsFoundry(OSRSBot):
             heating = True
             if not self.find_click_tag(self.lava_color, "Heat", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click lava to heat, retrying")
-                return self.fix_heat(current_stage, False)
+                return self.fix_heat(False)
         elif current_heat >= target_max:
             if not self.find_click_tag(self.waterfall_color, "Cool", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click waterfall to cool, retrying")
-                return self.fix_heat(current_stage, False)
+                return self.fix_heat(False)
             
         target_heat = 7
         if current_stage == "Hammer":
@@ -436,11 +437,11 @@ class GiantsFoundry(OSRSBot):
             if heat_left >= target_heat  or (heat_left - actions_left >= 2):
                 self.log_msg(f"Corrected heat withe heat left: {heat_left}, actions left: {actions_left}")
                 self.click_self_tile()                        
-                return self.fix_heat(current_stage, False)
+                return self.fix_heat(False)
             elif heating and current_heat >= target_max:
-                return self.fix_heat(current_stage, False)
+                return self.fix_heat(False)
             elif not heating and current_heat <= target_min:
-                return self.fix_heat(current_stage, False)
+                return self.fix_heat(False)
             
     
     def get_heat_left(self) -> int:
@@ -533,7 +534,7 @@ class GiantsFoundry(OSRSBot):
     def make_sword(self):
         # TODO currently if we start in the desired heat we do not click anything
         self.log_msg("Making sword...")
-        self.fix_heat(self.get_current_stage())
+        self.fix_heat()
         self.click_active_station()
 
         # TODO being too "slow" is the other big issue, pull in bounds to fix
@@ -545,7 +546,7 @@ class GiantsFoundry(OSRSBot):
                     self.find_click_rectangle(bonus, "Use", color=clr.OFF_WHITE)
                     time.sleep(0.5)
                     continue
-                if not self.fix_heat(current_stage):
+                if not self.fix_heat():
                     self.click_active_station()
             self.click_self_tile()
 
