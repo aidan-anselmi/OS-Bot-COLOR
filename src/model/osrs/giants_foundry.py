@@ -210,6 +210,9 @@ class GiantsFoundry(OSRSBot):
         return False
 
     def set_mould(self):
+        # TODO shrink search area to just the mould interface
+        # TODO expand text selection out to get larger rectangle
+
         if not self.find_click_tag(self.general_color, "Setup", color=clr.OFF_WHITE):
             self.log_msg("Failed to find and click setup station")
             return False
@@ -235,7 +238,7 @@ class GiantsFoundry(OSRSBot):
 
             search_texts = ["Serrated Tip", "Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
             if blade_part == "Forte":
-                search_texts = ["Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
+                search_texts = ["Juggernaut Forte", "Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
             elif blade_part == "Blades":
                 search_texts = ["Flamberge Blade", "Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
             mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
@@ -309,6 +312,7 @@ class GiantsFoundry(OSRSBot):
         pag.press('space')
         time.sleep(2)
         pag.press('1')
+        # confirm we got the comission
         return
     
     def has_tag_moved(self, tag: clr.Color) -> bool:
@@ -442,10 +446,13 @@ class GiantsFoundry(OSRSBot):
         return "unknown"
 
     def make_sword(self):
+        # TODO currently if we start in the desired heat we do not click anything
+
+        # TODO being too "slow" is the other big issue, pull in bounds to fix
         self.log_msg("Making sword...")
-        while self.errors < 10 and not self.no_swoard_interface():
+        while self.errors < 10 and not self.no_sword_interface():
             current_stage = self.get_current_stage()
-            while self.get_current_stage() == current_stage and self.errors < 10:
+            while self.get_current_stage() != "unknown" and self.get_current_stage() == current_stage and self.errors < 10:
                 if bonus := self.loop_find_tag(self.bonus_color, loops=1):
                     self.find_click_rectangle(bonus, "Use", color=clr.OFF_WHITE)
                     time.sleep(0.5)
@@ -477,5 +484,5 @@ class GiantsFoundry(OSRSBot):
         self.log_msg("Failed to click self tile")
         return False
     
-    def no_swoard_interface(self) -> bool:
+    def no_sword_interface(self) -> bool:
         return self.get_current_heat(loop_count=3) == -1
