@@ -166,13 +166,29 @@ class GiantsFoundry(OSRSBot):
             width=100,
             height=18,
         )
+        self.actions_left_window = Rectangle(
+            left=10 + self.win.game_view.left + 100,
+            top= self.current_stage_window.top + self.current_stage_window.height,
+            width=45,
+            height=18,
+        )
+        self.heat_left_window = Rectangle(
+            left=10 + self.win.game_view.left + 100,
+            top= self.actions_left_window.top + self.actions_left_window.height,
+            width=45,
+            height=18,
+        )
+
     
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
         while time.time() - start_time < end_time and self.errors < 10:
             if not self.loop_find_tag(self.active_station_color, loops=3):
-                self.setup_sword()
+                if not self.setup_sword():
+                    self.log_msg("Failed to setup sword, retrying")
+                    self.errors += 1
+                    continue
             self.make_sword()
             self.hand_in_sword()
 
@@ -181,17 +197,19 @@ class GiantsFoundry(OSRSBot):
             elif rd.random_chance(0.05):
                 self.take_break(min_seconds=30, max_seconds=90)
 
-    def setup_sword(self):
+    def setup_sword(self) -> bool:
         #self.get_commission()
         self.take_break(min_seconds=0, max_seconds=.5)
-        self.set_mould()
+        if not self.set_mould():
+            self.log_msg("Failed to set mould")
+            return False
         self.get_bars()
         self.add_bars_to_crucible()
         self.find_click_tag(self.active_station_color, "Pour", color=clr.OFF_WHITE)
         self.take_break(min_seconds=1, max_seconds=3)
         self.find_click_tag(self.general_color, "Pick-up", color=clr.OFF_WHITE)
         self.take_break(min_seconds=5.5, max_seconds=8)
-        return
+        return True
 
     def get_commission(self):
         kovac = self.loop_find_tag(clr.CYAN)
@@ -242,9 +260,9 @@ class GiantsFoundry(OSRSBot):
 
             search_texts = ["Serrated Tip", "Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
             if blade_part == "Forte":
-                search_texts = ["Juggernaut Forte", "Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
+                search_texts = ["Chopper Forte +1", "Juggernaut Forte", "Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
             elif blade_part == "Blades":
-                search_texts = ["Flamberge Blade", "Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
+                search_texts = ["Claymore Blade", "Flamberge Blade", "Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
             mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
             if not mould_rects:
                 mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
@@ -319,7 +337,7 @@ class GiantsFoundry(OSRSBot):
             return
         self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        if not self.wait_till_interface_text("omission", ocr.QUILL_8, clr.BLACK):
+        if not self.wait_till_interface_text("Yes", ocr.QUILL_8, clr.BLACK):
             pag.press('1')
         self.take_break(min_seconds=.3, max_seconds=1)
         # confirm we got the comission
@@ -365,24 +383,32 @@ class GiantsFoundry(OSRSBot):
         # click on self tile 
         # TODO temp incrrease accelerates, account for this 
 
+        heat_left = self.get_heat_left()
+        actions_left = self.get_actions_left()
+        if heat_left >= 2:
+            return first_try
+
         current_heat = self.get_current_heat()
-        if current_heat == -1:
+        actions_left = self.get_actions_left()
+        if current_heat == -1 or heat_left == -1 or actions_left == -1:
             return False
         
         target_min, target_max = self.get_target_heat_range(current_stage)
-        if current_stage == "Hammer":
-            target_min += 3
-        elif current_stage == "Grind":
-            target_max -= 3
-        elif current_stage == "Polish":
-            target_min += 3
-
         if target_min == -1:
             return False
-        if current_heat >= target_min and current_heat <= target_max:
-            return first_try
+        # if current_stage == "Hammer":
+        #     target_min += 3
+        # elif current_stage == "Grind":
+        #     target_max -= 3
+        # elif current_stage == "Polish":
+        #     target_min += 3
+        
+        # if current_heat >= target_min and current_heat <= target_max:
+        #     return first_try
 
+        heating = False
         if current_heat <= target_min:
+            heating = True
             if not self.find_click_tag(self.lava_color, "Heat", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click lava to heat, retrying")
                 return self.fix_heat(current_stage, False)
@@ -391,19 +417,66 @@ class GiantsFoundry(OSRSBot):
                 self.log_msg("Failed to click waterfall to cool, retrying")
                 return self.fix_heat(current_stage, False)
             
+        target_heat = 7
         if current_stage == "Hammer":
-            target_min = target_max - 5
+            target_heat = 7
         elif current_stage == "Grind":
-            target_max = target_min + 5
+            target_heat = 12
         elif current_stage == "Polish":
-            target_min = target_max - 5
+            target_heat = 11
+        # if current_stage == "Hammer":
+        #     target_min = target_max - 5
+        # elif current_stage == "Grind":
+        #     target_max = target_min + 5
+        # elif current_stage == "Polish":
+        #     target_min = target_max - 5
 
         while True:
             current_heat = self.get_current_heat()
-            if current_heat >= target_min and current_heat <= target_max:
+            if heat_left >= target_heat  or (heat_left - actions_left >= 2):
                 self.click_self_tile()                        
                 return self.fix_heat(current_stage, False)
+            elif heating and current_heat >= target_max:
+                return self.fix_heat(current_stage, False)
+            elif not heating and current_heat <= target_min:
+                return self.fix_heat(current_stage, False)
+            
     
+    def get_heat_left(self) -> int:
+        # red orange or green
+        for _ in range(3):
+            heat = self.get_heat_left_helper()
+            if heat != -1:
+                return heat
+            time.sleep(0.1)
+        return -1 
+    
+    def get_heat_left_helper(self) -> int:
+        img_rect = self.heat_left_window.screenshot()
+        cv2.imwrite(f"heat_left_window.png", np.array(img_rect))
+        heat = ocr.extract_text(self.heat_left_window, ocr.PLAIN_12, colors, exclude_chars=exclude_chars)
+        # if we read a number, return it
+        if str(heat).isdigit():
+            return int(heat)
+        return -1
+    
+    def get_actions_left(self) -> int:
+        for _ in range(3):
+            heat = self.get_current_heat_helper()
+            if heat != -1:
+                return heat
+            time.sleep(0.1)
+        return -1
+    
+    def get_actions_left_helper(self) -> int:
+        img_rect = self.actions_left_window.screenshot()
+        cv2.imwrite(f"actions_left_window.png", np.array(img_rect))
+        heat = ocr.extract_text(self.actions_left_window, ocr.PLAIN_12, clr.WHITE, exclude_chars=exclude_chars)
+        # if we read a number, return it
+        if str(heat).isdigit():
+            return int(heat)
+        return -1
+
     def get_current_heat(self, loop_count: int = 3) -> int:
         for _ in range(loop_count):
             heat = self.get_current_heat_helper()
