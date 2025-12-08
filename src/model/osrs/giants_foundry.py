@@ -412,11 +412,13 @@ class GiantsFoundry(OSRSBot):
             if not self.find_click_tag(self.lava_color, "Heat", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click lava to heat, retrying")
                 return self.fix_heat(False)
+            time.sleep(1)
             self.wait_until_tag_stops_moving(self.lava_color)
         elif current_heat >= target_max:
             if not self.find_click_tag(self.waterfall_color, "Cool", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click waterfall to cool, retrying")
                 return self.fix_heat(False)
+            time.sleep(1)
             self.wait_until_tag_stops_moving(self.waterfall_color)
         time.sleep(1)
             
