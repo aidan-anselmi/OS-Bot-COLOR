@@ -326,7 +326,9 @@ class GiantsFoundry(OSRSBot):
         self.log_msg("Handing in sword...")
         self.find_click_tag(clr.CYAN, "Hand-in", color=clr.OFF_WHITE)
         self.wait_until_tag_stops_moving(clr.CYAN)
-        pag.hold('space')
+        pag.press('space')
+        time.sleep(2)
+        pag.press('space')
         time.sleep(2)
         pag.press('1')
         return
