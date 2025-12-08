@@ -457,11 +457,12 @@ class GiantsFoundry(OSRSBot):
 
     def make_sword(self):
         # TODO currently if we start in the desired heat we do not click anything
-        if self.fix_heat(self.get_current_stage()):
-            self.click_active_station()
+        self.log_msg("Making sword...")
+        self.fix_heat(self.get_current_stage())
+        self.click_active_station()
 
         # TODO being too "slow" is the other big issue, pull in bounds to fix
-        self.log_msg("Making sword...")
+        
         while self.errors < 10 and not self.no_sword_interface():
             current_stage = self.get_current_stage()
             while self.get_current_stage() != "unknown" and self.get_current_stage() == current_stage and self.errors < 10:
