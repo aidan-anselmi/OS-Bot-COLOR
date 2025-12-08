@@ -373,11 +373,11 @@ class GiantsFoundry(OSRSBot):
                 return self.fix_heat(current_stage, False)
             
         if current_stage == "Hammer":
-            target_min = target_max - 7
+            target_min = target_max - 5
         elif current_stage == "Grind":
-            target_max = target_min + 7
+            target_max = target_min + 5
         elif current_stage == "Polish":
-            target_min = target_max - 7
+            target_min = target_max - 5
 
         while True:
             current_heat = self.get_current_heat()
