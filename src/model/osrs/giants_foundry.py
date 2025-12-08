@@ -557,16 +557,15 @@ class GiantsFoundry(OSRSBot):
         last_action_time = time.time()
         while self.errors < 10 and not self.no_sword_interface():
             cur_stage = self.get_current_stage()
-            if cur_stage != "unknown" and cur_stage != current_stage:
+            if bonus := self.loop_find_tag(self.bonus_color, loops=1):
+                self.find_click_rectangle(bonus, "Use", color=clr.OFF_WHITE)
+                time.sleep(0.5)
+            elif cur_stage != "unknown" and cur_stage != current_stage:
                 current_stage = cur_stage
                 if rd.random_chance(0.9):
                     self.click_self_tile()
                 self.fix_heat()
                 self.click_active_station()
-            elif bonus := self.loop_find_tag(self.bonus_color, loops=1):
-                self.find_click_rectangle(bonus, "Use", color=clr.OFF_WHITE)
-                time.sleep(0.5)
-                continue
             elif not self.fix_heat():
                 self.click_active_station()
             elif self.get_actions_left() != last_action_count:
@@ -584,6 +583,8 @@ class GiantsFoundry(OSRSBot):
             return True
         for _ in range(5):
             if self.find_click_tag(self.active_station_color, "Use", color=clr.OFF_WHITE):
+                time.sleep(.5)
+                self.wait_until_tag_stops_moving(self.active_station_color)
                 return True
             time.sleep(.1)
         self.errors += 1
