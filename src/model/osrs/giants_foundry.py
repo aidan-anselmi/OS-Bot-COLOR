@@ -574,9 +574,7 @@ class GiantsFoundry(OSRSBot):
                 last_action_time = time.time()
             elif time.time() - last_action_time > 20:
                 self.log_msg("No actions taken for 20 seconds, retrying active station")
-                current_stage = self.get_current_stage()
-                self.click_active_station()
-                last_action_time = time.time()
+                current_stage = "start"
         return 
     
     def click_active_station(self):
