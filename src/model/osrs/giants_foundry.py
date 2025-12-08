@@ -297,7 +297,7 @@ class GiantsFoundry(OSRSBot):
             self.wait_till_interface_text("What metal")
             self.take_break(min_seconds=.5, max_seconds=1.5)
             pag.press(button)
-            if not self.wait_till_interface_text("You add", ocr.QUILL_8):
+            if not self.wait_till_interface_text("You add", ocr.QUILL_8, clr.Color([0, 0, 0])):
                 self.log_msg("Failed to confirm bars added to crucible")
         return
     

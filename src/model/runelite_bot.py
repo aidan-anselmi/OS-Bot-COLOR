@@ -403,7 +403,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(.1)
         return True    
     
-    def wait_till_interface_text(self, texts: Union[str, List[str]], font=ocr.BOLD_12):
+    def wait_till_interface_text(self, texts: Union[str, List[str]], font=ocr.BOLD_12, color=clr.Color([64, 48, 32])) -> bool:
         """
         This will stop further execution until interface is opened with certain text
         """
@@ -421,7 +421,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             return True
 
         return False
-
+    
     def is_bank_deposit_open(self):
         tabs_img = imsearch.BOT_IMAGES.joinpath("bank", "bank_deposit_manual.png")
         if imsearch.search_img_in_rect(tabs_img, self.win.game_view, confidence=0.05):
