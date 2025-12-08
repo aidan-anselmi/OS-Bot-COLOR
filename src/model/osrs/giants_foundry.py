@@ -377,8 +377,6 @@ class GiantsFoundry(OSRSBot):
         self.errors += 1
         return False
     
-    def check_heat(self) -> bool:
-    
     def fix_heat(self, first_try: bool = True):
         # get heat
         # get tarted heat
