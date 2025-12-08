@@ -553,6 +553,8 @@ class GiantsFoundry(OSRSBot):
 
         # TODO being too "slow" is the other big issue, pull in bounds to fix
         current_stage = "start"
+        last_action_count = self.get_actions_left()
+        last_action_time = time.time()
         while self.errors < 10 and not self.no_sword_interface():
             cur_stage = self.get_current_stage()
             if cur_stage != "unknown" and cur_stage != current_stage:
@@ -567,7 +569,13 @@ class GiantsFoundry(OSRSBot):
                 continue
             if not self.fix_heat():
                 self.click_active_station()
-
+            if self.get_actions_left() != last_action_count:
+                last_action_count = self.get_actions_left()
+                last_action_time = time.time()
+            elif time.time() - last_action_time > 20:
+                self.log_msg("No actions taken for 20 seconds, retrying active station")
+                self.click_active_station()
+                last_action_time = time.time()
         return 
     
     def click_active_station(self):
