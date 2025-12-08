@@ -408,7 +408,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         This will stop further execution until interface is opened with certain text
         """
         error = 0
-        while not ocr.find_text(texts, rect=self.win.chat, font=font, color=clr.Color([64, 48, 32])):
+        while not ocr.find_text(texts, rect=self.win.chat, font=font, color=color):
             if error > 100:
                 return False
             error += 1
@@ -421,7 +421,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             return True
 
         return False
-    
+
     def is_bank_deposit_open(self):
         tabs_img = imsearch.BOT_IMAGES.joinpath("bank", "bank_deposit_manual.png")
         if imsearch.search_img_in_rect(tabs_img, self.win.game_view, confidence=0.05):
