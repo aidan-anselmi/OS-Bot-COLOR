@@ -281,7 +281,7 @@ class GiantsFoundry(OSRSBot):
         self.find_click_image(self.path.joinpath("Mithril_bar_bank.png"))
         self.take_break(min_seconds=0.1, max_seconds=0.5)
         self.find_click_image(self.path.joinpath("Steel_bar_bank.png"))
-        self.take_break(min_seconds=0.5, max_seconds=0.9)
+        self.take_break(min_seconds=1, max_seconds=2)
         pag.press('esc')
         return
     
