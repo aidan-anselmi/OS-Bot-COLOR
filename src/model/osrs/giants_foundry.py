@@ -412,10 +412,13 @@ class GiantsFoundry(OSRSBot):
             if not self.find_click_tag(self.lava_color, "Heat", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click lava to heat, retrying")
                 return self.fix_heat(False)
+            self.wait_until_tag_stops_moving(self.lava_color)
         elif current_heat >= target_max:
             if not self.find_click_tag(self.waterfall_color, "Cool", color=clr.OFF_WHITE):
                 self.log_msg("Failed to click waterfall to cool, retrying")
                 return self.fix_heat(False)
+            self.wait_until_tag_stops_moving(self.waterfall_color)
+        time.sleep(1)
             
         target_heat = 7
         if current_stage == "Hammer":
@@ -429,19 +432,26 @@ class GiantsFoundry(OSRSBot):
         # elif current_stage == "Grind":
         #     target_max = target_min + 5
         # elif current_stage == "Polish":
-        #     target_min = target_max - 5
+        #     target_min = target_max - 5        
 
         actions_left = self.get_actions_left()
         while True:
-            current_heat = self.get_current_heat()
+            loop_current_heat = self.get_current_heat()
             heat_left = self.get_heat_left()
+            if heating and loop_current_heat <= current_heat:
+                self.log_msg(f"Heating but heat did not increase, retrying")
+                return self.fix_heat(False)
+            elif not heating and loop_current_heat >= current_heat - 2:
+                self.log_msg(f"Cooling but heat did not decrease, retrying")
+                return self.fix_heat(False)
+
             if heat_left >= target_heat  or (heat_left - actions_left >= 2):
                 self.log_msg(f"Corrected heat withe heat left: {heat_left}, actions left: {actions_left}")
                 self.click_self_tile()                        
                 return self.fix_heat(False)
-            elif heating and current_heat >= target_max:
+            elif heating and loop_current_heat >= target_max:
                 return self.fix_heat(False)
-            elif not heating and current_heat <= target_min:
+            elif not heating and loop_current_heat <= target_min:
                 return self.fix_heat(False)
             
     
