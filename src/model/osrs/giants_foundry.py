@@ -563,13 +563,13 @@ class GiantsFoundry(OSRSBot):
                     self.click_self_tile()
                 self.fix_heat()
                 self.click_active_station()
-            if bonus := self.loop_find_tag(self.bonus_color, loops=1):
+            elif bonus := self.loop_find_tag(self.bonus_color, loops=1):
                 self.find_click_rectangle(bonus, "Use", color=clr.OFF_WHITE)
                 time.sleep(0.5)
                 continue
-            if not self.fix_heat():
+            elif not self.fix_heat():
                 self.click_active_station()
-            if self.get_actions_left() != last_action_count:
+            elif self.get_actions_left() != last_action_count:
                 last_action_count = self.get_actions_left()
                 last_action_time = time.time()
             elif time.time() - last_action_time > 20:
