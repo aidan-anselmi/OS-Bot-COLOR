@@ -260,7 +260,7 @@ class GiantsFoundry(OSRSBot):
 
             search_texts = ["Needle Point", "Defenders Tip", "Serrated Tip", "Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
             if blade_part == "Forte":
-                search_texts = ["Defender Base", "Stiletto Forte", "Chopper Forte +1", "Juggernaut Forte", "Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
+                search_texts = ["Defender Base", "Stiletto Forte", "Juggernaut Forte", "Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
             elif blade_part == "Blades":
                 search_texts = ["Serpent Blade", "Fleur de Blade", "Claymore Blade", "Flamberge Blade", "Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
             mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
