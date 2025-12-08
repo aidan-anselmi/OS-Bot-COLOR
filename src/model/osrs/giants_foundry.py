@@ -338,8 +338,10 @@ class GiantsFoundry(OSRSBot):
         self.take_break(min_seconds=1, max_seconds=3)
         pag.press('space')
         if not self.wait_till_interface_text("Yes", ocr.QUILL_8, clr.BLACK):
-            self.take_break(min_seconds=1, max_seconds=2)
-            pag.press('1')
+            self.log_msg("Failed to confirm receive another commission")
+            return
+        self.take_break(min_seconds=1, max_seconds=2)
+        pag.press('1')
         self.take_break(min_seconds=1, max_seconds=3)
         # confirm we got the comission
         return
@@ -547,12 +549,17 @@ class GiantsFoundry(OSRSBot):
     def make_sword(self):
         # TODO currently if we start in the desired heat we do not click anything
         self.log_msg("Making sword...")
-        self.fix_heat()
-        self.click_active_station()
 
         # TODO being too "slow" is the other big issue, pull in bounds to fix
-        
+        current_stage = "start"
         while self.errors < 10 and not self.no_sword_interface():
+            cur_stage = self.get_current_stage()
+            if cur_stage != "unknown" and cur_stage != current_stage:
+                current_stage = cur_stage
+                if rd.random_chance(0.9):
+                    self.click_self_tile()
+                self.fix_heat()
+                self.click_active_station()
             if bonus := self.loop_find_tag(self.bonus_color, loops=1):
                 self.find_click_rectangle(bonus, "Use", color=clr.OFF_WHITE)
                 time.sleep(0.5)
