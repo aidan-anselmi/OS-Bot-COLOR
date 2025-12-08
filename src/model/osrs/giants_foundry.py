@@ -173,7 +173,7 @@ class GiantsFoundry(OSRSBot):
         while time.time() - start_time < end_time and self.errors < 10:
             if not self.loop_find_tag(self.active_station_color, loops=3):
                 self.setup_sword()
-            self.make_sword()
+            #self.make_sword()
             self.hand_in_sword()
 
     def setup_sword(self):
