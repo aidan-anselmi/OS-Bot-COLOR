@@ -302,24 +302,24 @@ class GiantsFoundry(OSRSBot):
             self.wait_till_interface_text("What metal")
             self.take_break(min_seconds=.5, max_seconds=1.5)
             pag.press(button)
-            if not self.wait_till_interface_text("You add", ocr.QUILL_8, clr.Color([0, 0, 0])):
+            if not self.wait_till_interface_text("You add", ocr.QUILL_8, clr.BLACK):
                 self.log_msg("Failed to confirm bars added to crucible")
         return
     
     def hand_in_sword(self):
         self.log_msg("Handing in sword...")
         self.find_click_tag(clr.CYAN, "Hand-in", color=clr.OFF_WHITE)
-        if not self.wait_till_interface_text("Hmm", ocr.QUILL_8, clr.Color([0, 0, 0])):
+        if not self.wait_till_interface_text("Hmm", ocr.QUILL_8, clr.BLACK):
             self.log_msg("Failed to find hand-in interface")
             return
         self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        if not self.wait_till_interface_text("smithing", ocr.QUILL_8, clr.Color([0, 0, 0])):
+        if not self.wait_till_interface_text("smithing", ocr.QUILL_8, clr.BLACK):
             self.log_msg("Failed to confirm sword handed in")
             return
         self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        if not self.wait_till_interface_text("ommission", ocr.QUILL_8, clr.Color([0, 0, 0])):
+        if not self.wait_till_interface_text("ommission", ocr.QUILL_8, clr.BLACK):
             pag.press('1')
         self.take_break(min_seconds=.3, max_seconds=1)
         # confirm we got the comission
