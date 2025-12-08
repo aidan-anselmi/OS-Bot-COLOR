@@ -371,15 +371,11 @@ class GiantsFoundry(OSRSBot):
 
         current_heat = self.get_current_heat()
         if current_heat == -1:
-            self.log_msg("Failed to read current heat, retrying")
-            time.sleep(1)
-            return self.fix_heat(current_stage, False)
+            return False
         
         target_min, target_max = self.get_target_heat_range(current_stage)
         if target_min == -1:
-            self.log_msg(f"Failed to read target heat range for {current_stage}, retrying")
-            time.sleep(1)
-            return self.fix_heat(current_stage, False)
+            return False
         if current_heat >= target_min and current_heat <= target_max:
             return first_try
 
@@ -516,4 +512,8 @@ recieve another commission -> press 1
 Stage 
 heat 
 Actions left 
+
+
+green
+" You have successfully finished the sword"
 """
