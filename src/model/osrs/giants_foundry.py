@@ -392,6 +392,13 @@ class GiantsFoundry(OSRSBot):
                 self.log_msg("Failed to click waterfall to cool, retrying")
                 return self.fix_heat(current_stage, False)
             
+        if current_stage == "Hammer":
+            target_min = target_max - 7
+        elif current_stage == "Grind":
+            target_max = target_min + 7
+        elif current_stage == "Polish":
+            target_min = target_max - 7
+
         while True:
             current_heat = self.get_current_heat()
             if current_heat >= target_min and current_heat <= target_max:
@@ -424,11 +431,11 @@ class GiantsFoundry(OSRSBot):
         # Grind ORANGE Medium - min 38 max 62
         # Polish GREEN Low - min 5 max 28
         if current_stage == "Hammer":
-            return (80, 95)
+            return (75, 92)
         elif current_stage == "Grind":
-            return (38, 53)
+            return (41, 59)
         elif current_stage == "Polish":
-            return (18, 33)
+            return (8, 25)
         return (-1, -1)
     
     def get_current_stage(self) -> str:
