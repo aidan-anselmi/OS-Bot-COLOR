@@ -567,12 +567,14 @@ class GiantsFoundry(OSRSBot):
                 self.fix_heat()
                 self.click_active_station()
             elif not self.fix_heat():
+                current_stage = self.get_current_stage()
                 self.click_active_station()
             elif self.get_actions_left() != last_action_count:
                 last_action_count = self.get_actions_left()
                 last_action_time = time.time()
             elif time.time() - last_action_time > 20:
                 self.log_msg("No actions taken for 20 seconds, retrying active station")
+                current_stage = self.get_current_stage()
                 self.click_active_station()
                 last_action_time = time.time()
         return 
@@ -583,8 +585,6 @@ class GiantsFoundry(OSRSBot):
             return True
         for _ in range(5):
             if self.find_click_tag(self.active_station_color, "Use", color=clr.OFF_WHITE):
-                time.sleep(.5)
-                self.wait_until_tag_stops_moving(self.active_station_color)
                 return True
             time.sleep(.1)
         self.errors += 1
