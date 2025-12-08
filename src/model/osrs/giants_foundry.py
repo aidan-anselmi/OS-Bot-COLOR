@@ -314,12 +314,12 @@ class GiantsFoundry(OSRSBot):
             return
         self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        if not self.wait_till_interface_text("smithing", ocr.QUILL_8, clr.BLACK):
+        if not self.wait_till_interface_text("Smithing", ocr.QUILL_8, clr.BLACK):
             self.log_msg("Failed to confirm sword handed in")
             return
         self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        if not self.wait_till_interface_text("ommission", ocr.QUILL_8, clr.BLACK):
+        if not self.wait_till_interface_text("Would", ocr.QUILL_8, clr.BLACK):
             pag.press('1')
         self.take_break(min_seconds=.3, max_seconds=1)
         # confirm we got the comission
@@ -363,6 +363,7 @@ class GiantsFoundry(OSRSBot):
         # get tarted heat
         # heat or cool until done
         # click on self tile 
+        # TODO temp incrrease accelerates, account for this 
 
         current_heat = self.get_current_heat()
         if current_heat == -1:
