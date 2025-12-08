@@ -384,7 +384,7 @@ class GiantsFoundry(OSRSBot):
         # TODO temp incrrease accelerates, account for this 
 
         heat_left = self.get_heat_left()
-        actions_left = self.get_actions_left()
+        
         if heat_left >= 2:
             return first_try
 
@@ -463,7 +463,7 @@ class GiantsFoundry(OSRSBot):
     
     def get_actions_left(self) -> int:
         for _ in range(3):
-            heat = self.get_current_heat_helper()
+            heat = self.get_actions_left_helper()
             if heat != -1:
                 return heat
             time.sleep(0.1)
