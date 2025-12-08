@@ -321,9 +321,9 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
     def find_click_tag(self, object_color: clr.Color, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None) -> bool:
         tag = self.loop_find_tag(object_color)
         if not tag:
-            self.log_msg(f"could not find tag of color {object_color}")
+            self.log_msg(f"could not find tag of color {object_color.lower}")
             return False
-
+    
         self.mouse.move_to(tag.random_point())
         if mouseover_text and not self.mouseover_text(contains=mouseover_text, color=color):
             # retry
