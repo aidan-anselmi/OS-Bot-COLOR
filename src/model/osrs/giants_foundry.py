@@ -579,6 +579,7 @@ class GiantsFoundry(OSRSBot):
         return 
     
     def click_active_station(self):
+        self.log_msg("Clicking active station...")
         if self.no_sword_interface():
             return True
         for _ in range(5):
@@ -590,6 +591,7 @@ class GiantsFoundry(OSRSBot):
         return False
     
     def click_self_tile(self):
+        self.log_msg("Clicking self tile...")
         for _ in range(5):
             if self.find_click_tag(clr.MINT, "Walk", color=clr.OFF_WHITE):
                 return True
