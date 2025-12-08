@@ -319,7 +319,7 @@ class GiantsFoundry(OSRSBot):
             return
         self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        if not self.wait_till_interface_text("Would", ocr.QUILL_8, clr.BLACK):
+        if not self.wait_till_interface_text("omission", ocr.QUILL_8, clr.BLACK):
             pag.press('1')
         self.take_break(min_seconds=.3, max_seconds=1)
         # confirm we got the comission
