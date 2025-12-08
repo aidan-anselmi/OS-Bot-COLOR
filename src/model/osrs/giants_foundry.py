@@ -478,6 +478,8 @@ class GiantsFoundry(OSRSBot):
         return 
     
     def click_active_station(self):
+        if self.no_sword_interface():
+            return True
         for _ in range(5):
             if self.find_click_tag(self.active_station_color, "Use", color=clr.OFF_WHITE):
                 return True
