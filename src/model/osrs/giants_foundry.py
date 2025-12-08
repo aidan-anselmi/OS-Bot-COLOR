@@ -439,13 +439,14 @@ class GiantsFoundry(OSRSBot):
         #     target_min = target_max - 5        
 
         actions_left = self.get_actions_left()
+        start_time = time.time()
         while True:
             loop_current_heat = self.get_current_heat()
             heat_left = self.get_heat_left()
             if heating and loop_current_heat <= current_heat:
                 self.log_msg(f"Heating but heat did not increase, retrying")
                 return self.fix_heat(False)
-            elif not heating and loop_current_heat >= current_heat - 2:
+            elif not heating and time.time() - start_time > 8 and loop_current_heat >= current_heat - 3:
                 self.log_msg(f"Cooling but heat did not decrease, retrying")
                 return self.fix_heat(False)
 
