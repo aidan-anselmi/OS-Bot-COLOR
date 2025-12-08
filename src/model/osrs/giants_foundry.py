@@ -330,16 +330,17 @@ class GiantsFoundry(OSRSBot):
         if not self.wait_till_interface_text("Hmm", ocr.QUILL_8, clr.BLACK):
             self.log_msg("Failed to find hand-in interface")
             return
-        self.take_break(min_seconds=.3, max_seconds=1)
+        self.take_break(min_seconds=.5, max_seconds=1)
         pag.press('space')
         if not self.wait_till_interface_text("Smithing", ocr.QUILL_8, clr.BLACK):
             self.log_msg("Failed to confirm sword handed in")
             return
-        self.take_break(min_seconds=.3, max_seconds=1)
+        self.take_break(min_seconds=1, max_seconds=3)
         pag.press('space')
         if not self.wait_till_interface_text("Yes", ocr.QUILL_8, clr.BLACK):
+            self.take_break(min_seconds=1, max_seconds=2)
             pag.press('1')
-        self.take_break(min_seconds=.3, max_seconds=1)
+        self.take_break(min_seconds=1, max_seconds=3)
         # confirm we got the comission
         return
     
