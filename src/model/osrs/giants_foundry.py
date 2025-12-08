@@ -355,8 +355,12 @@ class GiantsFoundry(OSRSBot):
             return False
         
         target_min, target_max = self.get_target_heat_range(current_stage)
-        target_min += 3
-        target_max -= 3
+        if current_stage == "Hammer":
+            target_min += 3
+        elif current_stage == "Grind":
+            target_max -= 3
+        elif current_stage == "Polish":
+            target_min += 3
 
         if target_min == -1:
             return False
