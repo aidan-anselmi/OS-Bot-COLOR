@@ -314,12 +314,12 @@ class GiantsFoundry(OSRSBot):
             return
         self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        if not self.wait_till_interface_text("You", ocr.QUILL_8, clr.Color([0, 0, 0])):
+        if not self.wait_till_interface_text("smithing", ocr.QUILL_8, clr.Color([0, 0, 0])):
             self.log_msg("Failed to confirm sword handed in")
             return
         self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        if not self.wait_till_interface_text("Commission", ocr.QUILL_8, clr.Color([0, 0, 0])):
+        if not self.wait_till_interface_text("ommission", ocr.QUILL_8, clr.Color([0, 0, 0])):
             pag.press('1')
         self.take_break(min_seconds=.3, max_seconds=1)
         # confirm we got the comission
