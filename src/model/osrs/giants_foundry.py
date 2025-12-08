@@ -376,6 +376,8 @@ class GiantsFoundry(OSRSBot):
         self.errors += 1
         return False
     
+    def check_heat(self) -> bool:
+    
     def fix_heat(self, first_try: bool = True):
         # get heat
         # get tarted heat
@@ -540,15 +542,12 @@ class GiantsFoundry(OSRSBot):
         # TODO being too "slow" is the other big issue, pull in bounds to fix
         
         while self.errors < 10 and not self.no_sword_interface():
-            current_stage = self.get_current_stage()
-            while self.get_current_stage() != "unknown" and self.get_current_stage() == current_stage and self.errors < 10:
-                if bonus := self.loop_find_tag(self.bonus_color, loops=1):
-                    self.find_click_rectangle(bonus, "Use", color=clr.OFF_WHITE)
-                    time.sleep(0.5)
-                    continue
-                if not self.fix_heat():
-                    self.click_active_station()
-            self.click_self_tile()
+            if bonus := self.loop_find_tag(self.bonus_color, loops=1):
+                self.find_click_rectangle(bonus, "Use", color=clr.OFF_WHITE)
+                time.sleep(0.5)
+                continue
+            if not self.fix_heat():
+                self.click_active_station()
 
         return 
     
