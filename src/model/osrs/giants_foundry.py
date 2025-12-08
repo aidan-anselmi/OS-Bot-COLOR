@@ -21,30 +21,6 @@ import keyboard
 import utilities.ocr as ocr
 import cv2
 
-"""
-commision
-set mould
-    plugin should make it so that top item is always the mould we want
-    Tips -> Blades -> Forte
-get ingots
-fill crucible
-    "What metal would you like to add?"
-    steel -> 3
-    "You add"
-    mithril -> 4
-pour
-pick up mould
-
-loop while we cant find cyan tag
-    if green -> continue 
-    if orange -> wait if close - click if far
-    if red -> click on green or cyan or whatever
-    if purple -> click on it 
-
-hand in sword -> press space
-recieve another commission -> press 1
-"""
-
 exclude_chars = [
     "Ì",
     "Í",
@@ -196,7 +172,7 @@ class GiantsFoundry(OSRSBot):
         end_time = self.running_time * 60
         self.errors = 0
         while time.time() - start_time < end_time and self.errors < 10:
-            #self.setup_sword()
+            self.setup_sword()
             self.make_sword()
             self.hand_in_sword()
 
@@ -256,11 +232,11 @@ class GiantsFoundry(OSRSBot):
             if self.find_click_rectangle(tab_rects[0], "View", color=clr.OFF_WHITE):
                 tab_selects += 1
 
-            search_texts = ["Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
+            search_texts = ["Serrated Tip", "Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
             if blade_part == "Forte":
                 search_texts = ["Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
             elif blade_part == "Blades":
-                search_texts = ["Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
+                search_texts = ["Flamberge Blade", "Gladius Edge", "Stiletto Blade", "Medusa Blade", "Fish Blade", "Defenders Edge", "Saw Blade"]
             mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
             if not mould_rects:
                 mould_rects = ocr.find_text(search_texts, self.win.game_view, ocr.BOLD_12, self.mould_text_color)
@@ -326,6 +302,7 @@ class GiantsFoundry(OSRSBot):
         self.log_msg("Handing in sword...")
         self.find_click_tag(clr.CYAN, "Hand-in", color=clr.OFF_WHITE)
         self.wait_until_tag_stops_moving(clr.CYAN)
+        time.sleep(2)
         pag.press('space')
         time.sleep(2)
         pag.press('space')
@@ -489,37 +466,3 @@ class GiantsFoundry(OSRSBot):
     
     def no_swoard_interface(self) -> bool:
         return self.get_current_heat(loop_count=3) == -1
-
-"""
-commision
-set mould
-    plugin should make it so that top item is always the mould we want
-    Tips -> Blades -> Forte
-get ingots
-fill crucible
-    "What metal would you like to add?"
-    steel -> 3
-    "You add"
-    mithril -> 4
-pour
-pick up mould
-
-loop while we cant find blue tag
-    if green -> continue 
-    if orange -> wait if close - click if far
-    if red -> click on green or cyan or whatever
-    if purple -> click on it 
-
-hand in sword -> press space
-recieve another commission -> press 1
-
-
-# read overlay for 
-Stage 
-heat 
-Actions left 
-
-
-green
-" You have successfully finished the sword"
-"""
