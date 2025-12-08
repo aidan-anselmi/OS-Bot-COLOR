@@ -187,9 +187,9 @@ class GiantsFoundry(OSRSBot):
         )
         self.current_stage_window = Rectangle(
             left=10 + self.win.game_view.left + 45,
-            top= self.heat_window.top + self.heat_window.height - 1,
+            top= self.heat_window.top + self.heat_window.height - 2,
             width=100,
-            height=19,
+            height=18,
         )
     
         start_time = time.time()
@@ -402,8 +402,7 @@ class GiantsFoundry(OSRSBot):
         while True:
             current_heat = self.get_current_heat()
             if current_heat >= target_min and current_heat <= target_max:
-                if not self.find_click_tag(clr.MINT, "Walk", color=clr.OFF_WHITE):
-                    self.click_self_tile()                        
+                self.click_self_tile()                        
                 return self.fix_heat(current_stage, False)
     
     def get_current_heat(self):
