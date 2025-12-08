@@ -172,7 +172,7 @@ class GiantsFoundry(OSRSBot):
         end_time = self.running_time * 60
         self.errors = 0
         while time.time() - start_time < end_time and self.errors < 10:
-            if not self.loop_find_tag(self.active_station_color) and not self.loop_find_tag(self.bad_station_color):
+            if not self.loop_find_tag(self.active_station_color, loops=3) and not self.loop_find_tag(self.bad_station_color, loops=3):
                 self.setup_sword()
             self.make_sword()
             self.hand_in_sword()
@@ -281,7 +281,7 @@ class GiantsFoundry(OSRSBot):
         self.find_click_image(self.path.joinpath("Mithril_bar_bank.png"))
         self.take_break(min_seconds=0.1, max_seconds=0.5)
         self.find_click_image(self.path.joinpath("Steel_bar_bank.png"))
-        self.take_break(min_seconds=0.3, max_seconds=0.6)
+        self.take_break(min_seconds=0.5, max_seconds=0.9)
         pag.press('esc')
         return
     
@@ -409,9 +409,9 @@ class GiantsFoundry(OSRSBot):
         if current_stage == "Hammer":
             return (75, 92)
         elif current_stage == "Grind":
-            return (41, 59)
+            return (41, 61)
         elif current_stage == "Polish":
-            return (8, 25)
+            return (8, 28)
         return (-1, -1)
     
     def get_current_stage(self) -> str:
