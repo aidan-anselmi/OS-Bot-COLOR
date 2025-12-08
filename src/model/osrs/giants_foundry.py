@@ -141,7 +141,6 @@ class GiantsFoundry(OSRSBot):
         self.bank_color = clr.PINK
         self.active_station_color = clr.GREEN
         self.warning_station_color = clr.ORANGE
-        self.bad_station_color = clr.RED
         self.bonus_color = clr.PURPLE
         self.mould_text_color = clr.BLUE
         self.general_color = clr.BLUE
@@ -172,7 +171,7 @@ class GiantsFoundry(OSRSBot):
         end_time = self.running_time * 60
         self.errors = 0
         while time.time() - start_time < end_time and self.errors < 10:
-            if not self.loop_find_tag(self.active_station_color, loops=3) and not self.loop_find_tag(self.bad_station_color, loops=3):
+            if not self.loop_find_tag(self.active_station_color, loops=3):
                 self.setup_sword()
             self.make_sword()
             self.hand_in_sword()
@@ -296,15 +295,16 @@ class GiantsFoundry(OSRSBot):
         for button in order:
             self.find_click_tag(self.general_color, "Fill", color=clr.OFF_WHITE)
             self.wait_till_interface_text("What metal")
-            time.sleep(.2)
+            self.take_break(min_seconds=.5, max_seconds=1.5)
             pag.press(button)
-            # TODO the font for this is off
-            self.wait_till_interface_text("You add", ocr.QUILL_8)
+            if not self.wait_till_interface_text("You add", ocr.QUILL_8):
+                self.log_msg("Failed to confirm bars added to crucible")
         return
     
     def hand_in_sword(self):
         self.log_msg("Handing in sword...")
         self.find_click_tag(clr.CYAN, "Hand-in", color=clr.OFF_WHITE)
+        time.sleep(1)
         self.wait_until_tag_stops_moving(clr.CYAN)
         time.sleep(2)
         pag.press('space')
@@ -405,8 +405,8 @@ class GiantsFoundry(OSRSBot):
         # High red
         # Medium orange
         # Low green
-        img_rect = self.heat_window.screenshot()
-        cv2.imwrite(f"heat_window.png", np.array(img_rect))
+        #img_rect = self.heat_window.screenshot()
+        #cv2.imwrite(f"heat_window.png", np.array(img_rect))
         heat = ocr.extract_text(self.heat_window, ocr.PLAIN_12, colors, exclude_chars=exclude_chars)
         # if we read a number, return it
         if str(heat).isdigit():
@@ -435,8 +435,8 @@ class GiantsFoundry(OSRSBot):
 
     def get_current_stage_helper(self) -> str:
         # save window to debug
-        img_rect = self.current_stage_window.screenshot()
-        cv2.imwrite(f"current_stage_window.png", np.array(img_rect))
+        #img_rect = self.current_stage_window.screenshot()
+        #cv2.imwrite(f"current_stage_window.png", np.array(img_rect))
         if ocr.find_text("Hammer", self.current_stage_window, ocr.PLAIN_12, red):
             return "Hammer"
         elif ocr.find_text("Grind", self.current_stage_window, ocr.PLAIN_12, orange):
@@ -447,6 +447,8 @@ class GiantsFoundry(OSRSBot):
 
     def make_sword(self):
         # TODO currently if we start in the desired heat we do not click anything
+        if self.fix_heat(current_stage):
+            self.click_active_station()
 
         # TODO being too "slow" is the other big issue, pull in bounds to fix
         self.log_msg("Making sword...")
