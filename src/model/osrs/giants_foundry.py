@@ -170,12 +170,16 @@ class GiantsFoundry(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
-        self.hand_in_sword()
         while time.time() - start_time < end_time and self.errors < 10:
             if not self.loop_find_tag(self.active_station_color, loops=3):
                 self.setup_sword()
             self.make_sword()
             self.hand_in_sword()
+
+            if rd.random_chance(0.15):
+                self.take_break(min_seconds=10, max_seconds=20)
+            elif rd.random_chance(0.05):
+                self.take_break(min_seconds=30, max_seconds=90)
 
     def setup_sword(self):
         #self.get_commission()
@@ -305,14 +309,19 @@ class GiantsFoundry(OSRSBot):
     def hand_in_sword(self):
         self.log_msg("Handing in sword...")
         self.find_click_tag(clr.CYAN, "Hand-in", color=clr.OFF_WHITE)
-        self.wait_till_interface_text("Hmm", ocr.QUILL_8, clr.Color([0, 0, 0]))
-        time.sleep(.5)
+        if not self.wait_till_interface_text("Hmm", ocr.QUILL_8, clr.Color([0, 0, 0])):
+            self.log_msg("Failed to find hand-in interface")
+            return
+        self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        self.wait_till_interface_text("You", ocr.QUILL_8, clr.Color([0, 0, 0]))
-        time.sleep(.5)
+        if not self.wait_till_interface_text("You", ocr.QUILL_8, clr.Color([0, 0, 0])):
+            self.log_msg("Failed to confirm sword handed in")
+            return
+        self.take_break(min_seconds=.3, max_seconds=1)
         pag.press('space')
-        time.sleep(2)
-        pag.press('1')
+        if not self.wait_till_interface_text("Commission", ocr.QUILL_8, clr.Color([0, 0, 0])):
+            pag.press('1')
+        self.take_break(min_seconds=.3, max_seconds=1)
         # confirm we got the comission
         return
     
