@@ -444,6 +444,8 @@ class GiantsFoundry(OSRSBot):
             while self.get_current_stage() == current_stage and self.errors < 10:
                 if bonus := self.loop_find_tag(self.bonus_color, loops=1):
                     self.find_click_rectangle(bonus, "Use", color=clr.OFF_WHITE)
+                    time.sleep(0.5)
+                    continue
                 if not self.fix_heat(current_stage):
                     self.click_active_station()
             self.click_self_tile()
