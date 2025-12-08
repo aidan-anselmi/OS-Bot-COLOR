@@ -457,7 +457,7 @@ class GiantsFoundry(OSRSBot):
     def get_heat_left_helper(self) -> int:
         img_rect = self.heat_left_window.screenshot()
         cv2.imwrite(f"heat_left_window.png", np.array(img_rect))
-        heat = ocr.extract_text(self.heat_left_window, ocr.PLAIN_12, colors, exclude_chars=exclude_chars)
+        heat = ocr.extract_text(self.heat_left_window, ocr.PLAIN_12, [red, orange, green], exclude_chars=exclude_chars)
         # if we read a number, return it
         if str(heat).isdigit():
             return int(heat)
