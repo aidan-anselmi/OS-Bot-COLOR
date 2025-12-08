@@ -280,7 +280,7 @@ class GiantsFoundry(OSRSBot):
         self.find_click_image(self.path.joinpath("Mithril_bar_bank.png"))
         self.take_break(min_seconds=0.1, max_seconds=0.5)
         self.find_click_image(self.path.joinpath("Steel_bar_bank.png"))
-        self.take_break(min_seconds=0.1, max_seconds=0.5)
+        self.take_break(min_seconds=0.3, max_seconds=0.6)
         pag.press('esc')
         return
     
@@ -437,6 +437,10 @@ class GiantsFoundry(OSRSBot):
         while self.errors < 10 and not self.no_swoard_interface():
             current_stage = self.get_current_stage()
             while self.get_current_stage() == current_stage and self.errors < 10:
+                if bonus := self.loop_find_tag(self.bonus_color, loops=1):
+                    self.mouse.move_to(bonus.random_point())
+                    self.mouse.click()
+                    time.sleep(0.5)
                 if not self.fix_heat(current_stage):
                     self.click_active_station()
             self.click_self_tile()
