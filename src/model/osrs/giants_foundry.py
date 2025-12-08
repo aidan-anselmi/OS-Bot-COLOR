@@ -389,9 +389,8 @@ class GiantsFoundry(OSRSBot):
             return first_try
 
         current_heat = self.get_current_heat()
-        actions_left = self.get_actions_left()
         current_stage = self.get_current_stage()
-        if current_heat == -1 or heat_left == -1 or actions_left == -1 or current_stage == "unknown":
+        if current_heat == -1 or heat_left == -1 or current_stage == "unknown":
             return False
         
         target_min, target_max = self.get_target_heat_range(current_stage)
@@ -432,6 +431,7 @@ class GiantsFoundry(OSRSBot):
         # elif current_stage == "Polish":
         #     target_min = target_max - 5
 
+        actions_left = self.get_actions_left()
         while True:
             current_heat = self.get_current_heat()
             heat_left = self.get_heat_left()
@@ -455,8 +455,8 @@ class GiantsFoundry(OSRSBot):
         return -1 
     
     def get_heat_left_helper(self) -> int:
-        img_rect = self.heat_left_window.screenshot()
-        cv2.imwrite(f"heat_left_window.png", np.array(img_rect))
+        # img_rect = self.heat_left_window.screenshot()
+        # cv2.imwrite(f"heat_left_window.png", np.array(img_rect))
         heat = ocr.extract_text(self.heat_left_window, ocr.PLAIN_12, [red, orange, green], exclude_chars=exclude_chars)
         # if we read a number, return it
         if str(heat).isdigit():
