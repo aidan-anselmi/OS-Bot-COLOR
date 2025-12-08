@@ -355,6 +355,9 @@ class GiantsFoundry(OSRSBot):
             return False
         
         target_min, target_max = self.get_target_heat_range(current_stage)
+        target_min += 3
+        target_max -= 3
+
         if target_min == -1:
             return False
         if current_heat >= target_min and current_heat <= target_max:
@@ -435,6 +438,7 @@ class GiantsFoundry(OSRSBot):
         return "unknown"
 
     def make_sword(self):
+        self.log_msg("Making sword...")
         while self.errors < 10 and not self.no_swoard_interface():
             current_stage = self.get_current_stage()
             while self.get_current_stage() == current_stage and self.errors < 10:
