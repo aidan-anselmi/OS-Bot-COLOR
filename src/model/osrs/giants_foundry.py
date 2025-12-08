@@ -258,7 +258,7 @@ class GiantsFoundry(OSRSBot):
             if self.find_click_rectangle(tab_rects[0], "View", color=clr.OFF_WHITE):
                 tab_selects += 1
 
-            search_texts = ["Serrated Tip", "Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
+            search_texts = ["Defenders Tip", "Serrated Tip", "Saw Tip", "Gladius Point", "Serpent's Fang", "Medusa's Head", "Chopper Tip", "People Poker Point"]
             if blade_part == "Forte":
                 search_texts = ["Chopper Forte +1", "Juggernaut Forte", "Serrated Forte", "Serpent Ricasso", "Medusa Ricasso", "Disarming Forte", "Gladius Ricasso", "Chopper Forte"]
             elif blade_part == "Blades":
@@ -384,7 +384,6 @@ class GiantsFoundry(OSRSBot):
         # TODO temp incrrease accelerates, account for this 
 
         heat_left = self.get_heat_left()
-        
         if heat_left >= 2:
             return first_try
 
@@ -396,12 +395,12 @@ class GiantsFoundry(OSRSBot):
         target_min, target_max = self.get_target_heat_range(current_stage)
         if target_min == -1:
             return False
-        # if current_stage == "Hammer":
-        #     target_min += 3
-        # elif current_stage == "Grind":
-        #     target_max -= 3
-        # elif current_stage == "Polish":
-        #     target_min += 3
+        if current_stage == "Hammer":
+            target_min += 3
+        elif current_stage == "Grind":
+            target_max -= 3
+        elif current_stage == "Polish":
+            target_min += 3
         
         # if current_heat >= target_min and current_heat <= target_max:
         #     return first_try
@@ -435,6 +434,7 @@ class GiantsFoundry(OSRSBot):
             current_heat = self.get_current_heat()
             heat_left = self.get_heat_left()
             if heat_left >= target_heat  or (heat_left - actions_left >= 2):
+                self.log_msg(f"Corrected heat withe heat left: {heat_left}, actions left: {actions_left}")
                 self.click_self_tile()                        
                 return self.fix_heat(current_stage, False)
             elif heating and current_heat >= target_max:
@@ -453,8 +453,8 @@ class GiantsFoundry(OSRSBot):
         return -1 
     
     def get_heat_left_helper(self) -> int:
-        img_rect = self.heat_left_window.screenshot()
-        cv2.imwrite(f"heat_left_window.png", np.array(img_rect))
+        # img_rect = self.heat_left_window.screenshot()
+        # cv2.imwrite(f"heat_left_window.png", np.array(img_rect))
         heat = ocr.extract_text(self.heat_left_window, ocr.PLAIN_12, colors, exclude_chars=exclude_chars)
         # if we read a number, return it
         if str(heat).isdigit():
@@ -470,8 +470,8 @@ class GiantsFoundry(OSRSBot):
         return -1
     
     def get_actions_left_helper(self) -> int:
-        img_rect = self.actions_left_window.screenshot()
-        cv2.imwrite(f"actions_left_window.png", np.array(img_rect))
+        # img_rect = self.actions_left_window.screenshot()
+        # cv2.imwrite(f"actions_left_window.png", np.array(img_rect))
         heat = ocr.extract_text(self.actions_left_window, ocr.PLAIN_12, clr.WHITE, exclude_chars=exclude_chars)
         # if we read a number, return it
         if str(heat).isdigit():
