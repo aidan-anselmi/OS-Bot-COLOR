@@ -144,9 +144,9 @@ class MLM(OSRSBot):
                 prev_xp = currenxt_xp
                 prev_xp_timestamp = time.time()
             if time.time() - prev_xp_timestamp > 10 * 60:
-                self.log_msg("No XP gain detected for 10 minutes, retrying to mine.")
-                self.errors += 1
-                return self.nonempty_inventory_slots()
+                self.log_msg("No XP gain detected for 10 minutes, exit.")
+                self.update_progress(1)
+                self.errors += 10
             if not self.is_player_doing_action("Mining"):
                 time.sleep(.5)
                 if not self.is_player_doing_action("Mining", rect=self.win.current_action):
