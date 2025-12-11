@@ -207,7 +207,9 @@ class GiantsFoundry(OSRSBot):
         self.add_bars_to_crucible()
         self.find_click_tag(self.active_station_color, "Pour", color=clr.OFF_WHITE)
         self.take_break(min_seconds=1, max_seconds=3)
-        self.find_click_tag(self.general_color, "Pick-up", color=clr.OFF_WHITE)
+        if not self.find_click_tag(self.general_color, "Pick-up", color=clr.OFF_WHITE):
+            self.take_break(min_seconds=3, max_seconds=5)
+            self.find_click_tag(self.general_color, "Pick-up", color=clr.OFF_WHITE)
         self.take_break(min_seconds=5.5, max_seconds=8)
         return True
 
