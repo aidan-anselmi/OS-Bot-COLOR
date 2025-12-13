@@ -85,9 +85,6 @@ class SandMiner(OSRSBot):
         return False
     
     def slot_empty(self, slot_index: int) -> bool:
-        if slot_index >= 27:
-            self.log_msg(f"Slot index {slot_index} out of range for inventory.")
-            return False
         if pag.pixel(*self.win.inventory_slots[slot_index].get_center()) == self.inventory_pixel_map[slot_index]:
             return True
         return False
