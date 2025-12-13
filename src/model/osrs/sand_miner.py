@@ -56,8 +56,6 @@ class SandMiner(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
         errors = 0
-        if self.get_special_energy() == 100:
-            self.find_click_rectangle(self.win.spec_orb_text, "Use", color=clr.OFF_WHITE)
         while time.time() - start_time < end_time and errors < 10:
             while not self.full_inventory():
                 self.find_click_tag_with_missclick(rock_clr, "Mine", clr.OFF_WHITE)
