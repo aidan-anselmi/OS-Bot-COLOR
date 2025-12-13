@@ -47,7 +47,7 @@ class SandMiner(OSRSBot):
         self.inventory_pixel_map = {}
         for i in range(len(self.win.inventory_slots)):
             self.inventory_pixel_map[i] = pag.pixel(*self.win.inventory_slots[i].get_center())
-        self.logout(f"{self.inventory_pixel_map}")
+        self.log_msg(f"{self.inventory_pixel_map}")
 
         start = 11
         i = start
