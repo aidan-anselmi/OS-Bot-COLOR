@@ -49,7 +49,7 @@ class SandMiner(OSRSBot):
             self.inventory_pixel_map[i] = pag.pixel(*self.win.inventory_slots[i].get_center())
 
 
-        i = 12
+        i = 11
 
         # Main loop
         start_time = time.time()
