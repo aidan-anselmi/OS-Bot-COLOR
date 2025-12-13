@@ -61,9 +61,9 @@ class SandMiner(OSRSBot):
                 self.find_click_tag_with_missclick(rock_clr, "Mine", clr.OFF_WHITE, probability=0.05)
                 for _ in range(40):
                     if not self.slot_empty(i):
+                        i += 1
                         break
                     time.sleep(0.1)
-                i += 1
             if not self.deposit_sand():
                 errors += 1
                 if not self.deposit_sand():
