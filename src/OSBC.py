@@ -350,11 +350,12 @@ if __name__ == "__main__":
     from model.osrs.thieve_alc import ThieveAlc
     from model.osrs.blast_furnace import BlastFurnace
     from model.osrs.giants_foundry import GiantsFoundry
+    from model.osrs.sand_miner import SandMiner
     from model.osrs import *
     test = True
     if test:
         app = App(test=True)
-        app.test(GiantsFoundry()) 
+        app.test(SandMiner()) 
     else:
         app = App()  # Add the "test=True" argument to the App constructor call.
         app.start()  # Comment out this line.

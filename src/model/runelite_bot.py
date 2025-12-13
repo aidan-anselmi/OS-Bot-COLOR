@@ -483,5 +483,17 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         return True
     
     def is_idle(self):
-        return bool(ocr.find_text("are", self.win.chat.scale(scale_height=0.37, scale_width=1, anchor_y=1, anchor_x=0), ocr.PLAIN_12, clr.Color([239, 16, 32])))
+        return bool(ocr.find_text("You", self.win.chat.scale(scale_height=0.37, scale_width=1, anchor_y=1, anchor_x=0), ocr.PLAIN_12, clr.Color([239, 16, 32])))
+    
+    def wait_till_idle(self):
+        """
+        This will stop further execution until player is idle
+        """
+        error = 0
+        while not self.is_idle():
+            if error > 100:
+                return False
+            error += 1
+            time.sleep(.1)
+        return True
     
