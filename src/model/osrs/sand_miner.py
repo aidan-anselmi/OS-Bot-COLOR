@@ -49,7 +49,8 @@ class SandMiner(OSRSBot):
             self.inventory_pixel_map[i] = pag.pixel(*self.win.inventory_slots[i].get_center())
 
 
-        i = 11
+        start = 11
+        i = start
 
         # Main loop
         start_time = time.time()
@@ -69,15 +70,15 @@ class SandMiner(OSRSBot):
                 errors += 1
                 if not self.deposit_sand():
                     return
+            i = start
 
     def deposit_sand(self):
         for _ in range(3):
             if self.find_click_tag(self.deposit_color, "Deposit", clr.OFF_WHITE):
-                self.wait_till_idle()
-                if not self.slot_empty(27):
-                    self.log_msg("Failed to deposit sand.")
-                    return False
-                return True
+                for _ in range(10):
+                    if self.slot_empty(27):
+                        return True
+                    time.sleep(1)
         return False
             
     def full_inventory(self) -> bool:
