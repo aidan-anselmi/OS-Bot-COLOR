@@ -334,9 +334,9 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         self.mouse.click()
         return True
 
-    def find_click_tag_with_missclick(self, object_color: clr.Color, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None) -> bool:
+    def find_click_tag_with_missclick(self, object_color: clr.Color, mouseover_text: str, color: Union[clr.Color, List[clr.Color]] = None, probability=0.25) -> bool:
         # chance to missclick
-        if rd.random_chance(probability=0.25):
+        if rd.random_chance(probability=probability):
             offset_x = random.randint(-75, 75)
             offset_y = random.randint(-75, 75)
             tag = self.loop_find_tag(object_color)

@@ -47,7 +47,7 @@ class SandMiner(OSRSBot):
         self.inventory_pixel_map = {}
         for i in range(len(self.win.inventory_slots)):
             self.inventory_pixel_map[i] = pag.pixel(*self.win.inventory_slots[i].get_center())
-
+        self.logout(f"{self.inventory_pixel_map}")
 
         start = 11
         i = start
@@ -58,7 +58,7 @@ class SandMiner(OSRSBot):
         errors = 0
         while time.time() - start_time < end_time and errors < 10:
             while not self.full_inventory():
-                self.find_click_tag_with_missclick(rock_clr, "Mine", clr.OFF_WHITE)
+                self.find_click_tag_with_missclick(rock_clr, "Mine", clr.OFF_WHITE, probability=0.05)
                 for _ in range(40):
                     if not self.slot_empty(i):
                         break
@@ -86,7 +86,7 @@ class SandMiner(OSRSBot):
     
     def slot_empty(self, slot_index: int) -> bool:
         if slot_index >= 27:
-            self.log_msg("Slot index out of range for inventory.")
+            self.log_msg(f"Slot index {slot_index} out of range for inventory.")
             return False
         if pag.pixel(*self.win.inventory_slots[slot_index].get_center()) == self.inventory_pixel_map[slot_index]:
             return True
