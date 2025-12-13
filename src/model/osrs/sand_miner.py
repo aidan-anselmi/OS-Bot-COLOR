@@ -61,7 +61,7 @@ class SandMiner(OSRSBot):
         while time.time() - start_time < end_time and errors < 10:
             while not self.full_inventory():
                 self.find_click_tag_with_missclick(rock_clr, "Mine", clr.OFF_WHITE)
-                for _ in range(50):
+                for _ in range(40):
                     if not self.slot_empty(i):
                         break
                     time.sleep(0.1)
