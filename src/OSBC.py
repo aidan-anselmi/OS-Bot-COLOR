@@ -355,7 +355,7 @@ if __name__ == "__main__":
     test = True
     if test:
         app = App(test=True)
-        app.test(OSRSGlassBlower()) 
+        app.test(CalcifiedRocks()) 
     else:
         app = App()  # Add the "test=True" argument to the App constructor call.
         app.start()  # Comment out this line.
