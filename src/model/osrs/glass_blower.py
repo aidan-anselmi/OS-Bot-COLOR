@@ -19,7 +19,7 @@ class OSRSGlassBlower(OSRSBot):
         description = "blows glass"
         super().__init__(bot_title=bot_title, description=description)
         # Set option variables below (initial value is only used during headless testing)
-        self.running_time = 200
+        self.running_time = 103
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
@@ -106,7 +106,7 @@ class OSRSGlassBlower(OSRSBot):
             self.find_click_rectangle(self.win.inventory_slots[1], "Use")
             self.wait_till_interface()
             self.take_break(max_seconds=1, fancy=True)
-            keyboard.press(Key.space)
+            pag.press("space")
             self.log_msg("Making product...")
             items_made += 27
 
