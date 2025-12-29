@@ -20,7 +20,7 @@ class OSRSWoodcutter(OSRSBot):
             "This bot power-chops wood. Position your character near some trees, tag them, and press Play.\nTHIS SCRIPT IS AN EXAMPLE, DO NOT USE LONGTERM."
         )
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 246
+        self.running_time = 251
 
         self.break_length_multiplier = random.uniform(.5, 1.5)
         self.break_chance_multiplier = random.uniform(.5, 1.5)
@@ -95,7 +95,7 @@ class OSRSWoodcutter(OSRSBot):
 
             # take a long break 
             if rd.random_chance(probability=0.125 * self.break_chance_multiplier):
-                self.take_break(min_seconds=30, max_seconds=150 * self.break_length_multiplier, fancy=True)
+                self.take_break(min_seconds=30, max_seconds=250 * self.break_length_multiplier, fancy=True)
             # short break
             else:
                 self.take_break(min_seconds=5, max_seconds=10)

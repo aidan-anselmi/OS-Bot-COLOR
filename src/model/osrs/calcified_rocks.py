@@ -23,7 +23,7 @@ class CalcifiedRocks(OSRSBot):
             "This bot mines calcified rocks. Position your character near some rocks, tag them, and press Play.\nTHIS SCRIPT IS AN EXAMPLE, DO NOT USE LONGTERM."
         )
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 120
+        self.running_time = 131
 
         self.break_length_multiplier = random.uniform(.5, 1.5)
         self.break_chance_multiplier = random.uniform(.5, 1.5)

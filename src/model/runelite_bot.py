@@ -403,13 +403,13 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(.1)
         return True    
     
-    def wait_till_interface_text(self, texts: Union[str, List[str]], font=ocr.BOLD_12, color=clr.Color([64, 48, 32])) -> bool:
+    def wait_till_interface_text(self, texts: Union[str, List[str]], font=ocr.BOLD_12, color=clr.Color([64, 48, 32]), max_wait = 10) -> bool:
         """
         This will stop further execution until interface is opened with certain text
         """
         error = 0
         while not ocr.find_text(texts, rect=self.win.chat, font=font, color=color):
-            if error > 100:
+            if error > max_wait * 10:
                 return False
             error += 1
             time.sleep(.1)
@@ -484,16 +484,4 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
     
     def is_idle(self):
         return bool(ocr.find_text("You", self.win.chat.scale(scale_height=0.37, scale_width=1, anchor_y=1, anchor_x=0), ocr.PLAIN_12, clr.Color([239, 16, 32])))
-    
-    def wait_till_idle(self):
-        """
-        This will stop further execution until player is idle
-        """
-        error = 0
-        while not self.is_idle():
-            if error > 100:
-                return False
-            error += 1
-            time.sleep(.1)
-        return True
     
