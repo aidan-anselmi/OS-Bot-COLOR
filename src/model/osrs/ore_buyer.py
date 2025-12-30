@@ -62,7 +62,8 @@ class OreBuyer(OSRSBot):
     def main_loop(self):
         start_time = time.time()
         end_time = self.running_time * 60
-        errors = 0
+        self.errors = 0
+        pag.press("f2")
         self.scrape()
 
         self.empty_slot_clr_27 = pag.pixel(*self.win.inventory_slots[-1].get_center())
@@ -72,7 +73,10 @@ class OreBuyer(OSRSBot):
         self.coal_in_stock = True
         self.iron_in_stock = True
 
-        while time.time() - start_time < end_time and errors < 10:
+        while time.time() - start_time < end_time and self.errors < 10:
+            if self.full_inventory():
+                pag.press("f2")
+
             if not self.find_click_tag(self.ore_seller_color, mouseover_text="Trade", color=clr.OFF_WHITE):
                 time.sleep(1)
                 continue
@@ -81,7 +85,9 @@ class OreBuyer(OSRSBot):
             self.sleep_until_not_moving()
             if coal_rect := self.loop_find_image(image=self.path.joinpath("Coal_bank.png"), rect=self.win.game_view):
                 if self.find_click_rectangle(coal_rect, mouseover_text="Buy", color=clr.OFF_WHITE):
+                    self.take_break(min_seconds=.3, max_seconds=1)
                     pag.press(keys="esc")
+                    self.take_break(min_seconds=.3, max_seconds=1)
                     if not self.full_inventory():
                         self.coal_in_stock = False
 
@@ -91,7 +97,9 @@ class OreBuyer(OSRSBot):
             if self.find_click_tag(self.ore_seller_color, mouseover_text="Trade", color=clr.OFF_WHITE):
                 if iron_rect := self.loop_find_image(image=self.path.joinpath("Iron_ore_bank.png"), rect=self.win.game_view): 
                     if self.find_click_rectangle(iron_rect, mouseover_text="Buy", color=clr.OFF_WHITE):
+                        self.take_break(min_seconds=.3, max_seconds=1)
                         pag.press(keys="esc")
+                        self.take_break(min_seconds=.3, max_seconds=1)
                         if not self.full_inventory():
                             self.iron_in_stock = False
             
@@ -100,15 +108,15 @@ class OreBuyer(OSRSBot):
             self.wait_till_bank_open()
             self.find_click_rectangle(self.win.inventory_slots[1], mouseover_text="Empty", color=clr.OFF_WHITE)
             self.find_click_rectangle(self.win.inventory_slots[2], mouseover_text="Deposit", color=clr.OFF_WHITE)
+            self.take_break(min_seconds=.3, max_seconds=1)
             pag.press(keys="esc")
+            self.take_break(min_seconds=.3, max_seconds=1)
 
             self.turn_on_run()
             
             # hop
             if not self.coal_in_stock or not self.iron_in_stock:
-                pag.hotkey('shift', 'page_up')
-                time.sleep(3)
-                pag.press("f2")
+                self.hop()
         return 
     
     def sleep_until_not_moving(self, color=clr.PINK):
@@ -130,3 +138,13 @@ class OreBuyer(OSRSBot):
             self.find_click_rectangle(self.win.run_orb, "Toggle Run", color=clr.OFF_WHITE)
             return True
         return False
+    
+    def hop(self):
+        pag.keyDown('shift')
+        time.sleep(0.1)
+        pag.press('pageup')
+        pag.keyUp('shift')
+        if self.wait_till_interface_text("World", font=ocr.QUILL_8, color=clr.BLACK, max_wait=10):
+            self.errors += 10
+        pag.press("f2")
+        
