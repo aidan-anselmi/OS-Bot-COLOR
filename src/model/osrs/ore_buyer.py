@@ -60,6 +60,8 @@ class OreBuyer(OSRSBot):
         return 
     
     def main_loop(self):
+        
+
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0

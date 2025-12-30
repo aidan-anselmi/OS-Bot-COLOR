@@ -41,7 +41,7 @@ class RuneLiteWindow(Window):
         UI elements on screen.
         """
 
-        super().__init__(window_title, padding_top=26, padding_left=0)
+        super().__init__(window_title, padding_top=0, padding_left=0)
 
     # Override
     def initialize(self) -> bool:
