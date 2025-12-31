@@ -113,6 +113,7 @@ def extract_text(rect: Rectangle, font: dict, color: Union[clr.Color, List[clr.C
     """
     # Screenshot and isolate colors
     image = clr.isolate_colors(rect.screenshot(), color)
+    cv2.imwrite("debug_ocr_extract_text.png", image)
     result = ""
     char_list = []
     for key in font:

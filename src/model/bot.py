@@ -445,8 +445,8 @@ class Bot(ABC):
             True if exact string is found, False otherwise.
             If args are left blank, returns the text in the mouseover area.
         """
-        # img_rect = self.win.mouseover.screenshot()
-        # cv2.imwrite(f"mouseover.png", np.array(img_rect))
+        img_rect = self.win.mouseover.screenshot()
+        #cv2.imwrite(f"mouseover.png", np.array(img_rect))
 
 
         if color is None:

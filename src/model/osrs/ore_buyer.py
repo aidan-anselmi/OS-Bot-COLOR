@@ -67,6 +67,7 @@ class OreBuyer(OSRSBot):
         self.errors = 0
         pag.press("f2")
         self.scrape()
+        time.sleep(.3)
 
         self.empty_slot_clr_27 = pag.pixel(*self.win.inventory_slots[-1].get_center())
         self.bank_color = clr.PINK
@@ -117,7 +118,9 @@ class OreBuyer(OSRSBot):
             self.turn_on_run()
             
             # hop
-            if not self.coal_in_stock or not self.iron_in_stock:
+            if not self.coal_in_stock:
+                self.hop()
+            if not self.iron_in_stock:
                 self.hop()
         return 
     
@@ -147,6 +150,10 @@ class OreBuyer(OSRSBot):
         pag.press('pageup')
         pag.keyUp('shift')
         if self.wait_till_interface_text("World", font=ocr.QUILL_8, color=clr.BLACK, max_wait=10):
+            self.log_msg("Ran into forbidden world, ending")
             self.errors += 10
         pag.press("f2")
+        self.iron_in_stock = True
+        self.coal_in_stock = True
+        return
         

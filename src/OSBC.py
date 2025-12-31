@@ -354,10 +354,12 @@ if __name__ == "__main__":
     from model.osrs import *
     from model.osrs.templte_trekking import TemplteTrekker
     from model.osrs.ore_buyer import OreBuyer
+    from model.osrs.glass_blower import OSRSGlassBlower
+    from model.osrs.seaweed_alc import SeaweedAlc
     test = True
     if test:
         app = App(test=True)
-        app.test(OreBuyer()) 
+        app.test(SeaweedAlc()) 
     else:
         app = App()  # Add the "test=True" argument to the App constructor call.
         app.start()  # Comment out this line.
