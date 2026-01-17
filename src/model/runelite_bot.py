@@ -29,6 +29,8 @@ from utilities.window import Window
 import utilities.random_util as rd
 from utilities.api.morg_http_client import MorgHTTPSocket
 import random
+import cv2
+import numpy as np
 
 class RuneLiteWindow(Window):
     current_action: Rectangle = None  # https://i.imgur.com/fKXuIyO.png
@@ -128,16 +130,19 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         Returns:
             True if the item was clicked, False otherwise.
         """
-        # Capitalize each item name
+        # Capitalize each item name and remove ' ' and 'p' from items
         if isinstance(items, list):
             for i, item in enumerate(items):
                 item = item.capitalize()
                 items[i] = item
         else:
             items = self.capitalize_loot_list(items, to_list=True)
+    
         # Locate Ground Items text
         if item_text := ocr.find_text(items, self.win.game_view, ocr.PLAIN_11, clr.PURPLE):
             for item in item_text:
+                if item.contains("p"):
+                    self.log_msg(f"Found item with p in it {item}.")
                 item.set_rectangle_reference(self.win.game_view)
             sorted_by_closest = sorted(item_text, key=Rectangle.distance_from_center)
             self.mouse.move_to(sorted_by_closest[0].get_center())
@@ -224,6 +229,7 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
         """
         img_rect = rect.screenshot()
         isolated_colors = clr.isolate_colors(img_rect, color)
+        cv2.imwrite(f"isolated colors.png", np.array(isolated_colors))
         objs = rcv.extract_objects(isolated_colors)
         for obj in objs:
             obj.set_rectangle_reference(rect)
@@ -403,13 +409,13 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
             time.sleep(.1)
         return True    
     
-    def wait_till_interface_text(self, texts: Union[str, List[str]], font=ocr.BOLD_12, color=clr.Color([64, 48, 32])) -> bool:
+    def wait_till_interface_text(self, texts: Union[str, List[str]], font=ocr.BOLD_12, color=clr.Color([64, 48, 32]), max_wait = 10) -> bool:
         """
         This will stop further execution until interface is opened with certain text
         """
         error = 0
         while not ocr.find_text(texts, rect=self.win.chat, font=font, color=color):
-            if error > 100:
+            if error > max_wait * 10:
                 return False
             error += 1
             time.sleep(.1)
@@ -484,16 +490,4 @@ class RuneLiteBot(Bot, metaclass=ABCMeta):
     
     def is_idle(self):
         return bool(ocr.find_text("You", self.win.chat.scale(scale_height=0.37, scale_width=1, anchor_y=1, anchor_x=0), ocr.PLAIN_12, clr.Color([239, 16, 32])))
-    
-    def wait_till_idle(self):
-        """
-        This will stop further execution until player is idle
-        """
-        error = 0
-        while not self.is_idle():
-            if error > 100:
-                return False
-            error += 1
-            time.sleep(.1)
-        return True
     

@@ -83,9 +83,9 @@ class WyrmAgility(OSRSBot):
                 self.wait_until_not_moving()
                     
 
-            if rd.random_chance(.02):
+            if rd.random_chance(1.0/150.0):
                 self.take_break(min_seconds=30, max_seconds=200)
-            elif rd.random_chance(.08):
+            elif rd.random_chance(.02):
                 self.take_break(min_seconds=2, max_seconds=8)
             elif rd.random_chance(.1):
                 self.take_break(min_seconds=.5, max_seconds=2)

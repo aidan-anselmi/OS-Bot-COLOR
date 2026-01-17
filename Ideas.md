@@ -1,6 +1,12 @@
 Ideas 
 
 - temple trekking 
+- farming! (plus seaweed and bird house)
+- mastering mixology
+- mahogany homes
+- plank make
+- 
+
 - moonlight moths 
 - red chins 
 - shop buying bot 

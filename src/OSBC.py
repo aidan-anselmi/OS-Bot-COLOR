@@ -352,10 +352,14 @@ if __name__ == "__main__":
     from model.osrs.giants_foundry import GiantsFoundry
     from model.osrs.sand_miner import SandMiner
     from model.osrs import *
+    from model.osrs.templte_trekking import TemplteTrekker
+    from model.osrs.ore_buyer import OreBuyer
+    from model.osrs.glass_blower import OSRSGlassBlower
+    from model.osrs.seaweed_alc import SeaweedAlc
     test = True
     if test:
         app = App(test=True)
-        app.test(SandMiner()) 
+        app.test(OSRSWoodcutter()) 
     else:
         app = App()  # Add the "test=True" argument to the App constructor call.
         app.start()  # Comment out this line.
@@ -363,3 +367,7 @@ if __name__ == "__main__":
     # IMPORTANT
     # - Make sure your bot's options are pre-defined in its __init__ method.
     # - You can stop the bot by pressing `Left Ctrl`
+
+# sudo sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
+# xhost +SI:localuser:$USER
+# sudo systemctl restart gdm3

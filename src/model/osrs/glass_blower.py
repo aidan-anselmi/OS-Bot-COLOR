@@ -19,7 +19,7 @@ class OSRSGlassBlower(OSRSBot):
         description = "blows glass"
         super().__init__(bot_title=bot_title, description=description)
         # Set option variables below (initial value is only used during headless testing)
-        self.running_time = 200
+        self.running_time = 120
 
     def create_options(self):
         self.options_builder.add_slider_option("running_time", "How long to run (minutes)?", 1, 500)
@@ -45,7 +45,7 @@ class OSRSGlassBlower(OSRSBot):
         # make sure directory exists
         dest_dir.mkdir(parents=True, exist_ok=True)
 
-        search_string = "Yew longbow (u), Bow string, Maple logs"
+        search_string = "Yew longbow (u), Bow string, Maple logs, Maple longbow (u), Magic logs, Magic longbow (u)"
         # search_string = "Deposit Inventory"
         image_type = ImageType.BANK
         destination = dest_dir
@@ -64,15 +64,16 @@ class OSRSGlassBlower(OSRSBot):
         self.scrape_images()
         bank_color = clr.BLUE
 
-        bow_img = imsearch.BOT_IMAGES.joinpath("items", "Maple_logs_bank.png")
-        # string_img = imsearch.BOT_IMAGES.joinpath("items", "Bow_string_bank.png")
+        #bow_img = imsearch.BOT_IMAGES.joinpath("items", "Magic_logs_bank.png")
+        bow_img = imsearch.BOT_IMAGES.joinpath("items", "Magic_longbow_(u)_bank.png")
+        string_img = imsearch.BOT_IMAGES.joinpath("items", "Bow_string_bank.png")
 
         # Main loop
         start_time = time.time()
         end_time = self.running_time * 60
         errors = 0
         items_made = 0
-        while time.time() - start_time < end_time and errors < 10 and items_made < 10000:
+        while time.time() - start_time < end_time and errors < 10 and items_made < 3200:
 
             # bank
             if not self.is_bank_open():
@@ -84,8 +85,8 @@ class OSRSGlassBlower(OSRSBot):
             self.take_break(max_seconds=.8, fancy=True)
 
             # deposit items 
-            self.find_click_rectangle(self.win.inventory_slots[1], "Deposit-All")
-            #self.find_click_image(imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png"))
+            #self.find_click_rectangle(self.win.inventory_slots[1], "Deposit")
+            self.find_click_image(imsearch.BOT_IMAGES.joinpath("bank", "deposit_inventory.png"))
             self.log_msg("deposited orbs.")
             self.take_break(max_seconds=1, fancy=True)
 
@@ -95,27 +96,33 @@ class OSRSGlassBlower(OSRSBot):
                 errors += 1
                 continue
             self.take_break(max_seconds=1, fancy=True)
+
+            # withdraw bowstring
+            if not self.find_click_image(string_img):
+                self.log_msg("could not find bow string.")
+                errors += 1
+                continue
             self.take_break(max_seconds=1, fancy=True)
 
             # close bank
             pag.press('esc')
             self.take_break(max_seconds=1, fancy=True)
 
-            self.find_click_rectangle(self.win.inventory_slots[0], "Use")
+            self.find_click_rectangle(self.win.inventory_slots[13], "Use")
             self.take_break(max_seconds=1, fancy=True)
-            self.find_click_rectangle(self.win.inventory_slots[1], "Use")
+            self.find_click_rectangle(self.win.inventory_slots[14], "Use")
             self.wait_till_interface()
             self.take_break(max_seconds=1, fancy=True)
-            keyboard.press(Key.space)
+            pag.press("space")
             self.log_msg("Making product...")
-            items_made += 27
+            items_made += 14
 
-            #time.sleep(17)
-            time.sleep(49)
-            if rd.random_chance(.95):
+            time.sleep(17)
+            #time.sleep(49)
+            if rd.random_chance(.97):
                 self.take_break(max_seconds=5, fancy=True)
             else:
-                self.take_break(min_seconds=20, max_seconds=60, fancy=True)
+                self.take_break(min_seconds=15, max_seconds=60)
 
             self.update_progress((time.time() - start_time) / end_time)
             self.log_msg(f"num errors = {errors}")

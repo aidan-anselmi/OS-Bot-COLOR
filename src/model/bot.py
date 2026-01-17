@@ -27,6 +27,7 @@ from utilities.geometry import Point, Rectangle
 from utilities.mouse import Mouse
 from utilities.options_builder import OptionsBuilder
 from utilities.window import Window, WindowInitializationError
+import cv2
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -444,6 +445,10 @@ class Bot(ABC):
             True if exact string is found, False otherwise.
             If args are left blank, returns the text in the mouseover area.
         """
+        img_rect = self.win.mouseover.screenshot()
+        #cv2.imwrite(f"mouseover.png", np.array(img_rect))
+
+
         if color is None:
             color = [
                 clr.OFF_CYAN,

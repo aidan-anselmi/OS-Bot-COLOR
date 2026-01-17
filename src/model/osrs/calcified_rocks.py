@@ -23,7 +23,7 @@ class CalcifiedRocks(OSRSBot):
             "This bot mines calcified rocks. Position your character near some rocks, tag them, and press Play.\nTHIS SCRIPT IS AN EXAMPLE, DO NOT USE LONGTERM."
         )
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 120
+        self.running_time = 131
 
         self.break_length_multiplier = random.uniform(.5, 1.5)
         self.break_chance_multiplier = random.uniform(.5, 1.5)
@@ -69,15 +69,11 @@ class CalcifiedRocks(OSRSBot):
         start_time = time.time()
         end_time = self.running_time * 60
         self.errors = 0
-        prev_xp = self.get_total_xp()
         while time.time() - start_time < end_time and self.errors < 10:
-            prev_xp = self.get_total_xp()
             if self.full_inventory():
                 self.bank_and_return()
             self.mining_loop()
             self.bank_and_return()
-            if self.get_total_xp() == prev_xp:
-                self.errors += 1
         return 
     
     def mining_loop(self):
@@ -85,15 +81,25 @@ class CalcifiedRocks(OSRSBot):
         
         self.click_rock()
 
+        prev_xp = self.get_total_xp()
+        prev_xp_timestamp = time.time()
         while not self.full_inventory() and self.errors < 10:
-            if self.get_total_xp() == prev_xp:
-                self.errors += 1
+            cur_xp = self.get_total_xp()
+            if cur_xp != -1 and cur_xp != prev_xp:
+                prev_xp = cur_xp
+                prev_xp_timestamp = time.time()
+            if time.time() - prev_xp_timestamp > 10 * 60:
+                self.errors += 10
+                return
             prev_xp = self.get_total_xp()
 
             if not self.is_player_doing_action("Mining"):
                 self.click_rock()
 
-            self.take_break(min_seconds=5, max_seconds=20, fancy=True)
+            if rd.random_chance(1.0/1000.0):
+                self.take_break(min_seconds=60, max_seconds=300)
+            else:
+                self.take_break(min_seconds=3, max_seconds=7)
         return True
     
     def click_rock(self):
@@ -230,7 +236,7 @@ class CalcifiedRocks(OSRSBot):
         
         rock = self.biased_reverse_pick(rocks)
         self.log_msg(f"Mining rock at {rock}")
-        if not self.find_click_rectangle(rock, "Mine", clr.OFF_WHITE):
+        if not self.find_click_rectangle_with_missclick(rock, "Mine", clr.OFF_WHITE):
             self.log_msg("Could not click selected rock")
             self.errors += 1
             return False

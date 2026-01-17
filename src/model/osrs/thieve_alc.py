@@ -30,7 +30,7 @@ class ThieveAlc(OSRSBot):
             """
         )
         super().__init__(bot_title=bot_title, description=description)
-        self.running_time = 119
+        self.running_time = 200
 
         self.break_length_multiplier = random.uniform(.5, 1.5)
         self.break_chance_multiplier = random.uniform(.5, 1.5)
@@ -58,6 +58,7 @@ class ThieveAlc(OSRSBot):
         self.distracted_citizen_clickbox_color = clr.CYAN
 
         self.alc_intersect = self.win.spellbook_normal[35].intersect(self.win.inventory_slots[12])
+        self.alc_intersect = Rectangle(self.alc_intersect.left + 1, self.alc_intersect.top + 1, self.alc_intersect.width - 2, self.alc_intersect.height - 2)
         if not self.alc_intersect:
             self.log_msg("ERROR: High alchemy spell does not intersect inventory slot 12!")
             return
@@ -75,13 +76,16 @@ class ThieveAlc(OSRSBot):
                 xp = cur_xp
                 xp_timestamp = time.time()
 
-            if time.time() - xp_timestamp > 5 * 60:
+            if time.time() - xp_timestamp > 15:
                 self.log_msg("did not get xp for 5mins, retrying")
                 pag.press('f4')
                 time.sleep(.2)
-                self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
+                if not self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE):
+                    self.mouse.click()
+                    pag.press('f4')
+                    self.find_click_rectangle(self.alc_intersect, "Cast", clr.OFF_WHITE)
                 time.sleep(.2)
-            if time.time() - xp_timestamp > 10 * 60:
+            if time.time() - xp_timestamp > 3 * 60:
                 self.log_msg("not getting xp, logging out")
                 return
                 
@@ -89,11 +93,12 @@ class ThieveAlc(OSRSBot):
             self.take_break(min_seconds=.3, max_seconds=.8, fancy=True)
             self.mouse.click()
             self.take_break(min_seconds=.3, max_seconds=.8, fancy=True)
-            if rd.random_chance(0.005):
+            if rd.random_chance(0.002):
+                break_max = random.randint(30, 30)
                 if rd.random_chance(0.1):
-                    self.take_break(min_seconds=30, max_seconds=200)
-                else:
-                    self.take_break(min_seconds=5, max_seconds=30)
+                    break_max = random.randint(30, 150)
+                self.take_break(min_seconds=5, max_seconds=break_max)
+                xp_timestamp += break_max
             else:
                 self.mouse.click()
         return 

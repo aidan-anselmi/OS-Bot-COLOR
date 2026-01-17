@@ -60,11 +60,11 @@ class SpriteScraper:
         # Search for each image and attempt to download it
         for img_name in img_names:
             # if image already exists, skip it
-            filepath = Path(destination).joinpath(img_name)
-            if (image_type in {ImageType.NORMAL, ImageType.ALL} and filepath.with_suffix(".png").exists()) or \
-               (image_type in {ImageType.BANK, ImageType.ALL} and filepath.with_name(f"{img_name}_bank.png").exists()):
-                notify_callback(f"{img_name} already exists. Skipping download.\n")
-                continue
+            # filepath = Path(destination).joinpath(img_name)
+            # if (image_type in {ImageType.NORMAL, ImageType.ALL} and filepath.with_suffix(".png").exists()) or \
+            #    (image_type in {ImageType.BANK, ImageType.ALL} and filepath.with_name(f"{img_name}_bank.png").exists()):
+            #     notify_callback(f"{img_name} already exists. Skipping download.\n")
+            #     continue
 
             notify_callback(f"Searching for {img_name}...")
             img_url = self.__find_image_url(img_name, notify_callback)
@@ -167,21 +167,70 @@ class SpriteScraper:
     # Subregion: API-Specific Methods
     # -------------------
     def __get_item_infobox_data(self, item: str) -> Optional[str]:
-        """
-        Returns a string of data from the info box for a specific item from the Wiki.
-        Args:
-            item: The item name.
-        Returns:
-            String of json data of the info box or None if the item does not exist or if an error occurred.
-        """
-        params = {"action": "query", "prop": "revisions", "rvprop": "content", "format": "json", "titles": item}
+        """Return a string of data from the info box for a specific item from the Wiki."""
+        params = {
+            "action": "query",
+            "prop": "revisions",
+            "rvprop": "content",
+            "format": "json",
+            "titles": item,
+        }
 
         try:
-            response = requests.get(url=f"{self.BASE_URL}/api.php", params=params)
-            data = response.json()
+            print("\n========== DEBUG REQUEST ==========")
+            print(f"Item: {item}")
+            print(f"Base URL: {self.BASE_URL}/api.php")
+            print(f"Params: {params}")
+
+            response = requests.get(
+                url=f"{self.BASE_URL}/api.php",
+                params=params,
+            )
+
+            # --- Request info ---
+            print("\n--- Request sent ---")
+            print(f"Final URL: {response.request.url}")
+            print(f"Request headers:")
+            for k, v in response.request.headers.items():
+                print(f"  {k}: {v}")
+
+            # --- Response info ---
+            print("\n--- Response received ---")
+            print(f"Status code: {response.status_code}")
+            print("Response headers:")
+            for k, v in response.headers.items():
+                print(f"  {k}: {v}")
+
+            # If forbidden, dump body for inspection
+            if response.status_code == 403:
+                print("\n--- 403 Response body (truncated) ---")
+                print(response.text[:500])
+                return None
+
+            # --- JSON parsing ---
+            try:
+                data = response.json()
+            except ValueError:
+                print("ERROR: Response is not JSON")
+                print(response.text[:500])
+                return None
+
+            print("\n--- Parsed JSON ---")
+            print(f"Top-level keys: {list(data.keys())}")
+
             pages = data["query"]["pages"]
+            print(f"Pages keys: {list(pages.keys())}")
+
             page_id = list(pages.keys())[0]
-            return None if int(page_id) < 0 else pages[page_id]["revisions"][0]["*"]
+            print(f"Page ID: {page_id}")
+
+            if int(page_id) < 0:
+                print("Page does not exist")
+                return None
+
+            print("Returning page content")
+            return pages[page_id]["revisions"][0]["*"]
+
         except requests.exceptions.ConnectionError as e:
             print("Network error:", e)
             return None
