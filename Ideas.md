@@ -1,11 +1,10 @@
 Ideas 
 
-- blast furnace
-- giants foundry
 - temple trekking 
 - moonlight moths 
 - red chins 
 - shop buying bot 
+- karambwan
 - Spin flax bot
 - green dragons bot 
 
